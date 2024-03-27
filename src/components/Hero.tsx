@@ -15,6 +15,7 @@ import logoForbes from '@/images/logos/forbes.svg'
 import logoHuffpost from '@/images/logos/huffpost.svg'
 import logoTechcrunch from '@/images/logos/techcrunch.svg'
 import logoWired from '@/images/logos/wired.svg'
+import UrlInput from '@/components/UrlInput'
 
 function BackgroundIllustration(props: React.ComponentPropsWithoutRef<'div'>) {
   let id = useId()
@@ -100,7 +101,9 @@ function PlayIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 export function Hero() {
   return (
-    <div className="overflow-hidden py-20 sm:py-32 lg:pb-32 xl:pb-36">
+    <>
+    <UrlInput />
+    {/* <div className="overflow-hidden py-20 sm:py-32 lg:pb-32 xl:pb-36">
       <Container>
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
           <div className="relative z-10 mx-auto max-w-2xl lg:col-span-7 lg:max-w-none lg:pt-6 xl:col-span-6">
@@ -108,9 +111,9 @@ export function Hero() {
               Find your website perfect performance..
             </h1>
             <p className="mt-6 text-lg text-gray-600">
-            By leveraging insights from our web-application that uses state of the art tech, 
-            you’ll know exactly what you need to fix to maximize your website performance, 
-            and exactly which line to do it at.
+              By leveraging insights from our web-application that uses state of the art tech,
+              you’ll know exactly what you need to fix to maximize your website performance,
+              and exactly which line to do it at.
             </p>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-4">
               <AppStoreLink />
@@ -157,6 +160,8 @@ export function Hero() {
           </div>
         </div>
       </Container>
-    </div>
+    </div> */}
+    </>
+   
   )
 }
