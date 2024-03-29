@@ -10,7 +10,7 @@ export default function Example() {
 
     const handleAnalyzeClick = async () => {
         setIsLoading(true);
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/audit`;
+        const apiUrl = `/api/audit`;
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
