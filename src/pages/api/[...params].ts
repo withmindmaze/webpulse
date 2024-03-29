@@ -47,7 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await runMiddleware(req, res, cors);
 
   const { params } = req.query;
-  console.log("🚀 ~ handler ~ params:", params)
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
