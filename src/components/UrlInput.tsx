@@ -1,15 +1,18 @@
 "use client"
 import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid'
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { JsonView, defaultStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
 
 export default function Example() {
-    const router = useRouter();
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [data, setData] = useState(null);
+    const shouldExpandNode = (level: number, value: any, field: any) => level < 2;
+
     const handleAnalyzeClick = async () => {
         setIsLoading(true);
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}api/audit`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/audit`;
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -19,8 +22,7 @@ export default function Example() {
                 body: JSON.stringify({ url }),
             });
             const data = await response.json();
-            localStorage.setItem('reportData', JSON.stringify(data));
-            router.push(`/report`);
+            setData(data);
         } catch (error) {
             console.error('Error during API call:', error);
         } finally {
@@ -64,7 +66,23 @@ export default function Example() {
                         )}
                     </button>
                 </div>
+                {
+                    data &&
+                    <div className="flex justify-center items-center w-full">
+                        <div className="w-full max-w-4xl p-4">
+                            <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
+                            {/*@ts-ignore*/}
+                            <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
+                            <JsonView
+                                data={data}
+                                shouldExpandNode={shouldExpandNode}
+                                style={defaultStyles}
+                            />
+                        </div>
+                    </div>
+                }
             </div>
+
         </div>
     );
 
