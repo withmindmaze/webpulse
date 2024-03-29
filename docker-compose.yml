@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    image: node:18.18.2
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
