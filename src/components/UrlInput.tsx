@@ -31,7 +31,7 @@ export default function Example() {
     };
 
     return (
-        <div className="mt-8 flex justify-center items-center px-1">
+        <div className="mt-8 flex flex-col justify-center items-center">
             <div className="max-w-2xl w-full">
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                     Get Performance
@@ -66,23 +66,22 @@ export default function Example() {
                         )}
                     </button>
                 </div>
-                {
-                    data &&
-                    <div className="flex justify-center items-center w-full">
-                        <div className="w-full max-w-4xl p-4">
-                            <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
-                            {/*@ts-ignore*/}
-                            <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
-                            <JsonView
-                                data={data}
-                                shouldExpandNode={shouldExpandNode}
-                                style={defaultStyles}
-                            />
-                        </div>
-                    </div>
-                }
             </div>
-
+            {
+                data &&
+                <div className="flex justify-center items-center w-full">
+                    <div className="w-full max-w-4xl p-4">
+                        <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
+                        {/*@ts-ignore*/}
+                        <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
+                        <JsonView
+                            data={data}
+                            shouldExpandNode={shouldExpandNode}
+                            style={defaultStyles}
+                        />
+                    </div>
+                </div>
+            }
         </div>
     );
 

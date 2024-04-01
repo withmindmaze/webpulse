@@ -1,5 +1,5 @@
 {
-  "name": "tailwindui-Web Pulse",
+  "name": "Web Pulse",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "autoprefixer": "^10.4.12",
     "chrome-launcher": "^1.1.1",
     "clsx": "^2.1.0",
+    "cors": "^2.8.5",
     "framer-motion": "^10.15.0",
     "lighthouse": "^11.7.0",
     "next": "^14.0.4",
