@@ -8,6 +8,9 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
 import { NavLinks } from '@/components/NavLinks'
+import supabase from '@/utils/supabaseClient'
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react'
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -50,7 +53,30 @@ function MobileNavLink(
   )
 }
 
+
+
 export function Header() {
+  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(false);
+
+  const userLoggedIn = async () => {
+    const getUser = await supabase.auth.getUser();
+    if (getUser.data.user?.id) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }
+
+  useEffect(() => {
+    userLoggedIn();
+  }, [router]);
+
+
+  const handleLogout = () => {
+    supabase.auth.signOut();
+    router.push('/login');
+  }
   return (
     <header>
       <nav>
@@ -102,7 +128,7 @@ export function Header() {
                           }}
                           className="absolute inset-x-0 top-0 z-0 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
                         >
-                          <div className="space-y-4">
+                          {/* <div className="space-y-4">
                             <MobileNavLink href="/#features">
                               Features
                             </MobileNavLink>
@@ -113,12 +139,12 @@ export function Header() {
                               Pricing
                             </MobileNavLink>
                             <MobileNavLink href="/#faqs">FAQs</MobileNavLink>
-                          </div>
+                          </div> */}
                           <div className="mt-8 flex flex-col gap-4">
-                            <Button href="/login" variant="outline">
-                              Log in
+                            <Button onClick={handleLogout} variant="outline">
+                              Log out
                             </Button>
-                            <Button href="#">Download the app</Button>
+                            {/* <Button href="#">Download the app</Button> */}
                           </div>
                         </Popover.Panel>
                       </>
@@ -127,12 +153,17 @@ export function Header() {
                 </>
               )}
             </Popover>
-            <Button href="/login" variant="outline" className="hidden lg:block">
-              Log in
-            </Button>
-            <Button href="#" className="hidden lg:block">
+            {
+              isLogin === true
+              &&
+              <Button onClick={handleLogout} variant="outline" className="hidden lg:block">
+                Log out
+              </Button>
+            }
+
+            {/* <Button href="#" className="hidden lg:block">
               Download
-            </Button>
+            </Button> */}
           </div>
         </Container>
       </nav>

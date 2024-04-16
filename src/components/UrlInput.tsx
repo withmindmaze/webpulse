@@ -3,30 +3,177 @@ import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid'
 import React, { useEffect, useState } from 'react';
 import { JsonView, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
+import LightHouseStart from './LightHouseStart';
+import Performance from './Performance/page';
+import withAuth from '@/utils/withAuth';
+import supabase from '@/utils/supabaseClient';
+import { useRouter } from 'next/navigation';
 
-export default function Example() {
+function UrlInput() {
+    const router = useRouter();
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState(null);
-    const shouldExpandNode = (level: number, value: any, field: any) => level < 2;
+    const [device, setDevice] = useState('desktop');
+    const [iframeSrc, setIframeSrc] = useState('');
+    const [categories, setCategories] = useState({
+        performance: true,
+        accessibility: true,
+        bestPractices: true,
+        seo: true,
+        pwa: true
+    });
 
-    const handleAnalyzeClick = async () => {
+    // const shouldExpandNode = (level: number, value: any, field: any) => level < 2;
+
+    useEffect(() => {
+        if (data) {
+            // Assuming `data.report` is a string containing your HTML report
+            const blob = new Blob([data], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            setIframeSrc(url);
+
+            // Clean up the blob URL when the component unmounts
+            return () => {
+                URL.revokeObjectURL(url);
+            };
+        }
+    }, [data]);
+
+    const handleDeviceChange = (event: any) => {
+        setDevice(event.target.value);
+    };
+
+    const handleCategoryChange = (event: any) => {
+        setCategories({ ...categories, [event.target.name]: event.target.checked });
+    };
+
+    const authUserClick = async () => {
+        var userAttempts = 0;
+        // Fetch user details from Supabase to check plan and attempts
+        const getUser = await supabase.auth.getUser();
+        if (!getUser.data.user?.id) {
+            console.error('No user logged in');
+            return;
+        } else {
+            const userPlan = await supabase
+                .from('user_plan')
+                .select('plan, attempts')
+                .eq('user_id', getUser.data.user?.id)
+                .single();
+
+            userAttempts = userPlan.data.attempts;
+            if (userPlan.data?.plan === 'free' && userPlan.data.attempts > 0) {
+                router.push('/purchase');
+                return;
+            }
+        }
+
         setIsLoading(true);
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/audit`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
+        // Prepare categories array
+        // @ts-ignore
+        const selectedCategories = Object.keys(categories)
+            .filter(key => categories[key])
+            .map(key => key.toLowerCase());
+
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url, categories: selectedCategories, device: device }),
             });
             const data = await response.json();
-            setData(data);
+            setData(data.report);
+
+            // Increment the attempts after a successful analysis
+            const { error: updateError } = await supabase
+                .from('user_plan')
+                .update({ attempts: userAttempts + 1 })
+                .eq('user_id', getUser.data.user.id);
+
+            if (updateError) {
+                console.log(updateError)
+            }
+
         } catch (error) {
             console.error('Error during API call:', error);
         } finally {
             setIsLoading(false);
+        }
+    }
+
+    const guestUserClick = async () => {
+        const guestUserRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_UR}/api/guest/getAttempts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+        });
+        const guestData = await guestUserRes.json();
+        if (guestData.attempts > 0) {
+            router.push('/register');
+        }
+
+        setIsLoading(true);
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
+
+        // @ts-ignore
+        const selectedCategories = Object.keys(categories)
+            .filter(key => categories[key])
+            .map(key => key.toLowerCase());
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url, categories: selectedCategories, device: device }),
+            });
+            const data = await response.json();
+            setData(data.report);
+
+            // Increment the attempts after a successful analysis
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_UR}/api/guest/updateAttempts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(),
+            });
+
+        } catch (error) {
+            console.error('Error during API call:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleAnalyzeClick = async () => {
+        const getUser = await supabase.auth.getUser();
+        if (getUser.data.user?.id) {
+            authUserClick();
+        } else {
+            guestUserClick();
+        }
+
+    };
+
+    const hideLHTopbar = () => {
+        const iframe = document.querySelector('iframe[title="Lighthouse Report"]');
+        if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+            const topBar = iframe.contentWindow.document.querySelector('.lh-topbar');
+            if (topBar) {
+                topBar.style.display = 'none';
+            }
+            const footer = iframe.contentWindow.document.querySelector('.lh-footer');
+            if (footer) {
+                footer.style.display = 'none';
+            }
         }
     };
 
@@ -67,22 +214,42 @@ export default function Example() {
                     </button>
                 </div>
             </div>
+            <LightHouseStart
+                device={device}
+                categories={categories}
+                handleDeviceChange={handleDeviceChange}
+                handleCategoryChange={handleCategoryChange}
+            />
+            {/* <div className='mt-4'>
+                <Performance score={80} />
+            </div> */}
             {
-                data &&
-                <div className="flex justify-center items-center w-full">
-                    <div className="w-full max-w-4xl p-4">
-                        <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
-                        {/*@ts-ignore*/}
-                        <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
-                        <JsonView
-                            data={data}
-                            shouldExpandNode={shouldExpandNode}
-                            style={defaultStyles}
-                        />
-                    </div>
-                </div>
+                // data &&
+                // <div className="flex justify-center items-center w-full">
+                //     <div className="w-full max-w-4xl p-4">
+                //         <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
+                //         {/*@ts-ignore*/}
+                //         <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
+                //         <JsonView
+                //             data={data}
+                //             shouldExpandNode={shouldExpandNode}
+                //             style={defaultStyles}
+                //         />
+                //     </div>
+                // </div>
             }
-        </div>
+            {iframeSrc && (
+                <iframe
+                    src={iframeSrc}
+                    onLoad={hideLHTopbar}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 'none', height: '100vh' }}
+                    title="Lighthouse Report"
+                />
+            )}
+        </div >
     );
 
 }
+export default withAuth(UrlInput)
