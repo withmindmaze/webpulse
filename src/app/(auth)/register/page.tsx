@@ -15,7 +15,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSignUp = async (event) => {
+  const handleSignUp = async (event: any) => {
     event.preventDefault();
     setLoading(true);
 
@@ -34,7 +34,7 @@ export default function Register() {
       return;
     }
 
-    if (data.user.id) {
+    if (data?.user?.id) {
       const { data: planData, error: planError } = await supabase
         .from('user_plan')
         .insert([

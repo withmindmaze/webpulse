@@ -16,13 +16,13 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string>('');
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
 
     const { error } = await supabase.auth.signInWithPassword({
       email,

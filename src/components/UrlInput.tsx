@@ -62,7 +62,7 @@ function UrlInput() {
                 .eq('user_id', getUser.data.user?.id)
                 .single();
 
-            userAttempts = userPlan.data.attempts;
+            userAttempts = userPlan?.data?.attempts;
             if (userPlan.data?.plan === 'free' && userPlan.data.attempts > 0) {
                 router.push('/purchase');
                 return;
@@ -72,9 +72,9 @@ function UrlInput() {
         setIsLoading(true);
         const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
         // Prepare categories array
-        // @ts-ignore
         const selectedCategories = Object.keys(categories)
-            .filter(key => categories[key])
+        // @ts-ignore
+            .filter(key => categories[key]) // possibly redundant
             .map(key => key.toLowerCase());
 
         try {
@@ -121,9 +121,9 @@ function UrlInput() {
         setIsLoading(true);
         const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
 
-        // @ts-ignore
         const selectedCategories = Object.keys(categories)
-            .filter(key => categories[key])
+                // @ts-ignore
+            .filter(key => categories[key])//possibly redundant
             .map(key => key.toLowerCase());
 
         try {
@@ -143,7 +143,7 @@ function UrlInput() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(),
+                body: JSON.stringify(data.report), // if report is not needed, send an appropriate response body
             });
 
         } catch (error) {
@@ -164,13 +164,13 @@ function UrlInput() {
     };
 
     const hideLHTopbar = () => {
-        const iframe = document.querySelector('iframe[title="Lighthouse Report"]');
-        if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
-            const topBar = iframe.contentWindow.document.querySelector('.lh-topbar');
+        const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
+        if (iframe?.contentWindow?.document) {
+            const topBar = iframe?.contentWindow?.document.querySelector('.lh-topbar') as HTMLElement;
             if (topBar) {
                 topBar.style.display = 'none';
             }
-            const footer = iframe.contentWindow.document.querySelector('.lh-footer');
+            const footer = iframe.contentWindow.document.querySelector('.lh-footer') as HTMLElement;
             if (footer) {
                 footer.style.display = 'none';
             }

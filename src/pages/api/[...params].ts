@@ -1,7 +1,7 @@
 // pages/api/[...params].ts
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import lighthouse from 'lighthouse';
+import lighthouse, { OutputMode, Config } from 'lighthouse';
 import * as ChromeLauncher from 'chrome-launcher';
 import nextCors from 'nextjs-cors';
 
@@ -14,7 +14,7 @@ async function runLighthouse(url: string, categories: string[], device: string):
   const options = {
     port: chrome.port,
     onlyCategories: categories,
-    output: 'html',
+    output: "html" as OutputMode,
   };
   const mobileEmulation = {
     mobile: true,
@@ -36,7 +36,7 @@ async function runLighthouse(url: string, categories: string[], device: string):
     settings: {
       formFactor: device === 'desktop' ? 'desktop' : 'mobile',
       screenEmulation: device === 'desktop' ? desktopEmulation : mobileEmulation,
-    }
+    } as Config.Settings
   };
 
   const runnerResult = await lighthouse(url, options, config);
@@ -45,22 +45,22 @@ async function runLighthouse(url: string, categories: string[], device: string):
   return runnerResult;
 }
 
-type MiddlewareFn = (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  next: (err?: any) => void
-) => void;
+// type MiddlewareFn = (
+//   req: NextApiRequest,
+//   res: NextApiResponse,
+//   next: (err?: any) => void
+// ) => void;
 
-function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: MiddlewareFn): Promise<any> {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result?: any) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
+// function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: MiddlewareFn): Promise<any> {
+//   return new Promise((resolve, reject) => {
+//     fn(req, res, (result?: any) => {
+//       if (result instanceof Error) {
+//         return reject(result);
+//       }
+//       return resolve(result);
+//     });
+//   });
+// }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Initialize CORS middleware

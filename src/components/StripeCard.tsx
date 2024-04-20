@@ -4,19 +4,20 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import 'react-responsive-modal/styles.css';
 import supabase from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
+import { StripeCardElement } from '@stripe/stripe-js';
 
 const StripeCard = ({ isOpen, handleOnClose }: any) => {
     const router = useRouter();
     const stripe = useStripe();
     const elements = useElements();
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
         if (!stripe || !elements) {
             return;
         }
 
-        const cardElement = elements.getElement(CardElement);
+        const cardElement = elements.getElement(CardElement) as StripeCardElement;
 
         try {
             // Fetch the PaymentIntent from your API
@@ -56,7 +57,8 @@ const StripeCard = ({ isOpen, handleOnClose }: any) => {
             }
         } catch (error) {
             console.error('Payment error:', error);
-            alert('Error in processing payment: ' + error.message);
+            if(error instanceof Error && error?.message)
+                alert('Error in processing payment: ' + error.message);
         }
     };
 
