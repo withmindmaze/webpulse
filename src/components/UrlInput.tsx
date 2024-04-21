@@ -106,7 +106,7 @@ function UrlInput() {
     }
 
     const guestUserClick = async () => {
-        const guestUserRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_UR}/api/guest/getAttempts`, {
+        const guestUserRes = await fetch(`/api/guest/getAttempts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ function UrlInput() {
             setData(data.report);
 
             // Increment the attempts after a successful analysis
-            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_UR}/api/guest/updateAttempts`, {
+            await fetch(`/api/guest/updateAttempts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

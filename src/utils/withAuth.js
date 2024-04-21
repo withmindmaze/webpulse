@@ -15,7 +15,7 @@ const withAuth = (WrappedComponent) => {
                     // Guest User
                     if (session.data.session === null) {
                         // create or fetch guest user against ip address
-                        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/guest/signup`;
+                        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/guest/signup`;
                         try {
                             const response = await fetch(apiUrl, {
                                 method: 'POST',
