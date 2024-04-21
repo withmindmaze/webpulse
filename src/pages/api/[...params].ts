@@ -9,7 +9,7 @@ async function runLighthouse(url: string, categories: string[], device: string):
 
   const chrome = await ChromeLauncher.launch({
     startingUrl: 'https://google.com',
-    chromeFlags: ['--headless', '--disable-gpu'],
+    chromeFlags: ['--headless', '--disable-gpu', '--remote-debugging-port=9222'],
   });
   const options = {
     port: chrome.port,
@@ -81,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'Function not found' });
   }
 
+  console.log("🚀 ~ handler ~ params[0:", params[0]);
+  console.log("🚀 ~ handler ~ req.body:", req.body)
   switch (params[0]) {
     case 'audit':
       const { url, categories, device } = req.body;

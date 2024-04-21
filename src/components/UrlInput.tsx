@@ -52,6 +52,7 @@ function UrlInput() {
         var userAttempts = 0;
         // Fetch user details from Supabase to check plan and attempts
         const getUser = await supabase.auth.getUser();
+        setIsLoading(true);
         if (!getUser.data.user?.id) {
             console.error('No user logged in');
             return;
@@ -69,7 +70,6 @@ function UrlInput() {
             }
         }
 
-        setIsLoading(true);
         const apiUrl = `/api/audit`;
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
