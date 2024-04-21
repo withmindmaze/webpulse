@@ -70,7 +70,7 @@ function UrlInput() {
         }
 
         setIsLoading(true);
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
+        const apiUrl = `/api/audit`;
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
         // @ts-ignore
@@ -119,7 +119,7 @@ function UrlInput() {
         }
 
         setIsLoading(true);
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_UR}/api/audit`;
+        const apiUrl = `/api/audit`;
 
         const selectedCategories = Object.keys(categories)
                 // @ts-ignore
