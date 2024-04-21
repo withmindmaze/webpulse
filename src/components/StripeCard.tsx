@@ -21,7 +21,7 @@ const StripeCard = ({ isOpen, handleOnClose }: any) => {
 
         try {
             // Fetch the PaymentIntent from your API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_UR}/api/stripe/checkout`, {
+            const response = await fetch(`/api/stripe/checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
