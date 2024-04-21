@@ -1,7 +1,15 @@
 import supabase from '@/utils/supabaseClient';
 import { NextApiRequest, NextApiResponse } from 'next';
+import nextCors from 'nextjs-cors';
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    await nextCors(req, res, {
+        methods: ['POST', 'OPTIONS'],
+        origin: '*',
+        allowedHeaders: ['Content-Type'],
+      });
+    
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
