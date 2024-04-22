@@ -49,36 +49,15 @@ function UrlInput() {
     };
 
     const authUserClick = async () => {
-        var userAttempts = 0;
-        // Fetch user details from Supabase to check plan and attempts
-        const getUser = await supabase.auth.getUser();
         setIsLoading(true);
-        if (!getUser.data.user?.id) {
-            console.error('No user logged in');
-            return;
-        } else {
-            const userPlan = await supabase
-                .from('user_plan')
-                .select('plan, attempts')
-                .eq('user_id', getUser.data.user?.id)
-                .single();
-
-            userAttempts = userPlan?.data?.attempts;
-            if (userPlan.data?.plan === 'free' && userPlan.data.attempts > 0) {
-                router.push('/purchase');
-                return;
-            }
-        }
-
-        const apiUrl = `/api/audit`;
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
-        // @ts-ignore
-            .filter(key => categories[key]) // possibly redundant
+            // @ts-ignore
+            .filter(key => categories[key])
             .map(key => key.toLowerCase());
 
         try {
-            const response = await fetch(apiUrl, {
+            const response = await fetch(`/api/audit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,66 +65,30 @@ function UrlInput() {
                 body: JSON.stringify({ url, categories: selectedCategories, device: device }),
             });
             const data = await response.json();
-            setData(data.report);
-
-            // Increment the attempts after a successful analysis
-            const { error: updateError } = await supabase
-                .from('user_plan')
-                .update({ attempts: userAttempts + 1 })
-                .eq('user_id', getUser.data.user.id);
-
-            if (updateError) {
-                console.log(updateError)
+            const getUser = await supabase.auth.getUser();
+            
+            if (getUser.data.user?.id) {
+                if (data.isFirstReport === false) {
+                    const userPlan = await supabase
+                        .from('user_plan')
+                        .select('*')
+                        .eq('user_id', getUser.data.user?.id)
+                        .single();
+                    if (userPlan.data.plan === "free") {
+                        router.push('/purchase');
+                    } else {
+                        setData(data.data.report);
+                    }
+                } else {
+                    setData(data.data.report);
+                }
+            } else {
+                if (data.isFirstReport === false) {
+                    router.push('/register');
+                } else {
+                    setData(data.data.report);
+                }
             }
-
-        } catch (error) {
-            console.error('Error during API call:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    const guestUserClick = async () => {
-        const guestUserRes = await fetch(`/api/guest/getAttempts`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({}),
-        });
-        const guestData = await guestUserRes.json();
-        if (guestData.attempts > 0) {
-            router.push('/register');
-        }
-
-        setIsLoading(true);
-        const apiUrl = `/api/audit`;
-
-        const selectedCategories = Object.keys(categories)
-                // @ts-ignore
-            .filter(key => categories[key])//possibly redundant
-            .map(key => key.toLowerCase());
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url, categories: selectedCategories, device: device }),
-            });
-            const data = await response.json();
-            setData(data.report);
-
-            // Increment the attempts after a successful analysis
-            await fetch(`/api/guest/updateAttempts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data.report), // if report is not needed, send an appropriate response body
-            });
-
         } catch (error) {
             console.error('Error during API call:', error);
         } finally {
@@ -154,13 +97,7 @@ function UrlInput() {
     }
 
     const handleAnalyzeClick = async () => {
-        const getUser = await supabase.auth.getUser();
-        if (getUser.data.user?.id) {
-            authUserClick();
-        } else {
-            guestUserClick();
-        }
-
+        authUserClick();
     };
 
     const hideLHTopbar = () => {
@@ -220,24 +157,6 @@ function UrlInput() {
                 handleDeviceChange={handleDeviceChange}
                 handleCategoryChange={handleCategoryChange}
             />
-            {/* <div className='mt-4'>
-                <Performance score={80} />
-            </div> */}
-            {
-                // data &&
-                // <div className="flex justify-center items-center w-full">
-                //     <div className="w-full max-w-4xl p-4">
-                //         <h1 className="text-4xl font-bold text-center mb-6">Report</h1>
-                //         {/*@ts-ignore*/}
-                //         <h1 className="text-2xl text-center mb-6">Accessibility Score: {data?.categories?.accessibility?.score}</h1>
-                //         <JsonView
-                //             data={data}
-                //             shouldExpandNode={shouldExpandNode}
-                //             style={defaultStyles}
-                //         />
-                //     </div>
-                // </div>
-            }
             {iframeSrc && (
                 <iframe
                     src={iframeSrc}

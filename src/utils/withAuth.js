@@ -1,48 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import supabase from './supabaseClient';
 
 const withAuth = (WrappedComponent) => {
+    const allowedForGuestUser = ['/'];
 
     return (props) => {
+        const pathname = usePathname();
         const router = useRouter();
         const [loading, setLoading] = useState(true);
 
         useEffect(() => {
+            // Check if the current path is allowed for guest users
+            if (allowedForGuestUser.includes(pathname)) {
+                setLoading(false);
+                return;
+            }
             const getCurrentUser = async () => {
                 try {
-                    const session = await supabase.auth.getSession();
-                    // Guest User
-                    if (session.data.session === null) {
-                        // create or fetch guest user against ip address
-                        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/guest/signup`;
-                        try {
-                            const response = await fetch(apiUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(),
-                            });
-                            const data = await response.json();
-                            if (data.data.id) {
-                                setLoading(false);
-                            }
-                        } catch (error) {
-                            console.error('Error during API call:', error);
-                        }
+                    const { data: user, error } = await supabase.auth.getUser();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (!user) {
+                        router.push('/login');
                     } else {
-                        const { data: user, error } = await supabase.auth.getUser();
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        if (!user) {
-                            router.push('/login');
-                        } else {
-                            setLoading(false);
-                        }
+                        setLoading(false);
                     }
                 } catch (error) {
                     router.push('/login');
