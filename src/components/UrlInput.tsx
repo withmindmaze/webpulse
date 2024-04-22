@@ -65,10 +65,9 @@ function UrlInput() {
                 body: JSON.stringify({ url, categories: selectedCategories, device: device }),
             });
             const data = await response.json();
-            const getUser = await supabase.auth.getUser();
-            
+            const getUser = await supabase.auth.getUser();;
             if (getUser.data.user?.id) {
-                if (data.isFirstReport === false) {
+                if (localStorage.getItem('isFirstReport') === 'false') {
                     const userPlan = await supabase
                         .from('user_plan')
                         .select('*')
@@ -83,12 +82,13 @@ function UrlInput() {
                     setData(data.data.report);
                 }
             } else {
-                if (data.isFirstReport === false) {
+                if (localStorage.getItem('isFirstReport') === 'false') {
                     router.push('/register');
                 } else {
                     setData(data.data.report);
                 }
             }
+            localStorage.setItem('isFirstReport', 'false');
         } catch (error) {
             console.error('Error during API call:', error);
         } finally {
