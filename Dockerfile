@@ -11,7 +11,6 @@ COPY package*.json ./
 
 # Install Node.js dependencies
 RUN npm ci
-RUN npm i --save-dev @types/cookie
 
 # Copy the rest of your application
 COPY . .
