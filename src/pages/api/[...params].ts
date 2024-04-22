@@ -109,6 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       try {
         const reportHtml = await runLighthouse(url, categories, device);
+        console.log("req.cookies", req.cookies);
         if (req.cookies['report_generated']) {
           res.status(200).send({ data: reportHtml, isFirstReport: false });
         } else {
