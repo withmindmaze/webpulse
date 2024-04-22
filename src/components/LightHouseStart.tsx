@@ -3,7 +3,7 @@
 export default function LightHouseStart({ device, categories, handleDeviceChange, handleCategoryChange }: any) {
     return (
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto">
-            <h1 className="text-xl font-bold mb-4">Generate a Lighthouse report</h1>
+            <h1 className="text-xl font-bold mb-4">Generate a pulse report</h1>
 
             <div className="flex flex-col gap-4 mb-4">
                 {/* Mode section */}
