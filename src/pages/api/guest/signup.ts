@@ -8,8 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         methods: ['POST', 'OPTIONS'],
         origin: '*',
         allowedHeaders: ['Content-Type'],
-      });
-    
+    });
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         // Get the client's IP address from the request headers or connection info
         const ip_address = (req.headers['x-forwarded-for'] as string)?.split(',').shift() || req.socket.remoteAddress;
+
+        console.log("Guest IP address", ip_address);
 
         // Check if an entry for this IP address already exists
         const { data: existingUser, error: existingUserError } = await supabase
@@ -55,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(200).json({ message: 'User signed up successfully.', data: newUser });
         }
     } catch (error) {
-        if(error instanceof Error)
+        if (error instanceof Error)
             return res.status(500).json({ error: error.message });
     }
 }

@@ -22,7 +22,7 @@ RUN rm -rf jest.config.ts
 RUN npm run build
 
 # Expose the ports needed for your app and Chrome
-EXPOSE 3000 9222
+EXPOSE 3000
 
 # Start your application
 CMD ["npm", "run", "start"]

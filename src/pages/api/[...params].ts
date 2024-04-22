@@ -4,13 +4,21 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import lighthouse, { OutputMode, Config } from 'lighthouse';
 import * as ChromeLauncher from 'chrome-launcher';
 import nextCors from 'nextjs-cors';
+import cookie from 'cookie';
+import supabase from '@/utils/supabaseClient';
 
 async function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
 
   const chrome = await ChromeLauncher.launch({
     startingUrl: 'https://google.com',
-    chromeFlags: ['--headless', '--disable-gpu', '--remote-debugging-port=9222'],
+    chromeFlags: ['--headless', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
+  }).catch(err => {
+    console.error("Failed to launch Chrome:", err);
+    throw err;
   });
+
+  console.log(`Chrome launched with debugging port: ${chrome.port}`);
+
   const options = {
     port: chrome.port,
     onlyCategories: categories,
@@ -101,7 +109,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       try {
         const reportHtml = await runLighthouse(url, categories, device);
-        res.status(200).send(reportHtml);
+        if (req.cookies['report_generated']) {
+          res.status(200).send({ data: reportHtml, isFirstReport: false });
+        } else {
+          res.setHeader('Set-Cookie', cookie.serialize('report_generated', 'true', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            maxAge: 60 * 60 * 24 * 365 * 10, // 10 years
+            path: '/',
+          }));
+          res.status(200).send({ data: reportHtml, isFirstReport: true });
+        }
       } catch (error) {
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });
       }

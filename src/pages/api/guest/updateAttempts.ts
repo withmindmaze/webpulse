@@ -10,7 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Get the client's IP address from the request headers or connection info
         const ip_address = (req.headers['x-forwarded-for'] as string)?.split(',').shift() || req.socket.remoteAddress;
 
-        // Check if an entry for this IP address already exists
         const guestUser = await supabase
             .from('guest_user')
             .select('*')
