@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -7,22 +7,29 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
-
-// export const metadata = {
-//   title: 'Sign In',
-// };
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
   const router = useRouter();
+
+  const handleRedirection = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    if (user.user?.id) {
+      router.back();
+    }
+  }
+
+  useEffect(() => {
+    handleRedirection();
+  }, [router]);
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -30,11 +37,11 @@ export default function Login() {
     });
 
     if (error) {
-      setError(error.message);
+      toast.error(error.message);
     } else {
+      toast.success("You are logged in!");
       router.push('/');
     }
-
     setLoading(false);
   };
 
@@ -74,7 +81,6 @@ export default function Login() {
       <Button onClick={handleLogin} color="cyan" className="mt-8 w-full">
         {loading ? 'Loading...' : 'Sign in to account'}
       </Button>
-      {error && <p className="text-red-500">{error}</p>}
     </AuthLayout>
   );
 }

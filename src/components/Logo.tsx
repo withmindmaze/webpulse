@@ -12,7 +12,7 @@ export function Logomark(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 export function Logo(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
-    <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+    <h1 className="text-2xl font-bold tracking-tight text-[#3bbed9]">
       WebPulse
     </h1>
 

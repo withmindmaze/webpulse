@@ -8,8 +8,12 @@ import Performance from './Performance/page';
 import withAuth from '@/utils/withAuth';
 import supabase from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
 
 function UrlInput() {
+    const { t } = useTranslation();
     const router = useRouter();
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -74,17 +78,22 @@ function UrlInput() {
                         .eq('user_id', getUser.data.user?.id)
                         .single();
                     if (userPlan.data.plan === "free") {
+                        toast.info("Purchase to continue using audit services");
                         router.push('/purchase');
                     } else {
+                        toast.success("Audit report generated successfully");
                         setData(data.data.report);
                     }
                 } else {
+                    toast.success("Audit report generated successfully");
                     setData(data.data.report);
                 }
             } else {
                 if (localStorage.getItem('isFirstReport') === 'false') {
+                    toast.info("Sign up to continue using audit services");
                     router.push('/register');
                 } else {
+                    toast.success("Audit report generated successfully");
                     setData(data.data.report);
                 }
             }
@@ -116,11 +125,12 @@ function UrlInput() {
 
     return (
         <div className="mt-8 flex flex-col justify-center items-center">
-            <div className="max-w-2xl w-full">
-                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                    Get Performance
+            <div className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg">
+                <label htmlFor="email" className="block text-center text-sm font-medium leading-6 w-full">
+                    <h1 className="text-2xl font-bold mb-4">{t('dashboard.searchHeading')}</h1>
                 </label>
-                <div className="mt-2 flex rounded-md shadow-sm">
+
+                <div className="mt-4 flex rounded-md shadow-sm bg-gray-50">
                     <div className="relative flex flex-grow items-stretch focus-within:z-10">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <GlobeAltIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -129,23 +139,23 @@ function UrlInput() {
                             type="email"
                             name="email"
                             id="email"
-                            className="block w-full rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            placeholder="Enter URL"
+                            className="block w-full rounded-l-md border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            placeholder={t('dashboard.urlPlaceHolder')}
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                         />
                     </div>
                     <button
                         type="button"
-                        className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        className="relative -ml-px inline-flex items-center gap-x-2 rounded-r-md px-4 py-2 text-sm font-semibold text-gray-900 bg-[#3bbed9] text-white"
                         onClick={handleAnalyzeClick}
                     >
                         {isLoading ? (
-                            <div className="w-5 h-5 border-t-4 border-b-4 border-gray-900 animate-spin" />
+                            <div className="w-5 h-5 border-t-4 border-b-4 border-white animate-spin" />
                         ) : (
                             <>
-                                <BarsArrowUpIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                Analyze
+                                <BarsArrowUpIcon className="h-5 w-5 text-gray-200" aria-hidden="true" />
+                                {t('dashboard.analyseButton')}
                             </>
                         )}
                     </button>
@@ -167,8 +177,7 @@ function UrlInput() {
                     title="Lighthouse Report"
                 />
             )}
-        </div >
+        </div>
     );
-
 }
 export default withAuth(UrlInput)

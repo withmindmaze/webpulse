@@ -1,33 +1,35 @@
-'use client'
-
-import { useRef, useState } from 'react'
-import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useRef, useState } from 'react';
+import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export function NavLinks() {
-  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  let timeoutRef = useRef<number | null>(null)
+  const { t } = useTranslation();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
-  return [
-    // ['Features', '/#features'],
-    // ['Reviews', '/#reviews'],
-    // ['Pricing', '/#pricing'],
-    // ['FAQs', '/#faqs'],
-  ].map(({label, href}, index) => (
+  const links = [
+    { label: `${t('header.dashboard')}`, href: '/' },
+    // { label: 'Reviews', href: '/#reviews' },
+    { label: `${t('header.pricing')}`, href: '/purchase' },
+    // { label: 'FAQs', href: '/#faqs' },
+  ];
+
+  return links.map((link, index) => (
     <Link
-      key={label}
-      href={href}
+      key={link.label}
+      href={link.href}
       className="relative -mx-3 -my-2 rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors delay-150 hover:text-gray-900 hover:delay-0"
       onMouseEnter={() => {
         if (timeoutRef.current) {
-          window.clearTimeout(timeoutRef.current)
+          window.clearTimeout(timeoutRef.current);
         }
-        setHoveredIndex(index)
+        setHoveredIndex(index);
       }}
       onMouseLeave={() => {
         timeoutRef.current = window.setTimeout(() => {
-          setHoveredIndex(null)
-        }, 200)
+          setHoveredIndex(null);
+        }, 200);
       }}
     >
       <AnimatePresence>
@@ -44,7 +46,7 @@ export function NavLinks() {
           />
         )}
       </AnimatePresence>
-      <span className="relative z-10">{label}</span>
+      <span className="relative z-10">{link.label}</span>
     </Link>
-  ))
+  ));
 }

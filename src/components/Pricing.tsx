@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 
@@ -8,66 +8,11 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Logomark } from '@/components/Logo'
 import StripeCard from "@/components/StripeCard";
+import supabase from '@/utils/supabaseClient'
+import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
-const plans = [
-  // {
-  //   name: 'Starter',
-  //   featured: false,
-  //   price: { Monthly: '$0', Annually: '$0' },
-  //   description:
-  //     'You’re new to investing but want to do it right. Get started for free.',
-  //   button: {
-  //     label: 'Get started for free',
-  //     href: '/register',
-  //   },
-  //   features: [
-  //     'Commission-free trading',
-  //     'Multi-layered encryption',
-  //     'One tip every day',
-  //     'Invest up to $1,500 each month',
-  //   ],
-  //   logomarkClassName: 'fill-gray-300',
-  // },
-  {
-    name: 'Investor',
-    featured: false,
-    price: { Monthly: '$7', Annually: '$70' },
-    description:
-      'You’ve been investing for a while. Invest more and grow your wealth faster.',
-    button: {
-      label: 'Pay',
-      href: '/register',
-    },
-    features: [
-      'Commission-free trading',
-      'Multi-layered encryption',
-      'One tip every hour',
-      'Invest up to $15,000 each month',
-      'Basic transaction anonymization',
-    ],
-    logomarkClassName: 'fill-gray-500',
-  },
-  // {
-  //   name: 'VIP',
-  //   featured: true,
-  //   price: { Monthly: '$199', Annually: '$1,990' },
-  //   description:
-  //     'You’ve got a huge amount of assets but it’s not enough. To the moon.',
-  //   button: {
-  //     label: 'Subscribe',
-  //     href: '/register',
-  //   },
-  //   features: [
-  //     'Commission-free trading',
-  //     'Multi-layered encryption',
-  //     'Real-time tip notifications',
-  //     'No investment limits',
-  //     'Advanced transaction anonymization',
-  //     'Automated tax-loss harvesting',
-  //   ],
-  //   logomarkClassName: 'fill-cyan-500',
-  // },
-]
+
 
 function CheckIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -99,7 +44,8 @@ function Plan({
   activePeriod,
   logomarkClassName,
   featured = false,
-  handleOpenModal
+  handleOpenModal,
+  isPremiumUser
 }: {
   name: string
   price: {
@@ -116,7 +62,10 @@ function Plan({
   logomarkClassName?: string
   featured?: boolean
   handleOpenModal: any
+  isPremiumUser: boolean
 }) {
+  const { t } = useTranslation();
+
   return (
     <section
       className={clsx(
@@ -130,8 +79,8 @@ function Plan({
           featured ? 'text-white' : 'text-gray-900',
         )}
       >
-        <Logomark className={clsx('h-6 w-6 flex-none', logomarkClassName)} />
-        <span className="ml-4">{name}</span>
+        {/* <Logomark className={clsx('h-6 w-6 flex-none', logomarkClassName)} />
+        <span className="ml-4">{name}</span> */}
       </h3>
       <p
         className={clsx(
@@ -203,15 +152,96 @@ function Plan({
         color={featured ? 'cyan' : 'gray'}
         className="mt-6"
         aria-label={`Get started with the ${name} plan for ${price}`}
+        disabled={isPremiumUser}
       >
-        {button.label}
+        {isPremiumUser === true ? t('pricing.button_already_purchased') : button.label}
       </Button>
     </section>
   )
 }
 
 export function Pricing() {
+  const router = useRouter();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+
+  const plans = [
+    // {
+    //   name: 'Starter',
+    //   featured: false,
+    //   price: { Monthly: '$0', Annually: '$0' },
+    //   description:
+    //     'You’re new to investing but want to do it right. Get started for free.',
+    //   button: {
+    //     label: 'Get started for free',
+    //     href: '/register',
+    //   },
+    //   features: [
+    //     'Commission-free trading',
+    //     'Multi-layered encryption',
+    //     'One tip every day',
+    //     'Invest up to $1,500 each month',
+    //   ],
+    //   logomarkClassName: 'fill-gray-300',
+    // },
+    {
+      name: 'Investor',
+      featured: false,
+      price: { Monthly: '$7', Annually: '$70' },
+      description: t('pricing.info_text_2'),
+      button: {
+        label: t('pricing.button_pay'),
+        href: '/register',
+      },
+      features: [
+        t('pricing.feature_1'),
+        t('pricing.feature_2'),
+        t('pricing.feature_3'),
+      ],
+      logomarkClassName: 'fill-gray-500',
+    },
+    // {
+    //   name: 'VIP',
+    //   featured: true,
+    //   price: { Monthly: '$199', Annually: '$1,990' },
+    //   description:
+    //     'You’ve got a huge amount of assets but it’s not enough. To the moon.',
+    //   button: {
+    //     label: 'Subscribe',
+    //     href: '/register',
+    //   },
+    //   features: [
+    //     'Commission-free trading',
+    //     'Multi-layered encryption',
+    //     'Real-time tip notifications',
+    //     'No investment limits',
+    //     'Advanced transaction anonymization',
+    //     'Automated tax-loss harvesting',
+    //   ],
+    //   logomarkClassName: 'fill-cyan-500',
+    // },
+  ];
+
+  const checkPaymentStatus = async () => {
+    const getUser = await supabase.auth.getUser();
+    const paymentDetails = await supabase
+      .from('user_plan')
+      .select('payment_detail, plan')
+      .eq('user_id', getUser.data.user?.id)
+      .single();
+
+    if (paymentDetails.data?.payment_detail !== null && paymentDetails.data?.plan === "premium") {
+      setIsPremiumUser(true);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    checkPaymentStatus();
+  }, [router]);
+
   const handleOpenModal = () => {
     setModalIsOpen(true);
   };
@@ -238,17 +268,16 @@ export function Pricing() {
               id="pricing-title"
               className="text-3xl font-medium tracking-tight text-gray-900"
             >
-              Flat pricing, no management fees.
+              {t('pricing.flat_pricing')}
             </h2>
             <p className="mt-2 text-lg text-gray-600">
-              Whether you’re one person trying to get ahead or a big firm trying
-              to take over the world, we’ve got a plan for you.
+              {t('pricing.info_text_1')}
             </p>
           </div>
 
-          <div className="mt-8 flex justify-center">
+          <div className=" flex justify-center">
             <div className="relative">
-              <RadioGroup
+              {/* <RadioGroup
                 value={activePeriod}
                 onChange={setActivePeriod}
                 className="grid grid-cols-2"
@@ -267,7 +296,7 @@ export function Pricing() {
                     {period}
                   </RadioGroup.Option>
                 ))}
-              </RadioGroup>
+              </RadioGroup> */}
               <div
                 aria-hidden="true"
                 className={clsx(
@@ -292,11 +321,28 @@ export function Pricing() {
             </div>
           </div>
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 items-start gap-x-8 gap-y-10 sm:mt-20 lg:max-w-100 lg:grid-cols-1">
-            {plans.map((plan) => (
-              <Plan key={plan.name} {...plan} activePeriod={activePeriod} handleOpenModal={handleOpenModal} />
-            ))}
-          </div>
+          {
+            loading === true ?
+              <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="text-lg font-semibold text-gray-800">
+                  Loading...
+                </div>
+              </div>
+              :
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 items-start gap-x-8 gap-y-10 sm:mt-20 lg:max-w-100 lg:grid-cols-1">
+                {plans.map((plan) => (
+                  <Plan
+                    key={plan.name}
+                    {...plan}
+                    activePeriod={activePeriod}
+                    handleOpenModal={handleOpenModal}
+                    isPremiumUser={isPremiumUser}
+                  />
+                ))}
+              </div>
+          }
+
+
         </Container>
       </section>
     </>
