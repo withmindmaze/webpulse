@@ -11,6 +11,10 @@ import { NavLinks } from '@/components/NavLinks'
 import supabase from '@/utils/supabaseClient'
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
+import '../utils/i18n';
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -53,11 +57,39 @@ function MobileNavLink(
   )
 }
 
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
 
+  // Function to change language and store selection in localStorage
+  const changeLanguage = (lang:any) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem('language', lang); // Store the language preference
+  };
+
+  // Effect hook to load language preference from localStorage
+  useEffect(() => {
+    const savedLang = localStorage.getItem('language');
+    if (savedLang) {
+      i18n.changeLanguage(savedLang);
+    }
+  }, [i18n]);
+
+  return (
+    <select
+      value={i18n.language}
+      onChange={(e) => changeLanguage(e.target.value)}
+      className="border p-2 rounded w-[95px]"
+    >
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+    </select>
+  );
+}
 
 export function Header() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(false);
+  const { t } = useTranslation();
 
   const userLoggedIn = async () => {
     const getUser = await supabase.auth.getUser();
@@ -75,8 +107,14 @@ export function Header() {
 
   const handleLogout = () => {
     supabase.auth.signOut();
+    toast.success("You are logged out!")
     router.push('/login');
   }
+
+  const handleLogIn = () => {
+    router.push('/login');
+  }
+
   return (
     <header>
       <nav>
@@ -128,22 +166,31 @@ export function Header() {
                           }}
                           className="absolute inset-x-0 top-0 z-0 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
                         >
-                          {/* <div className="space-y-4">
-                            <MobileNavLink href="/#features">
-                              Features
+                          <div className="space-y-4">
+                            <MobileNavLink href="/">
+                              {t('header.dashboard')}
                             </MobileNavLink>
-                            <MobileNavLink href="/#reviews">
-                              Reviews
+                            <MobileNavLink href="/purchase">
+                              {t('header.pricing')}
                             </MobileNavLink>
-                            <MobileNavLink href="/#pricing">
+                            {/*  <MobileNavLink href="/#pricing">
                               Pricing
                             </MobileNavLink>
                             <MobileNavLink href="/#faqs">FAQs</MobileNavLink>
-                          </div> */}
+                          */}
+                          </div>
                           <div className="mt-8 flex flex-col gap-4">
-                            <Button onClick={handleLogout} variant="outline">
-                              Log out
-                            </Button>
+                            {
+                              isLogin === true ?
+                                <Button onClick={handleLogout} variant="outline">
+                                  Log out
+                                </Button>
+                                :
+                                <Button onClick={handleLogIn} variant="outline">
+                                  Log In
+                                </Button>
+                            }
+
                             {/* <Button href="#">Download the app</Button> */}
                           </div>
                         </Popover.Panel>
@@ -154,11 +201,18 @@ export function Header() {
               )}
             </Popover>
             {
+              <LanguageSwitcher />
+            }
+            {
               isLogin === true
-              &&
-              <Button onClick={handleLogout} variant="outline" className="hidden lg:block">
-                Log out
-              </Button>
+                ?
+                <Button onClick={handleLogout} variant="outline" className="hidden lg:block">
+                  {t('header.logout')}
+                </Button>
+                :
+                <Button onClick={handleLogIn} variant="outline" className="hidden lg:block">
+                  {t('header.login')}
+                </Button>
             }
 
             {/* <Button href="#" className="hidden lg:block">

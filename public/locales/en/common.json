@@ -1,0 +1,43 @@
+{
+    "header": {
+        "dashboard": "Dashboard",
+        "pricing": "Pricing",
+        "login": "Log In",
+        "logout": "Log Out"
+    },
+    "dashboard": {
+        "searchHeading": "Analyse your website",
+        "urlPlaceHolder": "Enter URL",
+        "analyseButton": "Analyze",
+        "radio_navigation": "Navigation (Default)",
+        "radio_desktop": "Desktop",
+        "radio_mobile": "Mobile",
+        "radio_performance": "Performance",
+        "radio_accessibility": "Accessibility",
+        "radio_best_paracticies": "Best practices",
+        "radio_seo": "SEO",
+        "radio_pwa": "Progressive Web App",
+        "label_categories": "Categories",
+        "label_device": "Device"
+    },
+    "signIn": {
+        "title": "Sign in to account",
+        "subTitle": "Don’t have an account? Sign up for a free trial.",
+        "label_email": "Email address",
+        "label_password": "Password",
+        "button_signin": "Sign in to account"
+    },
+    "auth": {
+        "loading": "Loading"
+    },
+    "pricing": {
+        "flat_pricing": "Flat pricing, no management fees.",
+        "info_text_1": "Whether you’re one person trying to get ahead or a big firm trying to take over the world, we’ve got a plan for you.",
+        "info_text_2": "You’ve been investing for a while. Invest more and grow your wealth faster.",
+        "button_pay": "Pay",
+        "button_already_purchased": "Already Purchased 🙂",
+        "feature_1": "Unlimited audits",
+        "feature_2": "Continuous Monitoring",
+        "feature_3": "Compare with Competitors"
+    }
+}

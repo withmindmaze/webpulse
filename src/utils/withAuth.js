@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import supabase from './supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 const withAuth = (WrappedComponent) => {
     const allowedForGuestUser = ['/'];
 
     return (props) => {
+        const { t } = useTranslation();
         const pathname = usePathname();
         const router = useRouter();
         const [loading, setLoading] = useState(true);
@@ -40,7 +42,7 @@ const withAuth = (WrappedComponent) => {
             return (
                 <div className="flex items-center justify-center min-h-screen bg-gray-100">
                     <div className="text-lg font-semibold text-gray-800">
-                        Loading...
+                        {t('auth.loading')}
                     </div>
                 </div>
             );

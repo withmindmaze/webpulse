@@ -1,35 +1,48 @@
 'use client'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
+
+  const handleRedirection = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    if (user.user?.id) {
+      router.back();
+    }
+  }
+
+  useEffect(() => {
+    handleRedirection();
+  }, [router]);
 
   const handleSignUp = async (event: any) => {
     event.preventDefault();
     setLoading(true);
+    const baseURL = `${window.location.protocol}//${window.location.host}`;
 
     // Sign up the user
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_API_BASE_UR}/login`,
+        emailRedirectTo: `${baseURL}/register/confirm`,
       },
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      toast.error(signUpError.message);
       setLoading(false);
       return;
     }
@@ -43,15 +56,14 @@ export default function Register() {
 
       if (planError) {
         console.error('Error creating user plan:', planError);
-        setError(planError.message);
       } else {
         console.log('User plan created:', planData);
         setLoading(false);
+        toast.success("Sign Up successfull. Please confirm your email.")
         router.push('/login');
       }
     }
   };
-
 
   return (
     <AuthLayout
@@ -92,7 +104,6 @@ export default function Register() {
         <Button type="submit" color="cyan" className="mt-8 w-full">
           {loading ? 'Registering...' : 'Get started today'}
         </Button>
-        {error && <p className="text-red-500">{error}</p>}
       </form>
     </AuthLayout>
   );
