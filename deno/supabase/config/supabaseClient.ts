@@ -1,3 +1,4 @@
+//@ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = "https://kckpcztvngcakrpuxvcj.supabase.co";
