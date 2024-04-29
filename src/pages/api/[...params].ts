@@ -1,11 +1,10 @@
-// pages/api/[...params].ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import lighthouse, { OutputMode, Config } from 'lighthouse';
 import * as ChromeLauncher from 'chrome-launcher';
 import nextCors from 'nextjs-cors';
-import cookie from 'cookie';
 import supabase from '@/utils/supabaseClient';
+import fs from 'fs';
+import path from 'path';
 
 async function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
 
@@ -70,6 +69,25 @@ async function runLighthouse(url: string, categories: string[], device: string):
 //   });
 // }
 
+async function uploadReportFile(userId: any, url: any, htmlContent: any) {
+  const fileName = `${url}_${userId}.html`;
+  const filePath = `reports/${fileName}`;  // Path within the bucket
+
+  const { data, error } = await supabase.storage
+    .from('webpulse')
+    .upload(filePath, htmlContent, {
+      contentType: 'text/html',
+      upsert: true
+    });
+
+  if (error) {
+    console.error('Failed to upload HTML report:', error);
+    throw new Error('Failed to upload HTML report');
+  }
+
+  return filePath;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Initialize CORS middleware
   await nextCors(req, res, {
@@ -93,7 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log("🚀 ~ handler ~ req.body:", req.body)
   switch (params[0]) {
     case 'audit':
-      const { url, categories, device } = req.body;
+      const { url, categories, device, user_id, generatedBy } = req.body;
 
       if (!url || typeof url !== 'string') {
         return res.status(400).json({ error: 'URL is required and must be a string' });
@@ -108,19 +126,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       try {
-        const reportHtml = await runLighthouse(url, categories, device);
-        console.log("req.cookies", req.cookies);
-        if (req.cookies['report_generated']) {
-          res.status(200).send({ data: reportHtml, isFirstReport: false });
-        } else {
-          res.setHeader('Set-Cookie', cookie.serialize('report_generated', 'true', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV !== 'development',
-            maxAge: 60 * 60 * 24 * 365 * 10, // 10 years
-            path: '/',
-          }));
-          res.status(200).send({ data: reportHtml, isFirstReport: true });
+        const runnerResult = await runLighthouse(url, categories, device);
+        const jsonReport = runnerResult?.lhr
+        if (user_id !== undefined) {
+          await supabase
+            .from('report')
+            .insert([{
+              user_id,
+              // html_report: `${url}_${user_id}.html`,
+              json_report: jsonReport,
+              url,
+              generatedBy: generatedBy ? generatedBy : 'user'
+            }]);
+          // await uploadReportFile(user_id, url, runnerResult.report)
         }
+        res.status(200).json({ data: runnerResult, jsonReport: jsonReport });
       } catch (error) {
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });
       }

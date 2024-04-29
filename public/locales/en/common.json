@@ -1,6 +1,9 @@
 {
     "header": {
         "dashboard": "Dashboard",
+        "reports": "Reports",
+        "alerts":"Alerts",
+        "compare":"Compare",
         "pricing": "Pricing",
         "login": "Log In",
         "logout": "Log Out"
@@ -18,7 +21,7 @@
         "radio_seo": "SEO",
         "radio_pwa": "Progressive Web App",
         "label_categories": "Categories",
-        "label_device": "Device"
+        "device_lable": "Device"
     },
     "signIn": {
         "title": "Sign in to account",

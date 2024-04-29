@@ -170,6 +170,9 @@ export function Header() {
                             <MobileNavLink href="/">
                               {t('header.dashboard')}
                             </MobileNavLink>
+                            <MobileNavLink href="/reports">
+                              {t('header.reports')}
+                            </MobileNavLink>
                             <MobileNavLink href="/purchase">
                               {t('header.pricing')}
                             </MobileNavLink>

@@ -1,6 +1,6 @@
 "use client"
 import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { JsonView, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import LightHouseStart from './LightHouseStart';
@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 function UrlInput() {
     const { t } = useTranslation();
     const router = useRouter();
+    const iframeRef = useRef(null);
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState(null);
@@ -52,8 +53,17 @@ function UrlInput() {
         setCategories({ ...categories, [event.target.name]: event.target.checked });
     };
 
+    const printIframe = () => {
+        const iframe = iframeRef.current;
+        if (iframe) {
+            //@ts-ignore
+            iframe?.contentWindow?.print();
+        }
+    };
+
     const authUserClick = async () => {
         setIsLoading(true);
+        const getUser = await supabase.auth.getUser();
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
             // @ts-ignore
@@ -66,10 +76,14 @@ function UrlInput() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url, categories: selectedCategories, device: device }),
+                body: JSON.stringify({
+                    url: url,
+                    categories: selectedCategories,
+                    device: device,
+                    user_id: getUser?.data?.user?.id ? getUser?.data?.user?.id : undefined
+                }),
             });
             const data = await response.json();
-            const getUser = await supabase.auth.getUser();;
             if (getUser.data.user?.id) {
                 if (localStorage.getItem('isFirstReport') === 'false') {
                     const userPlan = await supabase
@@ -116,10 +130,19 @@ function UrlInput() {
             if (topBar) {
                 topBar.style.display = 'none';
             }
+            const stickHeader = iframe?.contentWindow?.document.querySelector('lh-sticky-header lh-sticky-header--visible') as HTMLElement;
+            if (stickHeader) {
+                stickHeader.style.display = 'none';
+            }
             const footer = iframe.contentWindow.document.querySelector('.lh-footer') as HTMLElement;
             if (footer) {
                 footer.style.display = 'none';
             }
+        }
+        const iframeElement = iframeRef.current;
+        if (iframeElement) {
+            //@ts-ignore
+            iframeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
 
@@ -139,7 +162,7 @@ function UrlInput() {
                             type="email"
                             name="email"
                             id="email"
-                            className="block w-full rounded-l-md border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-l-md border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:border-[#3bbed9] focus:outline-none focus:ring-[#3bbed9] focus:ring-1 sm:text-sm sm:leading-6"
                             placeholder={t('dashboard.urlPlaceHolder')}
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
@@ -167,8 +190,19 @@ function UrlInput() {
                 handleDeviceChange={handleDeviceChange}
                 handleCategoryChange={handleCategoryChange}
             />
+            {
+                iframeSrc !== '' &&
+                <button
+                    onClick={printIframe}
+                    className="my-4 bg-[#3bbed9] text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-[#32a8c1] transition-colors duration-300 ease-in-out"
+                >
+                    Print Report
+                </button>
+            }
+
             {iframeSrc && (
                 <iframe
+                    ref={iframeRef}
                     src={iframeSrc}
                     onLoad={hideLHTopbar}
                     width="100%"
