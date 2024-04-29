@@ -129,14 +129,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const runnerResult = await runLighthouse(url, categories, device);
         const jsonReport = runnerResult?.lhr
         if (user_id !== undefined) {
-          await supabase
+          const reportData = await supabase
             .from('report')
             .insert([{
               user_id,
               // html_report: `${url}_${user_id}.html`,
               json_report: jsonReport,
               url,
-              generatedBy: generatedBy ? generatedBy : 'user'
+              generated_by: generatedBy ? generatedBy : 'user'
             }]);
           // await uploadReportFile(user_id, url, runnerResult.report)
         }
