@@ -138,6 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               url,
               generated_by: generatedBy ? generatedBy : 'user'
             }]);
+          console.log(reportData);
           // await uploadReportFile(user_id, url, runnerResult.report)
         }
         res.status(200).json({ data: runnerResult, jsonReport: jsonReport });
