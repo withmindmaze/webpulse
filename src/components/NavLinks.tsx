@@ -10,9 +10,10 @@ export function NavLinks() {
 
   const links = [
     { label: `${t('header.dashboard')}`, href: '/' },
-    // { label: 'Reviews', href: '/#reviews' },
+    { label: `${t('header.alerts')}`, href: '/alerts' },
+    { label: `${t('header.compare')}`, href: '/compare' },
+    { label: `${t('header.reports')}`, href: '/reports' },
     { label: `${t('header.pricing')}`, href: '/purchase' },
-    // { label: 'FAQs', href: '/#faqs' },
   ];
 
   return links.map((link, index) => (

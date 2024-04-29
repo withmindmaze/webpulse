@@ -18,7 +18,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
 
                 {/* Device section */}
                 <div>
-                    <h1 className="text-sm font-bold mb-4">{t('dasboard.label_device')}</h1>
+                    <h1 className="text-sm font-bold mb-4">{t('dashboard.device_lable')}</h1>
                     <label className="flex items-center">
                         <input
                             type="radio"

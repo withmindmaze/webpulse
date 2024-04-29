@@ -1,6 +1,9 @@
 {
     "header": {
         "dashboard": "لوحة التحكم",
+        "reports": "تقارير",
+        "alerts":"التنبيهات",
+        "compare":"يقارن",
         "pricing": "الأسعار",
         "login": "تسجيل الدخول",
         "logout": "تسجيل الخروج"
@@ -18,7 +21,7 @@
         "radio_seo": "تحسين محركات البحث",
         "radio_pwa": "تطبيق ويب تقدمي",
         "label_categories": "الفئات",
-        "label_device": "الجهاز"
+        "device_lable": "الجهاز"
     },
     "signIn": {
         "title": "تسجيل الدخول إلى الحساب",
