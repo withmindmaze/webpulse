@@ -6,6 +6,7 @@ import '@/styles/tailwind.css'
 import { type Metadata } from 'next'
 import { ToastContainer } from 'react-toastify';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,14 +29,25 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const [isClient, setIsClient] = useState(false);
+  const [direction, setDirection] = useState('ltr');
+  const { t } = useTranslation();
 
   useEffect(() => {
-    // Set the isClient state to true once the component mounts
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    const currentLnaguage = localStorage.getItem('language');
+    if (currentLnaguage === 'en') {
+      setDirection('ltr');
+    } else {
+      setDirection('rtl');
+    }
+  }, [t]);
+
   return (
     <html
+      dir={direction}
       lang="en"
       className={clsx('h-full bg-gray-50 antialiased', inter.variable)}
     >

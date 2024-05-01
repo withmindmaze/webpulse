@@ -1,3 +1,4 @@
+//@ts-nocheck
 'use client'
 import { useEffect, useState } from 'react';
 import supabase from "@/utils/supabaseClient";
@@ -73,38 +74,59 @@ function Reports() {
                     datasets: [
                         {
                             label: 'Performance Score',
-                            data: data.map(d => d.json_report.categories.performance.score),
+                            data: data.map(d => d?.json_report?.categories?.performance?.score),
                             borderColor: 'rgb(255, 99, 132)',
                             backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         },
                         {
                             label: 'Accessibility Score',
-                            data: data.map(d => d.json_report.categories.accessibility.score),
+                            data: data.map(d => d?.json_report?.categories?.accessibility?.score),
                             borderColor: 'rgb(53, 162, 235)',
                             backgroundColor: 'rgba(53, 162, 235, 0.5)',
                         },
                         {
                             label: 'SEO Score',
-                            data: data.map(d => d.json_report.categories.seo.score),
+                            data: data.map(d => d.json_report.categories?.seo?.score),
                             borderColor: 'rgb(75, 192, 192)',
                             backgroundColor: 'rgba(75, 192, 192, 0.5)',
                         },
                         {
                             label: 'PWA Score',
-                            data: data.map(d => d.json_report.categories.pwa.score),
+                            data: data.map(d => d.json_report?.categories?.pwa?.score),
                             borderColor: 'rgb(153, 102, 255)',
                             backgroundColor: 'rgba(153, 102, 255, 0.5)',
                         }
                     ],
                 };
-                const tableData = data.map(d => ({
-                    url: selectedUrl,
-                    performance: d.json_report.categories.performance.score,
-                    accessibility: d.json_report.categories.accessibility.score,
-                    seo: d.json_report.categories.seo.score,
-                    pwa: d.json_report.categories.pwa.score,
-                    date: new Date(d.created_at).toLocaleDateString()
-                }));
+                const tableData = data.map(d => {
+                    const entry = {
+                        url: selectedUrl,
+                        date: new Date(d.created_at).toLocaleDateString()
+                    };
+
+                    // Add performance score if present
+                    if (d.json_report.categories.performance && d.json_report.categories.performance.score !== undefined) {
+                        entry.performance = d.json_report.categories.performance.score;
+                    }
+
+                    // Add accessibility score if present
+                    if (d.json_report.categories.accessibility && d.json_report.categories.accessibility.score !== undefined) {
+                        entry.accessibility = d.json_report.categories.accessibility.score;
+                    }
+
+                    // Add SEO score if present
+                    if (d.json_report.categories.seo && d.json_report.categories.seo.score !== undefined) {
+                        entry.seo = d.json_report.categories.seo.score;
+                    }
+
+                    // Add PWA score if present
+                    if (d.json_report.categories.pwa && d.json_report.categories.pwa.score !== undefined) {
+                        entry.pwa = d.json_report.categories.pwa.score;
+                    }
+
+                    return entry;
+                });
+
                 setGraphData(chartData);
                 setTableData(tableData);
 
