@@ -36,7 +36,7 @@ Deno.serve(async (req: any) => {
   comparisonAlert.forEach(async (alert: any) => {
     const myReport = await generateMyWebsiteReport(alert.url, alert.user_id);
     const competitorReport = await generateCompetitorReport(alert.competitor_url, alert.user_id);
-    compareMetrics(myReport, competitorReport, alert.metrics, alert.url, alert.competitor_url);
+    compareMetrics(myReport, competitorReport, alert.metrics, alert.url, alert.competitor_url, alert.email);
   });
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
@@ -87,7 +87,7 @@ const generateCompetitorReport = async (url: any, user_id: any) => {
   return generatedReport;
 }
 
-function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any) {
+function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any) {
   const myPerformanceScore = myReport.categories.performance.score;
   const myAccessibilityScore = myReport.categories.accessibility.score;
   const mySeoScore = myReport.categories.seo.score;
@@ -142,10 +142,10 @@ function compareMetrics(myReport: any, competitorReport: any, metrics: any, url:
       console.log("PWA score is reduced");
     }
   }
-  sendEmail(url, competitor_url);
+  sendEmail(url, competitor_url, toEmail);
 }
 
-const sendEmail = async (url: any, competitor_url: any) => {
+const sendEmail = async (url: any, competitor_url: any, toEmail: any) => {
   // const res = await fetch('https://api.resend.com/domains/1a233755-82ea-4c54-99d2-73d20160d009/verify', {
   //   method: 'POST',
   //   headers: {
@@ -175,7 +175,7 @@ const sendEmail = async (url: any, competitor_url: any) => {
   try {
     await client.send({
       from: "jawadakhter7@gmail.com",
-      to: "jawadakhter7@gmail.com",
+      to: toEmail,
       subject: "Audit Alert",
       content: htmlReport(url, competitor_url),
       html: htmlReport(url, competitor_url),
