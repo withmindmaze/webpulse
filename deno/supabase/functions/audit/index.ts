@@ -56,7 +56,7 @@ Deno.serve(async (req: any) => {
 
     const data = await apiResponse.json();
     const generatedReport = data.data.lhr;
-    compareMetrics(alert.metrics, generatedReport, alert.url);
+    compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
   });
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
@@ -65,7 +65,7 @@ Deno.serve(async (req: any) => {
 
 })
 
-function compareMetrics(storedMetrics: any, generatedReport: any, url: any) {
+function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {
   const generatedPerformanceScore = generatedReport.categories.performance.score;
   const generatedAccessibilityScore = generatedReport.categories.accessibility.score;
   const generatedSeoScore = generatedReport.categories.seo.score;
@@ -126,10 +126,10 @@ function compareMetrics(storedMetrics: any, generatedReport: any, url: any) {
       console.log("PWA score is reduced");
     }
   }
-  sendEmail(url);
+  sendEmail(url, toEmail);
 }
 
-const sendEmail = async (url: any) => {
+const sendEmail = async (url: any, toEmail: any) => {
   // const res = await fetch('https://api.resend.com/domains/1a233755-82ea-4c54-99d2-73d20160d009/verify', {
   //   method: 'POST',
   //   headers: {
@@ -159,7 +159,7 @@ const sendEmail = async (url: any) => {
   try {
     await client.send({
       from: "jawadakhter7@gmail.com",
-      to: "jawadakhter7@gmail.com",
+      to: toEmail,
       subject: "Audit Alert",
       content: htmlReport(url),
       html: htmlReport(url),
