@@ -1,7 +1,7 @@
 {
     "header": {
         "dashboard": "Dashboard",
-        "reports": "Reports",
+        "reports": "Reports Summary",
         "alerts": "Alerts",
         "compare": "Compare",
         "pricing": "Pricing",
@@ -81,7 +81,11 @@
         "table_header_email": "Email",
         "table_header_action": "Action",
         "button_delete": "Delete",
-        "button_update": "Update"
+        "button_update": "Update",
+        "info_performance": "Measures page load speed and user interaction.",
+        "info_Accessibility": "Evaluates usability for people with disabilities.",
+        "info_PWA": "Checks app-like features and offline functionality.",
+        "info_SEO": "Analyzes visibility and ranking in search results."
     },
     "compare": {
         "heading_top": "Competitive Analysis Tool",
@@ -129,6 +133,11 @@
         "table_header_seo":"SEO",
         "table_header_pwa":"PWA",
         "table_header_date":"Date"
-
+    },
+    "confirmation":{
+        "heading_congratulations":"Congratulations",
+        "subheading_note":"Your email address has been successfully verified.",
+        "text_note":"Thank you for confirming your email address. You have successfully completed the verification process and your account is now fully activated.",
+        "button_login":"Login"
     }
 }

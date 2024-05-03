@@ -62,6 +62,23 @@ function UrlInput() {
         }
     };
 
+    const callAuditApi = async (selectedCategories: any, getUser: any) => {
+        const response = await fetch(`/api/audit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: url,
+                categories: selectedCategories,
+                device: device,
+                user_id: getUser?.data?.user?.id ? getUser?.data?.user?.id : undefined
+            }),
+        });
+        const data = await response.json();
+        return data;
+    }
+
     const authUserClick = async () => {
         setIsLoading(true);
         const getUser = await supabase.auth.getUser();
@@ -72,19 +89,6 @@ function UrlInput() {
             .map(key => key.toLowerCase());
 
         try {
-            const response = await fetch(`/api/audit`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    url: url,
-                    categories: selectedCategories,
-                    device: device,
-                    user_id: getUser?.data?.user?.id ? getUser?.data?.user?.id : undefined
-                }),
-            });
-            const data = await response.json();
             if (getUser.data.user?.id) {
                 if (localStorage.getItem('isFirstReport') === 'false') {
                     const userPlan = await supabase
@@ -96,10 +100,12 @@ function UrlInput() {
                         toast.info("Purchase to continue using audit services");
                         router.push('/purchase');
                     } else {
+                        const data = await callAuditApi(selectedCategories, getUser);
                         toast.success("Audit report generated successfully");
                         setData(data.data.report);
                     }
                 } else {
+                    const data = await callAuditApi(selectedCategories, getUser);
                     toast.success("Audit report generated successfully");
                     setData(data.data.report);
                 }
@@ -108,6 +114,7 @@ function UrlInput() {
                     toast.info("Sign up to continue using audit services");
                     router.push('/register');
                 } else {
+                    const data = await callAuditApi(selectedCategories, getUser);
                     toast.success("Audit report generated successfully");
                     setData(data.data.report);
                 }
@@ -154,7 +161,7 @@ function UrlInput() {
             iframeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
-    
+
 
     return (
         <div className="mt-8 flex flex-col justify-center items-center">
@@ -172,7 +179,7 @@ function UrlInput() {
                             type="email"
                             name="email"
                             id="email"
-                            className="block w-full rounded-l-md border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:border-[#3bbed9] focus:outline-none focus:ring-[#3bbed9] focus:ring-1 sm:text-sm sm:leading-6"
+                            className="block w-full border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:border-[#3bbed9] focus:outline-none focus:ring-[#3bbed9] focus:ring-1 sm:text-sm sm:leading-6"
                             placeholder={t('dashboard.urlPlaceHolder')}
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
@@ -180,9 +187,10 @@ function UrlInput() {
                     </div>
                     <button
                         type="button"
-                        className="relative -ml-px inline-flex items-center gap-x-2 rounded-r-md px-4 py-2 text-sm font-semibold text-gray-900 bg-[#3bbed9] text-white"
+                        className="relative inline-flex items-center gap-x-2 px-4 py-2 text-sm font-semibold text-gray-900 bg-[#3bbed9] text-white"
                         onClick={handleAnalyzeClick}
                     >
+
                         {isLoading ? (
                             <div className="w-5 h-5 border-t-4 border-b-4 border-white animate-spin" />
                         ) : (

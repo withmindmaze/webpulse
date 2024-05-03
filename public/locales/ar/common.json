@@ -1,7 +1,7 @@
 {
     "header": {
         "dashboard": "لوحة التحكم",
-        "reports": "تقارير",
+        "reports": "ملخص التقارير",
         "alerts": "التنبيهات",
         "compare": "يقارن",
         "pricing": "الأسعار",
@@ -81,7 +81,11 @@
         "table_header_email": "البريد الإلكتروني",
         "table_header_action": "الإجراء",
         "button_delete": "حذف",
-        "button_update": "تحديث"
+        "button_update": "تحديث",
+        "info_performance": "يقيس سرعة تحميل الصفحة وتفاعل المستخدم.",
+        "info_Accessibility": "يقيم قابلية الاستخدام للأشخاص ذوي الإعاقة.",
+        "info_PWA": "يفحص الميزات المشابهة للتطبيقات والوظائف دون اتصال بالإنترنت.",
+        "info_SEO": "يحلل الظهور والترتيب في نتائج البحث."
     },
     "compare": {
         "heading_top": "أداة تحليل التنافسية",
@@ -128,5 +132,11 @@
         "table_header_seo": "تحسين محركات البحث",
         "table_header_pwa": "تطبيق ويب تقدمي",
         "table_header_date": "التاريخ"
-    }
+    },
+    "confirmation": {
+        "heading_congratulations": "تهانينا",
+        "subheading_note": "لقد تم التحقق من عنوان بريدك الإلكتروني بنجاح.",
+        "text_note": "شكرًا لتأكيد عنوان بريدك الإلكتروني. لقد أكملت عملية التحقق بنجاح وتم تفعيل حسابك بالكامل الآن.",
+        "button_login": "تسجيل الدخول"
+    }    
 }

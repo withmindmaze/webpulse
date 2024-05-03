@@ -9,9 +9,11 @@ import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Confirm() {
     const router = useRouter();
+    const { t } = useTranslation();
 
     const handleRedirect = () => {
         router.push('/login');
@@ -19,17 +21,17 @@ export default function Confirm() {
 
     return (
         <AuthLayout
-            title="Congratulations! "
+            title={t('confirmation.heading_congratulations')}
             subtitle={
                 <>
-                    Your email address has been successfully verified.
+                    {t('confirmation.subheading_note')}
                 </>
             }
         >
             <div className="text-center p-5">
-                <p className="mb-4">Thank you for confirming your email address. You have successfully completed the verification process and your account is now fully activated.</p>
+                <p className="mb-4">{t('confirmation.text_note')}</p>
                 <button onClick={handleRedirect} className="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
-                    Login
+                    {t('confirmation.button_login')}
                 </button>
             </div>
 
