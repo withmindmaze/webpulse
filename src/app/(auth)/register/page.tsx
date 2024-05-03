@@ -40,6 +40,9 @@ export default function Register() {
       password: password,
       options: {
         emailRedirectTo: `${baseURL}/register/confirm`,
+        data: {
+          currentLanguage: localStorage.getItem('language')
+        }
       },
     });
 
@@ -94,7 +97,7 @@ export default function Register() {
           />
           <TextField
             className="col-span-full"
-            label={t('signUp.password')}
+            label={t('signUp.label_password')}
             name="password"
             type="password"
             autoComplete="new-password"

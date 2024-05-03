@@ -213,6 +213,17 @@ function Alerts() {
         return metric_english;
     }
 
+    const renderMetricInfo = (metric: any) => {
+        if (metric === "Performance") {
+            return t('alert.info_performance');
+        } else if (metric === "Accessibility") {
+            return t('alert.info_Accessibility');
+        } else if (metric === "PWA") {
+            return t('alert.info_PWA');
+        } else if (metric === "SEO") {
+            return t('alert.info_SEO');
+        }
+    }
 
     return (
         <div className="flex flex-col items-center w-full">
@@ -256,16 +267,19 @@ function Alerts() {
                                 className="form-checkbox h-5 w-5"
                             />
                             <span className="flex-1">{renderMetricName(metric)}</span>
-                            {metrics[metric] !== '' && (
-                                <input
-                                    type="number"
-                                    value={metrics[metric]}
-                                    onChange={(e) => handleThresholdChange(metric, e.target.value)}
-                                    min="0"
-                                    className="w-20 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#3bbed9]"
-                                    placeholder="Threshold"
-                                />
-                            )}
+                            <p className="text-xs mt-1 text-gray-500 flex-1">{renderMetricInfo(metric)}</p>
+                            {
+                                metrics[metric] !== '' && (
+                                    <input
+                                        type="number"
+                                        value={metrics[metric]}
+                                        onChange={(e) => handleThresholdChange(metric, e.target.value)}
+                                        min="0"
+                                        className="w-20 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#3bbed9]"
+                                        placeholder="Threshold"
+                                    />
+                                )
+                            }
                         </div>
                     ))}
                     <div className="flex flex-col">
@@ -289,55 +303,59 @@ function Alerts() {
                     </button>
                 </form>
             </div>
-            <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-5">
-                <table className="w-full text-sm text-left text-gray-500">
-                    <thead>
-                        <tr>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                {t('alert.table_header_url')}
-                            </th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                {t('alert.table_header_metrics')}
-                            </th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                {t('alert.table_header_frequency')}
-                            </th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                {t('alert.table_header_email')}
-                            </th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                {t('alert.table_header_action')}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {alerts.map((alert) => (
-                            <tr key={alert.id}>
-                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    {alert.url}
-                                </td>
-                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    {formatMetrics(alert.metrics)}
-                                </td>
-                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    {alert.frequency}
-                                </td>
-                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    {alert.email}
-                                </td>
-                                <td className="h-full px-5 py-10 border-b border-gray-200 bg-white text-sm flex flex-col justify-center space-y-2">
-                                    <button onClick={() => handleDelete(alert.id)} className="text-red-500 hover:text-red-700 self-center">
-                                        {t('alert.button_delete')}
-                                    </button>
-                                    <button onClick={() => openModal(alert)} className="text-[#3bbed9] hover:text-blue-700 self-center">
-                                        {t('alert.button_update')}
-                                    </button>
-                                </td>
+            {
+                alerts?.length > 0 &&
+                <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-5">
+                    <table className="w-full text-sm text-left text-gray-500">
+                        <thead>
+                            <tr>
+                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    {t('alert.table_header_url')}
+                                </th>
+                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    {t('alert.table_header_metrics')}
+                                </th>
+                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    {t('alert.table_header_frequency')}
+                                </th>
+                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    {t('alert.table_header_email')}
+                                </th>
+                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    {t('alert.table_header_action')}
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {alerts.map((alert) => (
+                                <tr key={alert.id}>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                        {alert.url}
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                        {formatMetrics(alert.metrics)}
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                        {alert.frequency}
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                        {alert.email}
+                                    </td>
+                                    <td className="h-full px-5 py-10 border-b border-gray-200 bg-white text-sm flex flex-col justify-center space-y-2">
+                                        <button onClick={() => handleDelete(alert.id)} className="text-red-500 hover:text-red-700 self-center">
+                                            {t('alert.button_delete')}
+                                        </button>
+                                        <button onClick={() => openModal(alert)} className="text-[#3bbed9] hover:text-blue-700 self-center">
+                                            {t('alert.button_update')}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            }
+
             <EditAlertModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
