@@ -1,6 +1,7 @@
 'use client'
 import { Inter } from 'next/font/google'
 import clsx from 'clsx'
+import './global.css'
 
 import '@/styles/tailwind.css'
 import { type Metadata } from 'next'

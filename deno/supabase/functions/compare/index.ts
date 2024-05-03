@@ -146,20 +146,6 @@ function compareMetrics(myReport: any, competitorReport: any, metrics: any, url:
 }
 
 const sendEmail = async (url: any, competitor_url: any, toEmail: any) => {
-  // const res = await fetch('https://api.resend.com/domains/1a233755-82ea-4c54-99d2-73d20160d009/verify', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Bearer ${RESEND_API_KEY}`,
-  //   },
-  //   body: JSON.stringify({
-  //     from: 'jawad@withmindmaze.com',
-  //     to: 'jawadakhter7@gmail.com',
-  //     subject: 'hello world',
-  //     html: '<strong>it works!</strong>',
-  //   }),
-  // })
-
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",

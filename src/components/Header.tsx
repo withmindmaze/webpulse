@@ -61,7 +61,7 @@ function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   // Function to change language and store selection in localStorage
-  const changeLanguage = (lang:any) => {
+  const changeLanguage = (lang: any) => {
     i18n.changeLanguage(lang);
     localStorage.setItem('language', lang); // Store the language preference
   };
@@ -118,16 +118,23 @@ export function Header() {
   return (
     <header>
       <nav>
-        <Container className="relative z-50 flex justify-between py-8">
-          <div className="relative z-10 flex items-center gap-16">
-            <Link href="/" aria-label="Home">
-              <Logo className="h-10 w-auto" />
-            </Link>
-            <div className="hidden lg:flex lg:gap-10">
+        <Container className="relative z-50 flex justify-center items-center py-8">
+          <div className="flex justify-between items-center w-full max-w-6xl px-4 lg:px-0">
+            {/* Logo and NavLinks grouped */}
+            <div className="flex-grow flex items-center justify-start">
+              <Link href="/" aria-label="Home">
+                <Logo className="h-10 w-auto" />
+              </Link>
+            </div>
+
+            {/* Centered NavLinks */}
+            <div className="flex-grow-0 hidden lg:flex justify-center">
               <NavLinks />
             </div>
-          </div>
-          <div className="flex items-center gap-6">
+
+
+
+
             <Popover className="lg:hidden">
               {({ open }) => (
                 <>
@@ -173,28 +180,27 @@ export function Header() {
                             <MobileNavLink href="/reports">
                               {t('header.reports')}
                             </MobileNavLink>
+                            <MobileNavLink href="/alerts">
+                              {t('header.alerts')}
+                            </MobileNavLink>
+                            <MobileNavLink href="/compare">
+                              {t('header.compare')}
+                            </MobileNavLink>
                             <MobileNavLink href="/purchase">
                               {t('header.pricing')}
                             </MobileNavLink>
-                            {/*  <MobileNavLink href="/#pricing">
-                              Pricing
-                            </MobileNavLink>
-                            <MobileNavLink href="/#faqs">FAQs</MobileNavLink>
-                          */}
                           </div>
                           <div className="mt-8 flex flex-col gap-4">
                             {
                               isLogin === true ?
                                 <Button onClick={handleLogout} variant="outline">
-                                  Log out
+                                  {t('header.logout')}
                                 </Button>
                                 :
                                 <Button onClick={handleLogIn} variant="outline">
-                                  Log In
+                                  {t('header.login')}
                                 </Button>
                             }
-
-                            {/* <Button href="#">Download the app</Button> */}
                           </div>
                         </Popover.Panel>
                       </>
@@ -203,27 +209,32 @@ export function Header() {
                 </>
               )}
             </Popover>
-            {
+
+
+            {/* Language and authentication actions grouped */}
+            <div className="flex-grow flex items-center justify-end gap-6">
               <LanguageSwitcher />
-            }
-            {
-              isLogin === true
-                ?
-                <Button onClick={handleLogout} variant="outline" className="hidden lg:block">
+              {isLogin ? (
+                <Button onClick={handleLogout} variant="outline"
+                  className="border-[#3bbed9] text-[#3bbed9] hover:border-[#3bbed9] hover:text-[#3bbed9] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50 hidden lg:block"
+                >
                   {t('header.logout')}
                 </Button>
-                :
-                <Button onClick={handleLogIn} variant="outline" className="hidden lg:block">
+              ) : (
+                <Button
+                  onClick={handleLogIn}
+                  variant="outline"
+                  className="border-[#3bbed9] text-[#3bbed9] hover:border-[#3bbed9] hover:text-[#3bbed9] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50 hidden lg:block"
+                >
                   {t('header.login')}
                 </Button>
-            }
-
-            {/* <Button href="#" className="hidden lg:block">
-              Download
-            </Button> */}
+              )}
+            </div>
           </div>
         </Container>
       </nav>
     </header>
-  )
+  );
+
+
 }

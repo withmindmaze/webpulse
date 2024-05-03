@@ -1,0 +1,14 @@
+/* Default font for English */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* body {
+    font-family: 'Montserrat', sans-serif;
+} */
+
+/* Media query for Arabic language */
+@media (prefers-reduced-motion: no-preference) {
+  body:lang(ar) {
+    /* Font for Arabic language */
+    font-family: 'Tajawal', sans-serif;
+  }
+}

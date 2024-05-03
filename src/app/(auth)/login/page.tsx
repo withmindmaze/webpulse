@@ -9,8 +9,10 @@ import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,20 +49,20 @@ export default function Login() {
 
   return (
     <AuthLayout
-      title="Sign in to account"
+      title={t('signIn.title')}
       subtitle={
         <>
-          Don’t have an account?{' '}
+          {t('signIn.subTitle_p1')}{' '}
           <Link href="/register" className="text-cyan-600">
-            Sign up
+            {t('signIn.subTitle_p2')}
           </Link>{' '}
-          for a free trial.
+          {t('signIn.subTitle_p3')}
         </>
       }
     >
       <div className="space-y-6">
         <TextField
-          label="Email address"
+          label={t('signIn.label_email')}
           name="email"
           type="email"
           autoComplete="email"
@@ -69,7 +71,7 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="Password"
+          label={t('signIn.label_password')}
           name="password"
           type="password"
           autoComplete="current-password"
@@ -78,8 +80,8 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <Button onClick={handleLogin} color="cyan" className="mt-8 w-full">
-        {loading ? 'Loading...' : 'Sign in to account'}
+      <Button disabled={loading} onClick={handleLogin} color="cyan" className="mt-8 w-full">
+        {loading ? t('signIn.button_signing_in') : t('signIn.button_signin')}
       </Button>
     </AuthLayout>
   );

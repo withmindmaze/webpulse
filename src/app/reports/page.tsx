@@ -5,6 +5,7 @@ import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { useTranslation } from 'react-i18next';
 
 // Register the chart components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -28,6 +29,7 @@ interface TableRow {
 }
 
 function Reports() {
+    const { t } = useTranslation();
     const [urls, setUrls] = useState<string[]>([]);
     const [selectedUrl, setSelectedUrl] = useState('');
     const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -147,6 +149,21 @@ function Reports() {
         }
     }, [selectedUrl]);
 
+    const renderMetricName = (metric_english: any) => {
+        if (localStorage.getItem('language') === 'ar') {
+            if (metric_english === "Performance Score") {
+                return "درجة الأداء";
+            } else if (metric_english === "Accessibility Score") {
+                return "درجة الوصول";
+            } else if (metric_english === "PWA Score") {
+                return "درجة تحسين محركات البحث";
+            } else if (metric_english === "SEO Score") {
+                return  "درجة تطبيق الويب التقدمي";
+            }
+        }
+        return metric_english;
+    }
+
     if (loading === true) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -163,7 +180,7 @@ function Reports() {
                     onChange={(e) => setSelectedUrl(e.target.value)}
                     className="w-96 mb-4 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
                 >
-                    <option value="">Select a URL</option>
+                    <option value="">{t('reports.placeholder_select_url')}</option>
                     {urls.map(url => (
                         <option key={url} value={url}>{url}</option>
                     ))}
@@ -192,8 +209,8 @@ function Reports() {
                         <div className="flex flex-wrap justify-center">
                             {Object.keys(individualGraphData).map(key => (
                                 <div key={key} className="w-full sm:w-1/2 p-2">
-                                    <div className="shadow-lg rounded-lg overflow-hidden">  {/* Added shadow and rounded corners */}
-                                        <h2 className="text-lg font-semibold mb-2 bg-gray-100 p-3">{key}</h2>
+                                    <div className="shadow-lg rounded-lg overflow-hidden">
+                                        <h2 className="text-lg font-semibold mb-2 bg-gray-100 p-3">{renderMetricName(key)}</h2>
                                         {/**@ts-ignore */}
                                         <Line data={individualGraphData[key]} options={{
                                             responsive: true,
@@ -225,12 +242,12 @@ function Reports() {
                         <table className="w-full text-sm text-left text-gray-500">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th scope="col" className="py-3 px-6">URL</th>
-                                    <th scope="col" className="py-3 px-6">Performance</th>
-                                    <th scope="col" className="py-3 px-6">Accessibility</th>
-                                    <th scope="col" className="py-3 px-6">SEO</th>
-                                    <th scope="col" className="py-3 px-6">PWA</th>
-                                    <th scope="col" className="py-3 px-6">Date</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_url')}</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_performance')}</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_accessibility')}</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_seo')}</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_pwa')}</th>
+                                    <th scope="col" className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">{t('reports.table_header_date')}</th>
                                 </tr>
                             </thead>
                             <tbody>
