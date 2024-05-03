@@ -6,6 +6,7 @@ import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { validateURL } from '@/utils/urlValidator';
 
 function Alerts() {
     const [url, setUrl] = useState('');
@@ -217,9 +218,10 @@ function Alerts() {
         <div className="flex flex-col items-center w-full">
             <div className="max-w-xl flex flex-col items-center justify-center p-8 shadow-lg rounded-lg bg-white">
                 <h2 className="text-lg text-center font-semibold mb-4 text-[#3bbed9]">{t('alert.heading_top')}</h2>
-                <p className="text-sm text-gray-600 mb-6 text-center">
-                    {t('alert.text_guide')}                </p>
-                <form onSubmit={handleSave} className="space-y-4">
+                <p className="text-sm text-gray-600 mb-6 text-center pl-6 sm:pl-0">
+                    {t('alert.text_guide')}
+                </p>
+                <form onSubmit={handleSave} className="space-y-4 pl-6 sm:pl-0">
                     <div>
                         <label className="block">
                             {t('alert.label_url')}
@@ -266,20 +268,21 @@ function Alerts() {
                             )}
                         </div>
                     ))}
-                    <div>
-                        <label>
+                    <div className="flex flex-col">
+                        <label htmlFor="frequencySelect" className="mb-1">
                             {t('alert.label_frequency')}
-                            <select
-                                value={frequency}
-                                onChange={(e) => setFrequency(e.target.value)}
-                                className="w-96 mb-4 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
-                            >
-                                <option value="">{t('alert.placeholder_frequency')}</option>
-                                <option value="12 hours">{t('alert.frequency_12_hours')}</option>
-                                <option value="24 hours">{t('alert.frequency_24_hours')}</option>
-                            </select>
-                            <p className="text-xs mt-1 text-gray-500">{t('alert.info_frequency')}</p>
                         </label>
+                        <select
+                            id="frequencySelect"
+                            value={frequency}
+                            onChange={(e) => setFrequency(e.target.value)}
+                            className="w-96 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
+                        >
+                            <option value="">{t('alert.placeholder_frequency')}</option>
+                            <option value="12 hours">{t('alert.frequency_12_hours')}</option>
+                            <option value="24 hours">{t('alert.frequency_24_hours')}</option>
+                        </select>
+                        <p className="text-xs mt-1 text-gray-500">{t('alert.info_frequency')}</p>
                     </div>
                     <button disabled={saving} type="submit" className="px-6 py-3 w-full text-white bg-[#3bbed9] rounded-md hover:bg-[#3391a6] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-offset-2 transition duration-300 ease-in-out">
                         {saving ? t('alert.button_saving') : t('alert.button_save')}

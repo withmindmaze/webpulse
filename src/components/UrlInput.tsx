@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
+import { validateURL } from '../utils/urlValidator';
 
 function UrlInput() {
     const { t } = useTranslation();
@@ -120,17 +121,19 @@ function UrlInput() {
     }
 
     const handleAnalyzeClick = async () => {
-        authUserClick();
+        if (await validateURL(url)) {
+            authUserClick();
+        }
     };
 
     const hideLHTopbar = () => {
         const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
         if (iframe?.contentWindow?.document) {
-            const topBar = iframe?.contentWindow?.document.querySelector('.lh-topbar') as HTMLElement;
+            const topBar = iframe.contentWindow.document.querySelector('.lh-topbar') as HTMLElement;
             if (topBar) {
                 topBar.style.display = 'none';
             }
-            const stickHeader = iframe?.contentWindow?.document.querySelector('lh-sticky-header lh-sticky-header--visible') as HTMLElement;
+            const stickHeader = iframe.contentWindow.document.querySelector('lh-sticky-header lh-sticky-header--visible') as HTMLElement;
             if (stickHeader) {
                 stickHeader.style.display = 'none';
             }
@@ -138,17 +141,24 @@ function UrlInput() {
             if (footer) {
                 footer.style.display = 'none';
             }
+            // Locate the article tag and change its class from lh-dark to lh-light
+            const article = iframe.contentWindow.document.querySelector('article.lh-root') as HTMLElement;
+            if (article) {
+                article.classList.remove('lh-dark');
+                article.classList.add('lh-light');
+            }
         }
         const iframeElement = iframeRef.current;
         if (iframeElement) {
-            //@ts-ignore
+            // @ts-ignore
             iframeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
+    
 
     return (
         <div className="mt-8 flex flex-col justify-center items-center">
-            <div className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg">
+            <div className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-md">
                 <label htmlFor="email" className="block text-center text-sm font-medium leading-6 w-full">
                     <h1 className="text-2xl font-bold mb-4">{t('dashboard.searchHeading')}</h1>
                 </label>
@@ -183,13 +193,16 @@ function UrlInput() {
                         )}
                     </button>
                 </div>
+                <div className='mt-4'>
+                    <LightHouseStart
+                        device={device}
+                        categories={categories}
+                        handleDeviceChange={handleDeviceChange}
+                        handleCategoryChange={handleCategoryChange}
+                    />
+                </div>
             </div>
-            <LightHouseStart
-                device={device}
-                categories={categories}
-                handleDeviceChange={handleDeviceChange}
-                handleCategoryChange={handleCategoryChange}
-            />
+
             {
                 iframeSrc !== '' &&
                 <button

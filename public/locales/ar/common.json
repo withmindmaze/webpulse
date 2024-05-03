@@ -25,11 +25,24 @@
     },
     "signIn": {
         "title": "تسجيل الدخول إلى الحساب",
-        "subTitle": "لا تملك حسابًا؟ سجل للحصول على تجربة مجانية.",
+        "subTitle_p1": "لا تملك حسابًا؟", 
+        "subTitle_p2": "سجل", 
+        "subTitle_p3": "للحصول على تجربة مجانية.",
         "label_email": "عنوان البريد الإلكتروني",
         "label_password": "كلمة المرور",
+        "button_signing_in": "جاري تسجيل الدخول...",
         "button_signin": "تسجيل الدخول إلى الحساب"
     },
+    "signUp": {
+        "title": "إنشاء حساب",
+        "subTitle_p1": "هل أنت مسجل بالفعل؟", 
+        "subTitle_p2": "تسجيل الدخول", 
+        "subTitle_p3": "إلى حسابك.",
+        "label_email": "عنوان البريد الإلكتروني",
+        "label_password": "كلمة المرور",
+        "button_signing_up": "جاري التسجيل...",
+        "button_signup": "ابدأ اليوم"
+    },       
     "auth": {
         "loading": "جار التحميل"
     },
@@ -69,5 +82,51 @@
         "table_header_action": "الإجراء",
         "button_delete": "حذف",
         "button_update": "تحديث"
+    },
+    "compare": {
+        "heading_top": "أداة تحليل التنافسية",
+        "text_guide": "استخدم هذا النموذج لمقارنة المقاييس الأساسية للأداء بين موقعك الإلكتروني وموقع منافسك. تساعدك هذه الأداة على فهم كيفية تموضع موقعك مقابل المنافسة في مجالات مثل الأداء، والوصول، وتحسين محركات البحث، وغيرها.",
+        "label_url": "عنوان URL لموقعك:",
+        "info_url": "أدخل عنوان URL لموقعك للمراقبة والمقارنة.",
+        "label_competitor_url": "عنوان URL لموقع المنافس:",
+        "info_competitor_url": "وفر عنوان URL لموقع منافس لعمليات التقييم المعياري.",
+        "label_email": "البريد الإلكتروني لتلقي التنبيهات:",
+        "info_email": "حدد عنوان البريد الإلكتروني حيث ترغب في تلقي تقارير التحليل.",
+       
+        "info_select_category": "اختر المقاييس للمراقبة والمقارنة.",
+        "category_performance": "الأداء",
+        "category_accessibility": "الوصول",
+        "category_pwa": "تطبيق ويب تقدمي",
+        "category_seo": "تحسين محركات البحث",
+    
+        "label_frequency": "التكرار",
+        "placeholder_frequency": "اختر التكرار",
+        "frequency_12_hours": "كل 12 ساعة",
+        "frequency_24_hours": "كل 24 ساعة",
+        "info_frequency": "اختر كم مرة ترغب في تلقي التنبيهات.",
+    
+        "button_save": "حفظ",
+        "button_saving": "جاري الحفظ",
+    
+        "table_header_url": "عنوان URL",
+        "table_header_competitor_url": "URL المنافس",
+        "table_header_metrics": "المقاييس",
+        "table_header_frequency": "التكرار",
+        "table_header_email": "البريد الإلكتروني",
+        "table_header_action": "الإجراء",
+        "button_delete": "حذف",
+        "button_update": "تحديث"
+    },
+    "reports": {
+        "placeholder_select_url": "اختر عنوان URL",
+        "heading_performance_score": "درجة الأداء",
+        "heading_accessibiliry_score": "درجة الوصول",
+        "heading_seo_score": "درجة تحسين محركات البحث",
+        "heading_pwa_score": "درجة تطبيق الويب التقدمي",
+        "table_header_performance": "الأداء",
+        "table_header_accessibility": "الوصول",
+        "table_header_seo": "تحسين محركات البحث",
+        "table_header_pwa": "تطبيق ويب تقدمي",
+        "table_header_date": "التاريخ"
     }
 }

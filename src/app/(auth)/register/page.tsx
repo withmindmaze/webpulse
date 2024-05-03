@@ -9,8 +9,10 @@ import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,14 +69,14 @@ export default function Register() {
 
   return (
     <AuthLayout
-      title="Sign up for an account"
+      title={t('signUp.title')}
       subtitle={
         <>
-          Already registered?{' '}
+          {t('signUp.subTitle_p1')}{' '}
           <Link href="/login" className="text-cyan-600">
-            Sign in
+            {t('signUp.subTitle_p2')}
           </Link>{' '}
-          to your account.
+          {t('signUp.subTitle_p3')}
         </>
       }
     >
@@ -82,7 +84,7 @@ export default function Register() {
         <div className="grid grid-cols-2 gap-6">
           <TextField
             className="col-span-full"
-            label="Email address"
+            label={t('signUp.label_email')}
             name="email"
             type="email"
             autoComplete="email"
@@ -92,7 +94,7 @@ export default function Register() {
           />
           <TextField
             className="col-span-full"
-            label="Password"
+            label={t('signUp.password')}
             name="password"
             type="password"
             autoComplete="new-password"
@@ -101,8 +103,8 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <Button type="submit" color="cyan" className="mt-8 w-full">
-          {loading ? 'Registering...' : 'Get started today'}
+        <Button disabled={loading} type="submit" color="cyan" className="mt-8 w-full">
+          {loading ? t('signUp.button_signing_up') : t('signUp.button_signup')}
         </Button>
       </form>
     </AuthLayout>

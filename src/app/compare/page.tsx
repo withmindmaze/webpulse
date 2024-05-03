@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 function Alerts() {
+    const { t } = useTranslation();
     const [url, setUrl] = useState('');
     const [competitorUrl, setCompetitorUrl] = useState('');
     const [saving, setSaving] = useState(false);
@@ -194,50 +196,66 @@ function Alerts() {
         );
     }
 
+    const renderMetricName = (metric_english: any) => {
+        if (localStorage.getItem('language') === 'ar') {
+            if (metric_english === "Performance") {
+                return "الأداء";
+            } else if (metric_english === "Accessibility") {
+                return "السهولة";
+            } else if (metric_english === "PWA") {
+                return "تطبيق ويب تقدمي";
+            } else if (metric_english === "SEO") {
+                return "تحسين محركات البحث";
+            }
+        }
+        return metric_english;
+    }
+
     return (
         <div className="flex flex-col items-center w-full">
             <div className="max-w-xl flex flex-col items-center justify-center p-8 shadow-lg rounded-lg bg-white">
-                <h2 className="text-lg text-center text-[#3bbed9] font-semibold mb-4">Competitive Analysis Tool</h2>
+                <h2 className="text-lg text-center text-[#3bbed9] font-semibold mb-4">{t('compare.heading_top')}</h2>
                 <p className="text-sm text-gray-600 mb-6 text-center">
-                    Use this form to compare key performance metrics between your website and your competitor's. This tool helps you understand how your site stacks up against competition in areas like performance, accessibility, SEO, and more.
+                    {t('compare.text_guide')}
                 </p>
                 <form onSubmit={handleSave} className="space-y-4">
                     <div>
                         <label className="block">
-                            Your website URL:
+                            {t('compare.label_url')}
                             <input
                                 type="text"
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
                                 className="mt-1 block w-full p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
                             />
-                            <p className="text-xs mt-1 text-gray-500">Enter the URL of your website to monitor and compare.</p>
+                            <p className="text-xs mt-1 text-gray-500">{t('compare.info_url')}</p>
                         </label>
                     </div>
                     <div>
                         <label className="block">
-                            Your competitor's website URL:
+                            {t('compare.label_competitor_url')}
                             <input
                                 type="text"
                                 value={competitorUrl}
                                 onChange={(e) => setCompetitorUrl(e.target.value)}
                                 className="mt-1 block w-full p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
                             />
-                            <p className="text-xs mt-1 text-gray-500">Provide the URL of a competitor’s site for benchmarking.</p>
+                            <p className="text-xs mt-1 text-gray-500">{t('info_competitor_url')}</p>
                         </label>
                     </div>
                     <div>
                         <label className="block">
-                            Email to receive alerts:
+                            {t('compare.label_email')}
                             <input
                                 type="text"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="mt-1 block w-full p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
                             />
-                            <p className="text-xs mt-1 text-gray-500">Specify the email address where you want to receive analysis reports.</p>
+                            <p className="text-xs mt-1 text-gray-500">{t('compare.info_email')}</p>
                         </label>
                     </div>
+                    <h5 className="text-xs mt-1 text-gray-500 flex-1">{t('compare.info_select_category')}</h5>
                     {Object.keys(metrics).map((metric) => (
                         <div key={metric} className="flex items-center space-x-4 mb-2">
                             <input
@@ -246,27 +264,28 @@ function Alerts() {
                                 onChange={() => handleMetricChange(metric)}
                                 className="form-checkbox h-5 w-5"
                             />
-                            <span className="flex-1">{metric}</span>
-                            <p className="text-xs mt-1 text-gray-500 flex-1">Monitor and compare the {metric} metric.</p>
+                            <span className="flex-1">{renderMetricName(metric)}</span>
                         </div>
                     ))}
-                    <div>
-                        <label>
-                            Frequency:
-                            <select
-                                value={frequency}
-                                onChange={(e) => setFrequency(e.target.value)}
-                                className="w-96 mb-4 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
-                            >
-                                <option value="">Select frequency</option>
-                                <option value="12 hours">Every 12 hours</option>
-                                <option value="24 hours">Every 24 hours</option>
-                            </select>
-                            <p className="text-xs mt-1 text-gray-500">Choose how often you want to receive comparison reports.</p>
+                    <div className="flex flex-col">
+                        <label htmlFor="frequencySelect" className="mb-1">
+                            {t('compare.label_frequency')}
                         </label>
+                        <select
+                            id="frequencySelect"
+                            value={frequency}
+                            onChange={(e) => setFrequency(e.target.value)}
+                            className="w-96 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"
+                        >
+                            <option value="">{t('alert.placeholder_frequency')}</option>
+                            <option value="12 hours">{t('compare.frequency_12_hours')}</option>
+                            <option value="24 hours">{t('compare.frequency_24_hours')}</option>
+                        </select>
+                        <p className="text-xs mt-1 text-gray-500">{t('compare.info_frequency')}</p>
                     </div>
+
                     <button disabled={saving} type="submit" className="px-6 py-3 w-full text-white bg-[#3bbed9] rounded-md hover:bg-[#3391a6] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-offset-2 transition duration-300 ease-in-out">
-                        {saving ? 'Saving...' : 'Save'}
+                        {saving ? t('compare.button_saving') : t('compare.button_save')}
                     </button>
                 </form>
             </div>
@@ -276,22 +295,22 @@ function Alerts() {
                     <thead>
                         <tr>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                URL
+                                {t('compare.table_header_url')}
                             </th>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Competitor URL
+                                {t('compare.table_header_competitor_url')}
                             </th>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Metrics
+                                {t('compare.table_header_metrics')}
                             </th>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Frequency
+                                {t('compare.table_header_frequency')}
                             </th>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Email
+                                {t('compare.table_header_email')}
                             </th>
                             <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                Actions
+                                {t('compare.table_header_action')}
                             </th>
                         </tr>
                     </thead>
@@ -315,10 +334,10 @@ function Alerts() {
                                 </td>
                                 <td className="h-full px-5 py-10 border-b border-gray-200 bg-white text-sm flex flex-col justify-center space-y-2">
                                     <button onClick={() => handleDelete(alert.id)} className="text-red-500 hover:text-red-700 self-center">
-                                        Delete
+                                        {t('compare.button_delete')}
                                     </button>
                                     <button onClick={() => openModal(alert)} className="text-[#3bbed9] hover:text-blue-700 self-center">
-                                        Update
+                                        {t('compare.button_update')}
                                     </button>
                                 </td>
                             </tr>
