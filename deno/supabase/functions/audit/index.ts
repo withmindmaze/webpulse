@@ -130,20 +130,6 @@ function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEm
 }
 
 const sendEmail = async (url: any, toEmail: any) => {
-  // const res = await fetch('https://api.resend.com/domains/1a233755-82ea-4c54-99d2-73d20160d009/verify', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Bearer ${RESEND_API_KEY}`,
-  //   },
-  //   body: JSON.stringify({
-  //     from: 'jawad@withmindmaze.com',
-  //     to: 'jawadakhter7@gmail.com',
-  //     subject: 'hello world',
-  //     html: '<strong>it works!</strong>',
-  //   }),
-  // })
-
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -207,6 +193,9 @@ const htmlReport = (url: any) => {
             background-color: #4CAF50;
             color: white;
         }
+        .reduced {
+            color: red;
+        }
     </style>
     </head>
     <body>
@@ -219,13 +208,14 @@ const htmlReport = (url: any) => {
                 <th>Score</th>
                 <th>Threshold</th>
             </tr>
-            ${metrics.map(metric => `<tr><td>${metric.name}</td><td>${metric.score}</td><td>${metric.threshold}</td></tr>`).join('')}
+            ${metrics.map(metric => `<tr class="${metric.isReduced ? 'reduced' : ''}"><td>${metric.name}</td><td>${metric.score}</td><td>${metric.threshold}</td></tr>`).join('')}
         </table>
     </div>
     </body>
     </html>`;
   return emailBody;
 }
+
 
 /* To invoke locally:
 

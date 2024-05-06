@@ -25,22 +25,32 @@
     },
     "signIn": {
         "title": "Sign in to account",
-        "subTitle_p1": "Don’t have an account?", 
-        "subTitle_p2":"Sign up", 
-        "subTitle_p3":"for a free trial.",
+        "subTitle_p1": "Don’t have an account?",
+        "subTitle_p2": "Sign up",
+        "subTitle_p3": "for a free trial.",
         "label_email": "Email address",
         "label_password": "Password",
-        "button_signing_in":"Signing In...",
-        "button_signin": "Sign in to account"
+        "button_signing_in": "Signing In...",
+        "button_signin": "Sign in to account",
+        "text_forgot_password": "Forgot Password"
     },
-    "signUp":{
+    "forget-password": {
+        "title": "Reset Password",
+        "button_forget_password": "Send reset link",
+        "button_sending_link": "Sending reset link",
+        "button_resetting_password": "Reseting Password",
+        "button_reset_password": "Reset Password",
+        "label_password": "New Password",
+        "label_confirm_password": "Confirm New Password"
+    },
+    "signUp": {
         "title": "Sign up for an account",
-        "subTitle_p1": "Already registered?", 
-        "subTitle_p2":"Sign in", 
-        "subTitle_p3":"to your account.",
+        "subTitle_p1": "Already registered?",
+        "subTitle_p2": "Sign in",
+        "subTitle_p3": "to your account.",
         "label_email": "Email address",
         "label_password": "Password",
-        "button_signing_up":"Signing up...",
+        "button_signing_up": "Signing up...",
         "button_signup": "Get started today"
     },
     "auth": {
@@ -92,26 +102,22 @@
         "text_guide": "Use this form to compare key performance metrics between your website and your competitor's. This tool helps you understand how your site stacks up against competition in areas like performance, accessibility, SEO, and more.",
         "label_url": "Your website URL:",
         "info_url": "Enter the URL of your website to monitor and compare.",
-        "label_competitor_url":"Your competitor's website URL:",
-        "info_competitor_url":"Provide the URL of a competitor’s site for benchmarking.",
+        "label_competitor_url": "Your competitor's website URL:",
+        "info_competitor_url": "Provide the URL of a competitor’s site for benchmarking.",
         "label_email": "Email to receive alerts:",
         "info_email": "Specify the email address where you want to receive analysis reports.",
-       
-        "info_select_category":"Select the Metrics to monitor and compare.",
+        "info_select_category": "Select the Metrics to monitor and compare.",
         "category_performance": "Performance",
         "category_accessibility": "Accessibility",
         "category_pwa": "PWA",
         "category_seo": "SEO",
-
         "label_frequency": "Frequency",
         "placeholder_frequency": "Select Frequency",
         "frequency_12_hours": "Every 12 Hours",
         "frequency_24_hours": "Every 24 Hours",
         "info_frequency": "Choose how often you want to receive alerts.",
-
         "button_save": "Save",
         "button_saving": "Saving",
-
         "table_header_url": "URL",
         "table_header_competitor_url": "Competitor URL",
         "table_header_metrics": "Metrics",
@@ -119,25 +125,49 @@
         "table_header_email": "Email",
         "table_header_action": "Action",
         "button_delete": "Delete",
-        "button_update": "Update"
+        "button_update": "Update",
+        "table_header_frequency": "Frequency"
     },
-    "reports":{
-        "placeholder_select_url":"Select a URL",
-        "heading_performance_score":"Performance Score",
-        "heading_accessibiliry_score":"Accessibility Score",
-        "heading_seo_score":"SEO Score",
-        "heading_pwa_score":"PWA Score",
-        "table_header_url":"URL",
-        "table_header_performance":"Performance",
-        "table_header_accessibility":"Accessibility",
-        "table_header_seo":"SEO",
-        "table_header_pwa":"PWA",
-        "table_header_date":"Date"
+    "reports": {
+        "placeholder_select_url": "Select a URL",
+        "heading_performance_score": "Performance Score",
+        "heading_accessibiliry_score": "Accessibility Score",
+        "heading_seo_score": "SEO Score",
+        "heading_pwa_score": "PWA Score",
+        "table_header_url": "URL",
+        "table_header_performance": "Performance",
+        "table_header_accessibility": "Accessibility",
+        "table_header_seo": "SEO",
+        "table_header_pwa": "PWA",
+        "table_header_date": "Date"
     },
-    "confirmation":{
-        "heading_congratulations":"Congratulations",
-        "subheading_note":"Your email address has been successfully verified.",
-        "text_note":"Thank you for confirming your email address. You have successfully completed the verification process and your account is now fully activated.",
-        "button_login":"Login"
+    "confirmation": {
+        "heading_congratulations": "Congratulations",
+        "subheading_note": "Your email address has been successfully verified.",
+        "text_note": "Thank you for confirming your email address. You have successfully completed the verification process and your account is now fully activated.",
+        "button_login": "Login"
+    },
+    "toast": {
+        "reset_password_link": "Reset Password link sent to your email!",
+        "password_Reset_success": "Password reset successfully",
+        "logged_in_success": "You are logged in!",
+        "signup_success": "Sign Up successfull. Please confirm your email.",
+        "delete_alert_success": "Alert deleted successfully",
+        "auth_error": "Authentication error or no user data",
+        "save_alert_fail": "Failed to save alert settings",
+        "alert_configured_success": "Alert configured successfully for the entered URL",
+        "fetch_alerts_fail": "Failed to fetch alerts",
+        "compare_alert_fail": "Failed to save comparison alert settings",
+        "compare_alert_success": "Comparison alert configured successfully for the entered URL",
+        "delete_alert_fail": "Delete alert failed!",
+        "log_out_success": "You are logged out!",
+        "payment_success": "Payment Successful!",
+        "payment_info": "Purchase to continue using audit services",
+        "audit_report_success": "Audit report generated successfully",
+        "sign_up_to_use": "Sign up to continue using audit services",
+        "enter_valid_url": "Please enter a valid URL.",
+        "url_not_accessible": "URL is not accessible. Please check the URL and try again.",
+        "error": "Error! ",
+        "password_mismatch": "Password are Confirm Password do not match"
     }
 }

@@ -64,7 +64,7 @@ export default function Register() {
       } else {
         console.log('User plan created:', planData);
         setLoading(false);
-        toast.success("Sign Up successfull. Please confirm your email.")
+        toast.success(t('toast.signup_success'))
         router.push('/login');
       }
     }
@@ -84,7 +84,7 @@ export default function Register() {
       }
     >
       <form onSubmit={handleSignUp}>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-2">
           <TextField
             className="col-span-full"
             label={t('signUp.label_email')}

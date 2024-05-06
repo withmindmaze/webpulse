@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import { StripeCardElement } from '@stripe/stripe-js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from 'react-i18next';
 
 const StripeCard = ({ isOpen, handleOnClose }: any) => {
     const router = useRouter();
     const stripe = useStripe();
     const elements = useElements();
     const [isProcessing, setIsProcessing] = useState(false);
+    const { t } = useTranslation();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
@@ -53,7 +55,7 @@ const StripeCard = ({ isOpen, handleOnClose }: any) => {
                         .eq('user_id', getUser.data.user?.id);
 
                     console.log('[PaymentIntent]', result.paymentIntent);
-                    toast.success('Payment Successful!');
+                    toast.success(t('toast.payment_success'));
                     handleOnClose();
                     router.push('/');
                 }

@@ -1,17 +1,15 @@
 "use client"
-import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid'
-import React, { useEffect, useState, useRef } from 'react';
-import { JsonView, defaultStyles } from 'react-json-view-lite';
-import 'react-json-view-lite/dist/index.css';
-import LightHouseStart from './LightHouseStart';
-import Performance from './Performance/page';
-import withAuth from '@/utils/withAuth';
 import supabase from '@/utils/supabaseClient';
+import withAuth from '@/utils/withAuth';
+import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import 'react-json-view-lite/dist/index.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTranslation } from 'react-i18next';
 import { validateURL } from '../utils/urlValidator';
+import LightHouseStart from './LightHouseStart';
 
 function UrlInput() {
     const { t } = useTranslation();
@@ -29,8 +27,6 @@ function UrlInput() {
         seo: true,
         pwa: true
     });
-
-    // const shouldExpandNode = (level: number, value: any, field: any) => level < 2;
 
     useEffect(() => {
         if (data) {
@@ -97,25 +93,25 @@ function UrlInput() {
                         .eq('user_id', getUser.data.user?.id)
                         .single();
                     if (userPlan.data.plan === "free") {
-                        toast.info("Purchase to continue using audit services");
+                        toast.info(t('toast.payment_info'));
                         router.push('/purchase');
                     } else {
                         const data = await callAuditApi(selectedCategories, getUser);
-                        toast.success("Audit report generated successfully");
+                        toast.success(t('toast.audit_report_success'));
                         setData(data.data.report);
                     }
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success("Audit report generated successfully");
+                    toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
                 }
             } else {
                 if (localStorage.getItem('isFirstReport') === 'false') {
-                    toast.info("Sign up to continue using audit services");
+                    toast.info(t('toast.sign_up_to_use'));
                     router.push('/register');
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success("Audit report generated successfully");
+                    toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
                 }
             }

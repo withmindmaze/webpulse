@@ -23,10 +23,10 @@ export const isURLAccessible = async (url) => {
 // Function to validate URL before proceeding
 export const validateURL = async (url) => {
     if (!isValidURL(url)) {
-        toast.error("Please enter a valid URL.");
+        toast.error(t('toast.enter_valid_url'));
         return false;
     } else if (!await isURLAccessible(url)) {
-        toast.error("URL is not accessible. Please check the URL and try again.");
+        toast.error(t('toast.url_not_accessible'));
         return false;
     }
     return true;

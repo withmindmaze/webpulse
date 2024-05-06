@@ -48,7 +48,7 @@ function Alerts() {
         setSaving(true);
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
-            toast.error('Authentication error or no user data');
+            toast.error(t('toast.auth_error'));
             console.error('Authentication error or no user data:', userError);
             return;
         }
@@ -66,10 +66,10 @@ function Alerts() {
         }]);
 
         if (error) {
-            toast.error('Failed to save comparison alert settings');
+            toast.error(t('toast.compare_alert_fail'));
             console.error('Failed to save comparison alert settings:', error);
         } else {
-            toast.success('Comparison alert configured successfully for the entered URL');
+            toast.success(t('toast.compare_alert_success'));
             console.log('Comparison alert settings saved successfully:', data);
         }
         reloadStates();
@@ -83,7 +83,7 @@ function Alerts() {
     const fetchAlerts = async () => {
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
-            toast.error('Authentication error or no user data');
+            toast.error(t('toast.auth_error'));
             return;
         }
 
@@ -93,7 +93,7 @@ function Alerts() {
             .eq('user_id', user.user.id);
 
         if (error) {
-            toast.error('Failed to fetch alerts');
+            toast.error(t('toast.fetch_alerts_fail'));
             console.error('Failed to fetch alerts:', error);
         } else {
             setAlerts(data);
@@ -107,10 +107,10 @@ function Alerts() {
             .match({ id: alertId });
 
         if (error) {
-            toast.error('Failed to delete alert');
+            toast.error(t(t('toast.delete_alert_fail')));
             console.error('Failed to delete alert:', error);
         } else {
-            toast.success('Alert deleted successfully');
+            toast.success(t('toast.delete_alert_success'));
             fetchAlerts();
         }
     };

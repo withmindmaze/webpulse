@@ -107,7 +107,7 @@ export function Header() {
 
   const handleLogout = () => {
     supabase.auth.signOut();
-    toast.success("You are logged out!")
+    toast.success(t('toast.log_out_success'))
     router.push('/login');
   }
 
