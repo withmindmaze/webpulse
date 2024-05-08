@@ -11,6 +11,7 @@ import StripeCard from "@/components/StripeCard";
 import supabase from '@/utils/supabaseClient'
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify'
 
 
 
@@ -163,7 +164,7 @@ export function Pricing() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState('');
+  const [user, setUser] = useState('');
   const { t } = useTranslation();
 
   const plans = [
@@ -193,7 +194,7 @@ export function Pricing() {
       .eq('user_id', getUser.data.user?.id)
       .single();
 
-    setUserEmail(paymentDetails?.data?.email);
+    setUser(paymentDetails?.data);
     if (paymentDetails.data?.payment_detail !== null && paymentDetails.data?.plan === "premium") {
       setIsPremiumUser(true);
     }
@@ -204,7 +205,6 @@ export function Pricing() {
     checkPaymentStatus();
   }, [router]);
 
-  console.log({ userEmail });
 
   const handleOpenModal = () => {
     setModalIsOpen(true);
@@ -237,6 +237,26 @@ export function Pricing() {
     };
   }, []);
 
+  const handleCancelSubscription = async () => {
+    const apiResponse = await fetch(`/api/stripe/cancelSubscription`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user.id
+      }),
+    });
+
+    const data = await apiResponse.json();
+    if (data.success) {
+      toast.success(t('toast.subscription_cancel_success'));
+      router.push('/');
+    } else {
+      toast.error(t('toast.subscription_cancel_fail'));
+    }
+  }
+
   return (
     <>
       {/* <StripeCard isOpen={modalIsOpen} handleOnClose={handleCloseModal} /> */}
@@ -252,12 +272,16 @@ export function Pricing() {
                 className="bg-[#3bbed9] text-white font-medium py-2 px-4 rounded-lg hover:bg-[#32a8c1] transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50">
                 {t('pricing.button_manage_subscription')}
               </a>
+              <button onClick={handleCancelSubscription}
+                className="text-black font-medium py-2 px-4 rounded-lg hover:bg-[#32a8c1] transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50">
+                {t('pricing.button_cancel_subscription')}
+              </button>
             </div>
           </div>
           :
           //@ts-ignore
           <stripe-pricing-table
-            customer-email={userEmail}
+            customer-email={user.email}
             pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
             publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"
           />
