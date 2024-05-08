@@ -163,6 +163,7 @@ export function Pricing() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState('');
   const { t } = useTranslation();
 
   const plans = [
@@ -188,10 +189,11 @@ export function Pricing() {
     const getUser = await supabase.auth.getUser();
     const paymentDetails = await supabase
       .from('user_plan')
-      .select('payment_detail, plan')
+      .select('*')
       .eq('user_id', getUser.data.user?.id)
       .single();
 
+    setUserEmail(paymentDetails?.data?.email);
     if (paymentDetails.data?.payment_detail !== null && paymentDetails.data?.plan === "premium") {
       setIsPremiumUser(true);
     }
@@ -201,6 +203,8 @@ export function Pricing() {
   useEffect(() => {
     checkPaymentStatus();
   }, [router]);
+
+  console.log({ userEmail });
 
   const handleOpenModal = () => {
     setModalIsOpen(true);
@@ -236,12 +240,30 @@ export function Pricing() {
   return (
     <>
       {/* <StripeCard isOpen={modalIsOpen} handleOnClose={handleCloseModal} /> */}
-      {/**@ts-ignore */}
-      <stripe-pricing-table
-        customer-email="jawad@withmindmaze.com"
-        pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
-        publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"
-      />
+
+      {
+        isPremiumUser === true ?
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="flex flex-col items-center space-y-4">
+              <h2 id="pricing-title" className="text-3xl font-medium tracking-tight text-gray-900">
+                {t('pricing.already_subscribed')}
+              </h2>
+              <a href="https://billing.stripe.com/p/login/test_14k01j2ZxfEU3N6bII" target="_blank"
+                className="bg-[#3bbed9] text-white font-medium py-2 px-4 rounded-lg hover:bg-[#32a8c1] transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50">
+                {t('pricing.button_manage_subscription')}
+              </a>
+            </div>
+          </div>
+          :
+          //@ts-ignore
+          <stripe-pricing-table
+            customer-email={userEmail}
+            pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
+            publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"
+          />
+      }
+
+
       {/* <section
         id="pricing"
         aria-labelledby="pricing-title"

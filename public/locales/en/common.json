@@ -64,7 +64,9 @@
         "button_already_purchased": "Already Purchased 🙂",
         "feature_1": "Unlimited audits",
         "feature_2": "Continuous Monitoring",
-        "feature_3": "Compare with Competitors"
+        "feature_3": "Compare with Competitors",
+        "already_subscribed": "You have already subscribed 🙂",
+        "button_manage_subscription": "Manage your subscription"
     },
     "alert": {
         "heading_top": "Configure URL Monitoring",

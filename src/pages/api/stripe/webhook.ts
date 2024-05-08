@@ -27,6 +27,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     }
 
                     break;
+                case 'customer.subscription.deleted':
+                    const deleteEventData = event.data.object;
+                    const deleteCustomer = await stripeClient.customers.retrieve(deleteEventData.customer);
+                    //@ts-ignore
+                    const deleteCustomerEmail = deleteCustomer.email;
+                    console.log('deleteCustomerEmail:', deleteCustomerEmail);
+                    // Query Supabase to update user plan
+                    const { error: deleteUpdateError } = await supabase
+                        .from('user_plan')
+                        .update({ plan: 'free', payment_detail: null })
+                        .eq('email', deleteCustomerEmail);
+
+                    if (deleteUpdateError) {
+                        console.log("updare user_plan error", deleteUpdateError);
+                    }
+                    break;
                 default:
                 // Unexpected event type
                 // console.log(`Unhandled event type ${event.type}.`);
