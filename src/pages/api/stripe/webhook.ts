@@ -13,6 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 case 'invoice.paid':
                     const eventData = event.data.object;
                     const customer = await stripeClient.customers.retrieve(eventData.customer);
+                    //@ts-ignore
                     const customerEmail = customer.email;
                     console.log('Customer Email:', customerEmail);
                     // Query Supabase to update user plan

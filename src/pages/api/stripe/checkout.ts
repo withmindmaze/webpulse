@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 expand: ['latest_invoice.payment_intent'],
             });
 
-
+            //@ts-ignore
             const clientSecret = subscription?.latest_invoice.payment_intent?.client_secret;
             res.status(200).json({ clientSecret: clientSecret });
 
