@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from 'react-responsive-modal';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import 'react-responsive-modal/styles.css';

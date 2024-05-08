@@ -12,30 +12,22 @@ import { validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
 
 function UrlInput() {
-    const { t } = useTranslation();
-    const router = useRouter();
-    const iframeRef = useRef(null);
-    const [url, setUrl] = useState('');
+    const [categories, setCategories] = useState({ performance: true, accessibility: true, bestPractices: true, seo: true, pwa: true });
     const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState(null);
     const [device, setDevice] = useState('desktop');
     const [iframeSrc, setIframeSrc] = useState('');
-    const [categories, setCategories] = useState({
-        performance: true,
-        accessibility: true,
-        bestPractices: true,
-        seo: true,
-        pwa: true
-    });
+    const [data, setData] = useState(null);
+    const [url, setUrl] = useState('');
+    const { t } = useTranslation();
+    const iframeRef = useRef(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (data) {
-            // Assuming `data.report` is a string containing your HTML report
             const blob = new Blob([data], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             setIframeSrc(url);
 
-            // Clean up the blob URL when the component unmounts
             return () => {
                 URL.revokeObjectURL(url);
             };
@@ -76,7 +68,6 @@ function UrlInput() {
     }
 
     const authUserClick = async () => {
-        setIsLoading(true);
         const getUser = await supabase.auth.getUser();
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
@@ -124,14 +115,27 @@ function UrlInput() {
     }
 
     const handleAnalyzeClick = async () => {
+        setIsLoading(true);
         if (await validateURL(url)) {
             authUserClick();
+        } else {
+            setIsLoading(false);
         }
     };
 
-    const hideLHTopbar = () => {
+    const manipulateDOM = () => {
         const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
         if (iframe?.contentWindow?.document) {
+            // Import Montserrat font into iframe
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = `
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+            article.lh-root {
+                font-family: 'Montserrat', sans-serif;
+            }`;
+            iframe.contentWindow.document.head.appendChild(style);
+
             const topBar = iframe.contentWindow.document.querySelector('.lh-topbar') as HTMLElement;
             if (topBar) {
                 topBar.style.display = 'none';
@@ -149,6 +153,8 @@ function UrlInput() {
             if (article) {
                 article.classList.remove('lh-dark');
                 article.classList.add('lh-light');
+                article.style.fontFamily = 'Montserrat, sans-serif';
+                article.style.backgroundColor = '#FAFAFA';
             }
         }
         const iframeElement = iframeRef.current;
@@ -221,7 +227,7 @@ function UrlInput() {
                 <iframe
                     ref={iframeRef}
                     src={iframeSrc}
-                    onLoad={hideLHTopbar}
+                    onLoad={manipulateDOM}
                     width="100%"
                     height="100%"
                     style={{ border: 'none', height: '100vh' }}

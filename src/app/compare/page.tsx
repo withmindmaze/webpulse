@@ -1,27 +1,22 @@
 //@ts-nocheck
 'use client'
-import { useState, useEffect } from 'react';
 import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 function Alerts() {
-    const { t } = useTranslation();
-    const [url, setUrl] = useState('');
-    const [competitorUrl, setCompetitorUrl] = useState('');
-    const [saving, setSaving] = useState(false);
-    const [email, setEmail] = useState('');
-    const [alerts, setAlerts] = useState([]);
+    const [metrics, setMetrics] = useState({ Performance: false, Accessibility: false, SEO: false, PWA: false, });
     const [currentAlert, setCurrentAlert] = useState(null);
+    const [competitorUrl, setCompetitorUrl] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [frequency, setFrequency] = useState('');
-    const [metrics, setMetrics] = useState({
-        Performance: false,
-        Accessibility: false,
-        SEO: false,
-        PWA: false,
-    });
+    const [saving, setSaving] = useState(false);
+    const [alerts, setAlerts] = useState([]);
+    const [email, setEmail] = useState('');
+    const [url, setUrl] = useState('');
+    const { t } = useTranslation();
 
     const reloadStates = () => {
         setSaving(false);

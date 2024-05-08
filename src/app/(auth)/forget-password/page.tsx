@@ -1,21 +1,19 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTranslation } from 'react-i18next';
 
 export default function ForgotPassword() {
-  const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleRedirection = async () => {
@@ -32,12 +30,10 @@ export default function ForgotPassword() {
   const handleResetAction = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const baseURL = `${window.location.protocol}//${window.location.host}`;
+    const redirectTo = `${window.location.protocol}//${window.location.host}/forget-password/confirm`;
 
     const { data, error } = await supabase.auth
-      .resetPasswordForEmail(email, {
-        redirectTo: baseURL
-      });
+      .resetPasswordForEmail(email, { redirectTo });
 
     if (error) {
       toast.error(error.message);
@@ -50,15 +46,7 @@ export default function ForgotPassword() {
   return (
     <AuthLayout
       title={t('forget-password.title')}
-      subtitle={
-        <>
-          {/* {t('signIn.subTitle_p1')}{' '}
-          <Link href="/register" className="text-cyan-600">
-            {t('signIn.subTitle_p2')}
-          </Link>{' '}
-          {t('signIn.subTitle_p3')} */}
-        </>
-      }
+      subtitle={""}
     >
       <div className="space-y-2">
         <TextField

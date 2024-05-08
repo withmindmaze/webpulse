@@ -1,39 +1,27 @@
 //@ts-nocheck
 'use client'
-
-import { useState, useEffect } from 'react';
 import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { validateURL } from '@/utils/urlValidator';
+import { toast } from 'react-toastify';
 
 function Alerts() {
-    const [url, setUrl] = useState('');
-    const [saving, setSaving] = useState(false);
-    const [email, setEmail] = useState('');
-    const [alerts, setAlerts] = useState([]);
+    const [metrics, setMetrics] = useState({ Performance: '', Accessibility: '', SEO: '', PWA: '', });
     const [currentAlert, setCurrentAlert] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [frequency, setFrequency] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [alerts, setAlerts] = useState([]);
+    const [email, setEmail] = useState('');
+    const [url, setUrl] = useState('');
     const { t } = useTranslation();
-    const [metrics, setMetrics] = useState({
-        Performance: '',
-        Accessibility: '',
-        SEO: '',
-        PWA: '',
-    });
 
     const reloadStates = () => {
         setSaving(false);
         setUrl('');
         setFrequency('');
-        setMetrics({
-            Performance: '',
-            Accessibility: '',
-            SEO: '',
-            PWA: '',
-        });
+        setMetrics({ Performance: '', Accessibility: '', SEO: '', PWA: '' });
     }
 
     const handleMetricChange = (metric: any, isChecked: any) => {
@@ -158,7 +146,7 @@ function Alerts() {
         const [localAlert, setLocalAlert] = useState(alert);
 
         useEffect(() => {
-            setLocalAlert(alert); // Update local state when alert changes
+            setLocalAlert(alert);
         }, [alert]);
 
         const handleChange = (e) => {

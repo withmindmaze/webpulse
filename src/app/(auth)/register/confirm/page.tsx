@@ -1,19 +1,12 @@
 'use client'
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
 import { AuthLayout } from '@/components/AuthLayout';
-import { Button } from '@/components/Button';
-import { TextField } from '@/components/Fields';
-import supabase from '@/utils/supabaseClient';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirm() {
-    const router = useRouter();
     const { t } = useTranslation();
+    const router = useRouter();
 
     const handleRedirect = () => {
         router.push('/login');

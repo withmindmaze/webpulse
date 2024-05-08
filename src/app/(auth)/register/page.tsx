@@ -2,20 +2,19 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTranslation } from 'react-i18next';
 
 export default function Register() {
-  const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleRedirection = async () => {
@@ -56,7 +55,7 @@ export default function Register() {
       const { data: planData, error: planError } = await supabase
         .from('user_plan')
         .insert([
-          { user_id: data.user.id }
+          { user_id: data.user.id, email: data.user.email }
         ]);
 
       if (planError) {
