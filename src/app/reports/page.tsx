@@ -1,10 +1,10 @@
 //@ts-nocheck
 'use client'
-import { useEffect, useState } from 'react';
 import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
+import { CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Title, Tooltip } from 'chart.js';
+import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useTranslation } from 'react-i18next';
 
 // Register the chart components
@@ -29,13 +29,13 @@ interface TableRow {
 }
 
 function Reports() {
-    const { t } = useTranslation();
-    const [urls, setUrls] = useState<string[]>([]);
-    const [selectedUrl, setSelectedUrl] = useState('');
     const [graphData, setGraphData] = useState<GraphData | null>(null);
     const [individualGraphData, setIndividualGraphData] = useState({});
     const [tableData, setTableData] = useState<TableRow[]>([]);
+    const [selectedUrl, setSelectedUrl] = useState('');
+    const [urls, setUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     const normalizeUrl = (url: string) => {
         return url
@@ -268,8 +268,6 @@ function Reports() {
             </div>
         );
     }
-
-
 }
 
 export default withAuth(Reports);

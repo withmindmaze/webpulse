@@ -1,39 +1,27 @@
 //@ts-nocheck
 'use client'
-
-import { useState, useEffect } from 'react';
 import supabase from "@/utils/supabaseClient";
 import withAuth from "@/utils/withAuth";
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { validateURL } from '@/utils/urlValidator';
+import { toast } from 'react-toastify';
 
 function Alerts() {
-    const [url, setUrl] = useState('');
-    const [saving, setSaving] = useState(false);
-    const [email, setEmail] = useState('');
-    const [alerts, setAlerts] = useState([]);
+    const [metrics, setMetrics] = useState({ Performance: '', Accessibility: '', SEO: '', PWA: '', });
     const [currentAlert, setCurrentAlert] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [frequency, setFrequency] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [alerts, setAlerts] = useState([]);
+    const [email, setEmail] = useState('');
+    const [url, setUrl] = useState('');
     const { t } = useTranslation();
-    const [metrics, setMetrics] = useState({
-        Performance: '',
-        Accessibility: '',
-        SEO: '',
-        PWA: '',
-    });
 
     const reloadStates = () => {
         setSaving(false);
         setUrl('');
         setFrequency('');
-        setMetrics({
-            Performance: '',
-            Accessibility: '',
-            SEO: '',
-            PWA: '',
-        });
+        setMetrics({ Performance: '', Accessibility: '', SEO: '', PWA: '' });
     }
 
     const handleMetricChange = (metric: any, isChecked: any) => {
@@ -55,7 +43,7 @@ function Alerts() {
         setSaving(true);
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
-            toast.error('Authentication error or no user data');
+            toast.error(t('toast.auth_error'));
             console.error('Authentication error or no user data:', userError);
             return;
         }
@@ -73,10 +61,10 @@ function Alerts() {
         }]);
 
         if (error) {
-            toast.error('Failed to save alert settings');
+            toast.error(t('toast.save_alert_fail'));
             console.error('Failed to save alert settings:', error);
         } else {
-            toast.success('Alert configured successfully for the entered URL');
+            toast.success(t('toast.alert_configured_success'));
             console.log('Alert settings saved successfully:', data);
         }
         reloadStates();
@@ -113,7 +101,7 @@ function Alerts() {
     const fetchAlerts = async () => {
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
-            toast.error('Authentication error or no user data');
+            toast.error(t('toast.auth_error'));
             return;
         }
 
@@ -123,7 +111,7 @@ function Alerts() {
             .eq('user_id', user.user.id);
 
         if (error) {
-            toast.error('Failed to fetch alerts');
+            toast.error(t('toast.fetch_alerts_fail'));
             console.error('Failed to fetch alerts:', error);
         } else {
             setAlerts(data);
@@ -137,10 +125,10 @@ function Alerts() {
             .match({ id: alertId });
 
         if (error) {
-            toast.error('Failed to delete alert');
+            toast.error(t('toast.fetch_alerts_fail'));
             console.error('Failed to delete alert:', error);
         } else {
-            toast.success('Alert deleted successfully');
+            toast.success(t('toast.delete_alert_success'));
             fetchAlerts();
         }
     };
@@ -158,7 +146,7 @@ function Alerts() {
         const [localAlert, setLocalAlert] = useState(alert);
 
         useEffect(() => {
-            setLocalAlert(alert); // Update local state when alert changes
+            setLocalAlert(alert);
         }, [alert]);
 
         const handleChange = (e) => {

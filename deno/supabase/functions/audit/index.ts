@@ -2,27 +2,17 @@
 // Follow this setup guide to integrate the Deno language server with your editor:
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
-//@ts-ignore
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const supabase = createClient('https://kckpcztvngcakrpuxvcj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMzUyNzUwNiwiZXhwIjoyMDI5MTAzNTA2fQ.pgBXRDZcnq8J78ClKyT5vp6_ZfE1ZluXXNFgB7CJdms')
-const RESEND_API_KEY = "re_a1FAKJKQ_N6JwbzUUv8vuBHQ8eNJur8qF";
-//@ts-ignore
+
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-console.log("Hello from Functions!")
-//@ts-ignore
+console.log("Hello from send alert Function!");
 const metrics = [];
 
-//@ts-ignore
 Deno.serve(async (req: any) => {
   const { } = await req.json();
-
-  // sendEmail();
-
-  // return new Response(JSON.stringify({ data: 'testing email' }), {
-  //   status: 200,
-  //   headers: { "Content-Type": "application/json" },
-  // });
 
   // Fetch all alerts from the "alert" table
   const { data: alerts, error } = await supabase
@@ -130,20 +120,6 @@ function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEm
 }
 
 const sendEmail = async (url: any, toEmail: any) => {
-  // const res = await fetch('https://api.resend.com/domains/1a233755-82ea-4c54-99d2-73d20160d009/verify', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Bearer ${RESEND_API_KEY}`,
-  //   },
-  //   body: JSON.stringify({
-  //     from: 'jawad@withmindmaze.com',
-  //     to: 'jawadakhter7@gmail.com',
-  //     subject: 'hello world',
-  //     html: '<strong>it works!</strong>',
-  //   }),
-  // })
-
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -207,6 +183,9 @@ const htmlReport = (url: any) => {
             background-color: #4CAF50;
             color: white;
         }
+        .reduced {
+            color: red;
+        }
     </style>
     </head>
     <body>
@@ -219,13 +198,14 @@ const htmlReport = (url: any) => {
                 <th>Score</th>
                 <th>Threshold</th>
             </tr>
-            ${metrics.map(metric => `<tr><td>${metric.name}</td><td>${metric.score}</td><td>${metric.threshold}</td></tr>`).join('')}
+            ${metrics.map(metric => `<tr class="${metric.isReduced ? 'reduced' : ''}"><td>${metric.name}</td><td>${metric.score}</td><td>${metric.threshold}</td></tr>`).join('')}
         </table>
     </div>
     </body>
     </html>`;
   return emailBody;
 }
+
 
 /* To invoke locally:
 

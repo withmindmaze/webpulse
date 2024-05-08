@@ -1,45 +1,33 @@
 "use client"
-import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid'
-import React, { useEffect, useState, useRef } from 'react';
-import { JsonView, defaultStyles } from 'react-json-view-lite';
-import 'react-json-view-lite/dist/index.css';
-import LightHouseStart from './LightHouseStart';
-import Performance from './Performance/page';
-import withAuth from '@/utils/withAuth';
 import supabase from '@/utils/supabaseClient';
+import withAuth from '@/utils/withAuth';
+import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import 'react-json-view-lite/dist/index.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTranslation } from 'react-i18next';
 import { validateURL } from '../utils/urlValidator';
+import LightHouseStart from './LightHouseStart';
 
 function UrlInput() {
-    const { t } = useTranslation();
-    const router = useRouter();
-    const iframeRef = useRef(null);
-    const [url, setUrl] = useState('');
+    const [categories, setCategories] = useState({ performance: true, accessibility: true, bestPractices: true, seo: true, pwa: true });
     const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState(null);
     const [device, setDevice] = useState('desktop');
     const [iframeSrc, setIframeSrc] = useState('');
-    const [categories, setCategories] = useState({
-        performance: true,
-        accessibility: true,
-        bestPractices: true,
-        seo: true,
-        pwa: true
-    });
-
-    // const shouldExpandNode = (level: number, value: any, field: any) => level < 2;
+    const [data, setData] = useState(null);
+    const [url, setUrl] = useState('');
+    const { t } = useTranslation();
+    const iframeRef = useRef(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (data) {
-            // Assuming `data.report` is a string containing your HTML report
             const blob = new Blob([data], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             setIframeSrc(url);
 
-            // Clean up the blob URL when the component unmounts
             return () => {
                 URL.revokeObjectURL(url);
             };
@@ -80,7 +68,6 @@ function UrlInput() {
     }
 
     const authUserClick = async () => {
-        setIsLoading(true);
         const getUser = await supabase.auth.getUser();
         // Prepare categories array
         const selectedCategories = Object.keys(categories)
@@ -97,25 +84,25 @@ function UrlInput() {
                         .eq('user_id', getUser.data.user?.id)
                         .single();
                     if (userPlan.data.plan === "free") {
-                        toast.info("Purchase to continue using audit services");
+                        toast.info(t('toast.payment_info'));
                         router.push('/purchase');
                     } else {
                         const data = await callAuditApi(selectedCategories, getUser);
-                        toast.success("Audit report generated successfully");
+                        toast.success(t('toast.audit_report_success'));
                         setData(data.data.report);
                     }
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success("Audit report generated successfully");
+                    toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
                 }
             } else {
                 if (localStorage.getItem('isFirstReport') === 'false') {
-                    toast.info("Sign up to continue using audit services");
+                    toast.info(t('toast.sign_up_to_use'));
                     router.push('/register');
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success("Audit report generated successfully");
+                    toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
                 }
             }
@@ -128,14 +115,27 @@ function UrlInput() {
     }
 
     const handleAnalyzeClick = async () => {
+        setIsLoading(true);
         if (await validateURL(url)) {
             authUserClick();
+        } else {
+            setIsLoading(false);
         }
     };
 
-    const hideLHTopbar = () => {
+    const manipulateDOM = () => {
         const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
         if (iframe?.contentWindow?.document) {
+            // Import Montserrat font into iframe
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = `
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+            article.lh-root {
+                font-family: 'Montserrat', sans-serif;
+            }`;
+            iframe.contentWindow.document.head.appendChild(style);
+
             const topBar = iframe.contentWindow.document.querySelector('.lh-topbar') as HTMLElement;
             if (topBar) {
                 topBar.style.display = 'none';
@@ -153,6 +153,8 @@ function UrlInput() {
             if (article) {
                 article.classList.remove('lh-dark');
                 article.classList.add('lh-light');
+                article.style.fontFamily = 'Montserrat, sans-serif';
+                article.style.backgroundColor = '#FAFAFA';
             }
         }
         const iframeElement = iframeRef.current;
@@ -225,7 +227,7 @@ function UrlInput() {
                 <iframe
                     ref={iframeRef}
                     src={iframeSrc}
-                    onLoad={hideLHTopbar}
+                    onLoad={manipulateDOM}
                     width="100%"
                     height="100%"
                     style={{ border: 'none', height: '100vh' }}

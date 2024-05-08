@@ -101,10 +101,12 @@ function compareMetrics(myReport: any, competitorReport: any, metrics: any, url:
   console.log({ myPerformanceScore, competitorPerformanceScore })
 
   if (metrics.includes("Performance")) {
+    const isReduced = myPerformanceScore < parseInt(competitorPerformanceScore)
     emailMetrics.push({
       name: "Performance",
       myScore: myPerformanceScore,
       competitorScore: competitorPerformanceScore,
+      isReduced: isReduced
     });
     if (myPerformanceScore < parseInt(competitorPerformanceScore)) {
       console.log("Performance is reduced");
@@ -112,10 +114,12 @@ function compareMetrics(myReport: any, competitorReport: any, metrics: any, url:
   }
 
   if (metrics.includes("Accessibility")) {
+    const isReduced = myAccessibilityScore < parseInt(competitorAccessibilityScore);
     emailMetrics.push({
       name: "Accessibility",
       myScore: myAccessibilityScore,
       competitorScore: competitorAccessibilityScore,
+      isReduced: isReduced
     });
     if (myAccessibilityScore < parseInt(competitorAccessibilityScore)) {
       console.log("Accessibility is reduced");
@@ -209,6 +213,9 @@ const htmlReport = (url: any, competitor_url: any) => {
             background-color: #4CAF50;
             color: white;
         }
+        .lower-score {
+            background-color: #ffcccc; /* Light red background for lower scores */
+        }
     </style>
     </head>
     <body>
@@ -220,15 +227,17 @@ const htmlReport = (url: any, competitor_url: any) => {
             <tr>
                 <th>Metric</th>
                 <th>My Score</th>
-                <th>Copmetitor Score</th>
+                <th>Competitor Score</th>
             </tr>
-            ${emailMetrics.map(metric => `<tr><td>${metric.name}</td><td>${metric.myScore}</td><td>${metric.competitorScore}</td></tr>`).join('')}
+            ${emailMetrics.map(metric => `<tr class="${metric.myScore < metric.competitorScore ? 'lower-score' : ''}"><td>${metric.name}</td><td>${metric.myScore}</td><td>${metric.competitorScore}</td> </tr>`).join('')}
         </table>
     </div>
     </body>
     </html>`;
   return emailBody;
 }
+
+
 
 /* To invoke locally:
 

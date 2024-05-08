@@ -79,8 +79,6 @@ function Plan({
           featured ? 'text-white' : 'text-gray-900',
         )}
       >
-        {/* <Logomark className={clsx('h-6 w-6 flex-none', logomarkClassName)} />
-        <span className="ml-4">{name}</span> */}
       </h3>
       <p
         className={clsx(
@@ -168,24 +166,6 @@ export function Pricing() {
   const { t } = useTranslation();
 
   const plans = [
-    // {
-    //   name: 'Starter',
-    //   featured: false,
-    //   price: { Monthly: '$0', Annually: '$0' },
-    //   description:
-    //     'You’re new to investing but want to do it right. Get started for free.',
-    //   button: {
-    //     label: 'Get started for free',
-    //     href: '/register',
-    //   },
-    //   features: [
-    //     'Commission-free trading',
-    //     'Multi-layered encryption',
-    //     'One tip every day',
-    //     'Invest up to $1,500 each month',
-    //   ],
-    //   logomarkClassName: 'fill-gray-300',
-    // },
     {
       name: 'Investor',
       featured: false,
@@ -202,26 +182,6 @@ export function Pricing() {
       ],
       logomarkClassName: 'fill-gray-500',
     },
-    // {
-    //   name: 'VIP',
-    //   featured: true,
-    //   price: { Monthly: '$199', Annually: '$1,990' },
-    //   description:
-    //     'You’ve got a huge amount of assets but it’s not enough. To the moon.',
-    //   button: {
-    //     label: 'Subscribe',
-    //     href: '/register',
-    //   },
-    //   features: [
-    //     'Commission-free trading',
-    //     'Multi-layered encryption',
-    //     'Real-time tip notifications',
-    //     'No investment limits',
-    //     'Advanced transaction anonymization',
-    //     'Automated tax-loss harvesting',
-    //   ],
-    //   logomarkClassName: 'fill-cyan-500',
-    // },
   ];
 
   const checkPaymentStatus = async () => {
@@ -254,10 +214,35 @@ export function Pricing() {
     'Monthly',
   )
 
+  useEffect(() => {
+    // Function to dynamically load a script
+    const loadScript = (src: any) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      document.head.appendChild(script);
+      return script;
+    };
+
+    // Load the Stripe Pricing Table script
+    const stripeScript = loadScript('https://js.stripe.com/v3/pricing-table.js');
+
+    // Clean up the script when the component unmounts
+    return () => {
+      document.head.removeChild(stripeScript);
+    };
+  }, []);
+
   return (
     <>
-      <StripeCard isOpen={modalIsOpen} handleOnClose={handleCloseModal} />
-      <section
+      {/* <StripeCard isOpen={modalIsOpen} handleOnClose={handleCloseModal} /> */}
+      {/**@ts-ignore */}
+      <stripe-pricing-table
+        customer-email="jawad@withmindmaze.com"
+        pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
+        publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"
+      />
+      {/* <section
         id="pricing"
         aria-labelledby="pricing-title"
         className="border-t border-gray-200 bg-gray-100 py-20 sm:py-32"
@@ -277,7 +262,7 @@ export function Pricing() {
 
           <div className=" flex justify-center">
             <div className="relative">
-              {/* <RadioGroup
+              <RadioGroup
                 value={activePeriod}
                 onChange={setActivePeriod}
                 className="grid grid-cols-2"
@@ -296,7 +281,7 @@ export function Pricing() {
                     {period}
                   </RadioGroup.Option>
                 ))}
-              </RadioGroup> */}
+              </RadioGroup>
               <div
                 aria-hidden="true"
                 className={clsx(
@@ -344,7 +329,7 @@ export function Pricing() {
 
 
         </Container>
-      </section>
+      </section> */}
     </>
 
   )
