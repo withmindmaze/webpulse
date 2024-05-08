@@ -244,6 +244,7 @@ export function Pricing() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        //@ts-ignore
         userId: user.id
       }),
     });
@@ -281,6 +282,7 @@ export function Pricing() {
           :
           //@ts-ignore
           <stripe-pricing-table
+          //@ts-ignore
             customer-email={user.email}
             pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
             publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"
