@@ -66,7 +66,8 @@
         "feature_2": "Continuous Monitoring",
         "feature_3": "Compare with Competitors",
         "already_subscribed": "You have already subscribed 🙂",
-        "button_manage_subscription": "Manage your subscription"
+        "button_manage_subscription": "Manage your subscription",
+        "button_cancel_subscription": "Cancel subscription"
     },
     "alert": {
         "heading_top": "Configure URL Monitoring",
@@ -170,6 +171,8 @@
         "enter_valid_url": "Please enter a valid URL.",
         "url_not_accessible": "URL is not accessible. Please check the URL and try again.",
         "error": "Error! ",
-        "password_mismatch": "Password are Confirm Password do not match"
+        "password_mismatch": "Password are Confirm Password do not match",
+        "subscription_cancel_success": "Subscription cancelled successfully.",
+        "subscription_cancel_fail": "Subscription cancellation failed. Something goes wrong."
     }
 }
