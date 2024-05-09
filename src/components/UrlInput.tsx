@@ -185,6 +185,11 @@ function UrlInput() {
                             placeholder={t('dashboard.urlPlaceHolder')}
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleAnalyzeClick();
+                                }
+                            }}
                         />
                     </div>
                     <button

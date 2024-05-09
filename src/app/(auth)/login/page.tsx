@@ -19,7 +19,7 @@ export default function Login() {
 
   const handleRedirection = async () => {
     const { data: user, error } = await supabase.auth.getUser();
-    if (user.user?.id) {
+    if (user?.user?.id) {
       router.back();
     }
   }
@@ -28,8 +28,8 @@ export default function Login() {
     handleRedirection();
   }, [router]);
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();  // Prevent the form from submitting traditionally
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -59,7 +59,7 @@ export default function Login() {
         </>
       }
     >
-      <div className="space-y-2">
+      <form onSubmit={handleLogin} className="space-y-6">
         <TextField
           label={t('signIn.label_email')}
           name="email"
@@ -78,13 +78,13 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
-      <Link href="/forget-password" className="text-cyan-600">
-        {t('signIn.text_forgot_password')}
-      </Link>
-      <Button disabled={loading} onClick={handleLogin} color="cyan" className="mt-8 w-full">
-        {loading ? t('signIn.button_signing_in') : t('signIn.button_signin')}
-      </Button>
+        <Link href="/forget-password" className="text-cyan-600">
+          {t('signIn.text_forgot_password')}
+        </Link>
+        <Button type="submit" disabled={loading} color="cyan" className="mt-8 w-full">
+          {loading ? t('signIn.button_signing_in') : t('signIn.button_signin')}
+        </Button>
+      </form>
     </AuthLayout>
   );
 }
