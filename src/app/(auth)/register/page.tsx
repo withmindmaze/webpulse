@@ -60,6 +60,7 @@ export default function Register() {
 
       if (planError) {
         console.error('Error creating user plan:', planError);
+        setLoading(false);
       } else {
         console.log('User plan created:', planData);
         setLoading(false);
@@ -67,6 +68,9 @@ export default function Register() {
         router.push('/login');
       }
     }
+    toast.success(t('toast.signup_success'))
+    setLoading(false);
+    return;
   };
 
   return (
