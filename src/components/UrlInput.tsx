@@ -162,6 +162,12 @@ function UrlInput() {
             // @ts-ignore
             iframeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        const names_labels = iframe.contentWindow.document.querySelector('.lh-audit-group__header') as HTMLElement;
+        // const names_labels = iframe.contentWindow.document.querySelector('.lh-audit__header lh-expandable-details__summary') as HTMLElement;
+        if (names_labels) {
+            names_labels.style.backgroundColor = '#3bbed9';
+            names_labels.style.color = 'white';
+        }
     };
 
 
