@@ -12,8 +12,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const subscriptionDetails = await supabase
                 .from('user_plan')
                 .select('*')
-                .eq('user_id', "265256e9-f763-4092-9185-2d1de02ed03f")
+                .eq('user_id', userId)
                 .single();
+
             const subScriptionId = subscriptionDetails.data.payment_detail.subscription;
             stripeClient.subscriptions.update(subScriptionId, { cancel_at_period_end: false });
             const subscription = await stripeClient.subscriptions.cancel(

@@ -28,7 +28,7 @@ export default function Login() {
     handleRedirection();
   }, [router]);
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();  // Prevent the form from submitting traditionally
     setLoading(true);
 

@@ -9,7 +9,7 @@
         "logout": "Log Out"
     },
     "dashboard": {
-        "searchHeading": "Analyse your website",
+        "searchHeading": "Analyze your website",
         "urlPlaceHolder": "Enter URL",
         "analyseButton": "Analyze",
         "radio_navigation": "Navigation (Default)",
