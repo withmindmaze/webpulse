@@ -167,23 +167,23 @@ function Alerts() {
                 <div className="bg-white p-4 rounded-lg max-w-sm w-full">
                     <h2 className="text-lg text-[#3bbed9] font-semibold">Edit Alert</h2>
                     <label className="block mt-4">
-                        Your URL:
+                        {t('compare.label_url')}
                         <input type="text" name="url" value={localAlert.url} onChange={handleChange} className="mt-1 block w-full p-2 border rounded" />
                     </label>
                     <label className="block mt-4">
-                        Competitor URL:
+                        {t('compare.label_competitor_url')}
                         <input type="text" name="competitor_url" value={localAlert.competitor_url} onChange={handleChange} className="mt-1 block w-full p-2 border rounded" />
                     </label>
                     <label className="block mt-4">
-                        Email:
+                        {t('compare.label_email')}
                         <input type="text" name="email" value={localAlert.email} onChange={handleChange} className="mt-1 block w-full p-2 border rounded" />
                     </label>
                     <div className="flex justify-between space-x-4 mt-6">
                         <button onClick={onClose} className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded">
-                            Cancel
+                            {t('compare.cancel')}
                         </button>
                         <button onClick={handleSubmit} className="bg-[#3bbed9] text-white py-2 px-4 rounded">
-                            Save
+                            {t('compare.save')}
                         </button>
                     </div>
                 </div>

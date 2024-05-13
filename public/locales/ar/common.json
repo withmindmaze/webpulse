@@ -98,7 +98,9 @@
         "info_performance": "يقيس سرعة تحميل الصفحة وتفاعل المستخدم.",
         "info_Accessibility": "يقيم قابلية الاستخدام للأشخاص ذوي الإعاقة.",
         "info_PWA": "يفحص الميزات المشابهة للتطبيقات والوظائف دون اتصال بالإنترنت.",
-        "info_SEO": "يحلل الظهور والترتيب في نتائج البحث."
+        "info_SEO": "يحلل الظهور والترتيب في نتائج البحث.",
+        "cancel": "إلغاء",
+        "save": "حفظ"
     },
     "compare": {
         "heading_top": "أداة تحليل التنافسية",
@@ -128,7 +130,9 @@
         "table_header_email": "البريد الإلكتروني",
         "table_header_action": "الإجراء",
         "button_delete": "حذف",
-        "button_update": "تحديث"
+        "button_update": "تحديث",
+        "cancel": "إلغاء",
+        "save": "حفظ"
     },
     "reports": {
         "placeholder_select_url": "اختر عنوان URL",
