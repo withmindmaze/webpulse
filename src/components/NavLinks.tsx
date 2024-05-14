@@ -1,24 +1,44 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { usePathname } from 'next/navigation';
+import supabase from '@/utils/supabaseClient';
 
 export function NavLinks() {
   const { t } = useTranslation();
   const pathName = usePathname();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const [user, setUser] = useState<object | null>(null);
+
+  const getUser = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    if (user?.user?.id) {
+      setUser(user);
+    }
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const links = [
-    { label: `${t('header.dashboard')}`, href: '/' },
+    { label: `${user ? t('header.dashboard') : t('header.homepage')}`, href: '/' },
     { label: `${t('header.alerts')}`, href: '/alerts' },
     { label: `${t('header.compare')}`, href: '/compare' },
     { label: `${t('header.reports')}`, href: '/reports' },
     { label: `${t('header.pricing')}`, href: '/purchase' },
+    { label: `${t('header.about_us')}`, href: '/about' },
+    { label: `${t('header.faq')}`, href: '/faq' },
   ];
 
-  return links.map((link, index) => (
+  // Filter links based on user authentication state
+  const filteredLinks = user ? links : links.filter(link =>
+    [t('header.homepage'), t('header.about_us'), t('header.faq')].includes(link.label)
+  );
+
+  return filteredLinks.map((link, index) => (
     <Link
       key={link.label}
       href={link.href}
