@@ -1,10 +1,13 @@
 {
     "header": {
         "dashboard": "Dashboard",
+        "homepage": "Homepage",
         "reports": "Reports Summary",
         "alerts": "Alerts",
         "compare": "Compare",
         "pricing": "Pricing",
+        "about_us": "About Us",
+        "faq": "FAQ",
         "login": "Log In",
         "logout": "Log Out"
     },
