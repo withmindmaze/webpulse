@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
+import Performance from './Performance/page';
 
 function UrlInput() {
     const [categories, setCategories] = useState({ performance: true, accessibility: true, bestPractices: true, seo: true, pwa: true });

@@ -14,10 +14,12 @@ const metrics = [];
 Deno.serve(async (req: any) => {
   const { } = await req.json();
 
-  // Fetch all alerts from the "alert" table
+  // Fetch the first alert where last_executed_at is null
   const { data: alerts, error } = await supabase
     .from('alert')
-    .select('*');
+    .select('*')
+    .is('last_executed_at', null)
+    .limit(1);
 
   if (error) {
     console.error('Error fetching alerts:', error);
@@ -27,27 +29,50 @@ Deno.serve(async (req: any) => {
     });
   }
 
-  // Process each alert record
-  alerts.forEach(async (alert: any) => {
-    const apiUrl = `http://zk4gkk8.141.164.47.85.sslip.io/api/audit`;
-    const apiResponse = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: alert.url,
-        categories: ["performance", "accessibility", "seo", "pwa"],
-        device: "desktop",
-        user_id: alert.user_id,
-        generatedBy: "system",
-      }),
+  if (alerts.length === 0) {
+    return new Response(JSON.stringify({ message: 'No alerts to process' }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
     });
+  }
 
-    const data = await apiResponse.json();
-    const generatedReport = data.data.lhr;
-    compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
+  const alert = alerts[0];
+
+  // Process each alert record
+  // alerts.forEach(async (alert: any) => {
+  const apiUrl = `http://zk4gkk8.141.164.47.85.sslip.io/api/audit`;
+  const apiResponse = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      url: alert.url,
+      categories: ["performance", "accessibility", "seo", "pwa"],
+      device: "desktop",
+      user_id: alert.user_id,
+      generatedBy: "system",
+    }),
   });
+
+  const data = await apiResponse.json();
+  const generatedReport = data.data.lhr;
+  await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
+  // });
+
+  // Update the last_executed_at field for the processed alert
+  const { error: updateError } = await supabase
+    .from('alert')
+    .update({ last_executed_at: new Date().toISOString() })
+    .eq('id', alert.id);
+
+  if (updateError) {
+    console.error('Error updating alert:', updateError);
+    return new Response(JSON.stringify({ error: 'Failed to update alert' }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
@@ -55,11 +80,11 @@ Deno.serve(async (req: any) => {
 
 })
 
-function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {
-  const generatedPerformanceScore = generatedReport.categories.performance.score;
-  const generatedAccessibilityScore = generatedReport.categories.accessibility.score;
-  const generatedSeoScore = generatedReport.categories.seo.score;
-  const generatedPwaScore = generatedReport.categories.pwa.score;
+async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {
+  const generatedPerformanceScore = generatedReport.categories.performance.score * 100;
+  const generatedAccessibilityScore = generatedReport.categories.accessibility.score * 100;
+  const generatedSeoScore = generatedReport.categories.seo.score * 100;
+  const generatedPwaScore = generatedReport.categories.pwa.score * 100;
 
   const storedPerformanceScore = storedMetrics.Performance;
   const storedAccessibilityScore = storedMetrics.Accessibility;

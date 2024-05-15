@@ -2,42 +2,61 @@
 // Follow this setup guide to integrate the Deno language server with your editor:
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
-//@ts-ignore
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-const supabase = createClient('https://kckpcztvngcakrpuxvcj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMzUyNzUwNiwiZXhwIjoyMDI5MTAzNTA2fQ.pgBXRDZcnq8J78ClKyT5vp6_ZfE1ZluXXNFgB7CJdms')
-const RESEND_API_KEY = "re_a1FAKJKQ_N6JwbzUUv8vuBHQ8eNJur8qF";
-//@ts-ignore
+const supabase = createClient('https://kckpcztvngcakrpuxvcj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMzUyNzUwNiwiZXhwIjoyMDI5MTAzNTA2fQ.pgBXRDZcnq8J78ClKyT5vp6_ZfE1ZluXXNFgB7CJdms');
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
 console.log("Hello from comparison Function!")
-//@ts-ignore
 const emailMetrics = [];
 
-//@ts-ignore
+
 Deno.serve(async (req: any) => {
   // const { } = await req.json();
 
-  // Fetch all alerts from the "alert" table
-  const { data: comparisonAlert, error } = await supabase
+  // Fetch the first alert where last_executed_at is null
+  const { data: comparisonAlerts, error } = await supabase
     .from('comparison_alert')
-    .select('*');
+    .select('*')
+    .is('last_executed_at', null)
+    .limit(1);
+
+  const comparisonAlert = comparisonAlerts[0];
 
   if (error) {
-    console.error('Error fetching alerts:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
+    console.error('Error fetching comparison alerts:', error);
+    return new Response(JSON.stringify({ error: 'Failed to fetch comparison alerts' }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  console.log(comparisonAlert)
-
+  if (comparisonAlert.length === 0) {
+    return new Response(JSON.stringify({ message: 'No comparison alerts to process' }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   // Process each alert record
-  comparisonAlert.forEach(async (alert: any) => {
-    const myReport = await generateMyWebsiteReport(alert.url, alert.user_id);
-    const competitorReport = await generateCompetitorReport(alert.competitor_url, alert.user_id);
-    compareMetrics(myReport, competitorReport, alert.metrics, alert.url, alert.competitor_url, alert.email);
-  });
+  // comparisonAlert.forEach(async (alert: any) => {
+  const myReport = await generateMyWebsiteReport(comparisonAlert.url, comparisonAlert.user_id);
+  const competitorReport = await generateCompetitorReport(comparisonAlert.competitor_url, comparisonAlert.user_id);
+  await compareMetrics(myReport, competitorReport, comparisonAlert.metrics, comparisonAlert.url, comparisonAlert.competitor_url, comparisonAlert.email);
+  // });
+
+  // Update the last_executed_at field for the processed alert
+  const { error: updateError } = await supabase
+    .from('comparison_alert')
+    .update({ last_executed_at: new Date().toISOString() })
+    .eq('id', comparisonAlert.id);
+
+  if (updateError) {
+    console.error('Error updating comparison alert:', updateError);
+    return new Response(JSON.stringify({ error: 'Failed to update comparison alert' }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
@@ -87,18 +106,16 @@ const generateCompetitorReport = async (url: any, user_id: any) => {
   return generatedReport;
 }
 
-function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any) {
-  const myPerformanceScore = myReport.categories.performance.score;
-  const myAccessibilityScore = myReport.categories.accessibility.score;
-  const mySeoScore = myReport.categories.seo.score;
-  const myPwaScore = myReport.categories.pwa.score;
+async function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any) {
+  const myPerformanceScore = myReport.categories.performance.score * 100;
+  const myAccessibilityScore = myReport.categories.accessibility.score * 100;
+  const mySeoScore = myReport.categories.seo.score * 100;
+  const myPwaScore = myReport.categories.pwa.score * 100;
 
-  const competitorPerformanceScore = competitorReport.categories.performance.score;
-  const competitorAccessibilityScore = competitorReport.categories.accessibility.score;
-  const competitorSeoScore = competitorReport.categories.seo.score;
-  const competitorPwaScore = competitorReport.categories.pwa.score;
-
-  console.log({ myPerformanceScore, competitorPerformanceScore })
+  const competitorPerformanceScore = competitorReport.categories.performance.score * 100;
+  const competitorAccessibilityScore = competitorReport.categories.accessibility.score * 100;
+  const competitorSeoScore = competitorReport.categories.seo.score * 100;
+  const competitorPwaScore = competitorReport.categories.pwa.score * 100;
 
   if (metrics.includes("Performance")) {
     const isReduced = myPerformanceScore < parseInt(competitorPerformanceScore)
