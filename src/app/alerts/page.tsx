@@ -10,7 +10,7 @@ function Alerts() {
     const [metrics, setMetrics] = useState({ Performance: '', Accessibility: '', SEO: '', PWA: '', });
     const [currentAlert, setCurrentAlert] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [frequency, setFrequency] = useState('');
+    // const [frequency, setFrequency] = useState('');
     const [saving, setSaving] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [email, setEmail] = useState('');
@@ -20,7 +20,7 @@ function Alerts() {
     const reloadStates = () => {
         setSaving(false);
         setUrl('');
-        setFrequency('');
+        // setFrequency('');
         setMetrics({ Performance: '', Accessibility: '', SEO: '', PWA: '' });
     }
 
@@ -56,7 +56,7 @@ function Alerts() {
             user_id: user.user.id,
             url,
             metrics: selectedCategories,
-            frequency,
+            // frequency,
             email
         }]);
 
@@ -270,7 +270,7 @@ function Alerts() {
                             }
                         </div>
                     ))}
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                         <label htmlFor="frequencySelect" className="mb-1">
                             {t('alert.label_frequency')}
                         </label>
@@ -285,7 +285,7 @@ function Alerts() {
                             <option value="24 hours">{t('alert.frequency_24_hours')}</option>
                         </select>
                         <p className="text-xs mt-1 text-gray-500">{t('alert.info_frequency')}</p>
-                    </div>
+                    </div> */}
                     <button disabled={saving} type="submit" className="px-6 py-3 w-full text-white bg-[#3bbed9] rounded-md hover:bg-[#3391a6] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-offset-2 transition duration-300 ease-in-out">
                         {saving ? t('alert.button_saving') : t('alert.button_save')}
                     </button>
@@ -303,9 +303,9 @@ function Alerts() {
                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     {t('alert.table_header_metrics')}
                                 </th>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                {/* <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     {t('alert.table_header_frequency')}
-                                </th>
+                                </th> */}
                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     {t('alert.table_header_email')}
                                 </th>
@@ -323,9 +323,9 @@ function Alerts() {
                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                         {formatMetrics(alert.metrics)}
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                         {alert.frequency}
-                                    </td>
+                                    </td> */}
                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                         {alert.email}
                                     </td>
