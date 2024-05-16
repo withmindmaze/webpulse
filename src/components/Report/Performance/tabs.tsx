@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useEffect } from "react";
 
 const tabs = [
@@ -5,7 +6,7 @@ const tabs = [
     { name: 'Passed Audits', id: 2, current: false },
 ];
 
-function classNames(...classes) {
+function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
 }
 
