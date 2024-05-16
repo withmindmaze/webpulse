@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client"
 import supabase from '@/utils/supabaseClient';
 import withAuth from '@/utils/withAuth';
@@ -163,6 +164,16 @@ function UrlInput() {
             (header as HTMLElement).style.display = 'none';
         });
 
+        const topHeader = doc.querySelectorAll('.lh-topbar');
+        topHeader.forEach(header => {
+            (header as HTMLElement).style.display = 'none';
+        });
+
+        const scoreHeader = doc.querySelectorAll('.lh-scores-header');
+        scoreHeader.forEach(header => {
+            (header as HTMLElement).style.display = 'none';
+        });
+
         //@ts-ignore
         const categoryHeader = doc.querySelectorAll('.lh-category-header');
         categoryHeader.forEach(header => {
@@ -175,13 +186,12 @@ function UrlInput() {
             '.lh-audit-group.lh-audit-group--metrics',
             '.lh-filmstrip-container',
             '.lh-footer',
-            '.lh-topbar',
-            '.lh-scores-header',
         ];
         elementsToHide.forEach(selector => {
-            //@ts-ignore
             const element = doc.querySelector(selector) as HTMLElement;
-            element.style.display = 'none';
+            if (element) {
+                element.style.display = 'none';
+            }
         });
     };
 
