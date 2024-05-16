@@ -157,11 +157,13 @@ function UrlInput() {
 
         const doc = iframe.contentDocument;
         // Hide the sticky header permanently
+        //@ts-ignore
         const stickHeader = doc.querySelectorAll('.lh-sticky-header');
         stickHeader.forEach(header => {
             (header as HTMLElement).style.display = 'none';
         });
 
+        //@ts-ignore
         const categoryHeader = doc.querySelectorAll('.lh-category-header');
         categoryHeader.forEach(header => {
             (header as HTMLElement).style.display = 'none';
@@ -177,6 +179,7 @@ function UrlInput() {
             '.lh-scores-header',
         ];
         elementsToHide.forEach(selector => {
+            //@ts-ignore
             const element = doc.querySelector(selector) as HTMLElement;
             element.style.display = 'none';
         });

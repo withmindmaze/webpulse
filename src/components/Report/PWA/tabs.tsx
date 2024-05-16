@@ -9,7 +9,7 @@ const tabs = [
     { name: 'NOT APPLICABLE', id: 6, current: false },
 ];
 
-function classNames(...classes) {
+function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
 }
 

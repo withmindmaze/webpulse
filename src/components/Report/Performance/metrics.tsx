@@ -1,16 +1,16 @@
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid';
 
-function classNames(...classes) {
+function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
 }
 
-const getColorClass = (score) => {
+const getColorClass = (score: any) => {
     if (score >= 90) return 'bg-green-100 text-green-800';
     if (score >= 50) return 'bg-orange-100 text-orange-800';
     return 'bg-red-100 text-red-800';
 };
 
-export default function Metrics({ jsonData }) {
+export default function Metrics({ jsonData }: any) {
     const metrics = [
         {
             name: 'First Contentful Paint',
