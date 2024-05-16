@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
-import Performance from './Performance/page';
+import Stats from './Report/page';
 
 function UrlInput() {
     const [categories, setCategories] = useState({ performance: true, accessibility: true, bestPractices: true, seo: true, pwa: true });
@@ -18,6 +18,7 @@ function UrlInput() {
     const [device, setDevice] = useState('desktop');
     const [iframeSrc, setIframeSrc] = useState('');
     const [data, setData] = useState(null);
+    const [jsonData, setJsonData] = useState(null);
     const [url, setUrl] = useState('');
     const { t } = useTranslation();
     const iframeRef = useRef(null);
@@ -91,11 +92,13 @@ function UrlInput() {
                         const data = await callAuditApi(selectedCategories, getUser);
                         toast.success(t('toast.audit_report_success'));
                         setData(data.data.report);
+                        setJsonData(data.jsonReport);
                     }
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
                     toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
+                    setJsonData(data.jsonReport);
                 }
             } else {
                 if (localStorage.getItem('isFirstReport') === 'false') {
@@ -105,6 +108,7 @@ function UrlInput() {
                     const data = await callAuditApi(selectedCategories, getUser);
                     toast.success(t('toast.audit_report_success'));
                     setData(data.data.report);
+                    setJsonData(data.jsonReport);
                 }
             }
             localStorage.setItem('isFirstReport', 'false');
@@ -136,19 +140,6 @@ function UrlInput() {
                 font-family: 'Montserrat', sans-serif;
             }`;
             iframe.contentWindow.document.head.appendChild(style);
-
-            const topBar = iframe.contentWindow.document.querySelector('.lh-topbar') as HTMLElement;
-            if (topBar) {
-                topBar.style.display = 'none';
-            }
-            const stickHeader = iframe.contentWindow.document.querySelector('lh-sticky-header lh-sticky-header--visible') as HTMLElement;
-            if (stickHeader) {
-                stickHeader.style.display = 'none';
-            }
-            const footer = iframe.contentWindow.document.querySelector('.lh-footer') as HTMLElement;
-            if (footer) {
-                footer.style.display = 'none';
-            }
             // Locate the article tag and change its class from lh-dark to lh-light
             const article = iframe.contentWindow.document.querySelector('article.lh-root') as HTMLElement;
             if (article) {
@@ -163,15 +154,33 @@ function UrlInput() {
             // @ts-ignore
             iframeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        // @ts-ignore
-        const names_labels = iframe.contentWindow.document.querySelector('.lh-audit-group__header') as HTMLElement;
-        // const names_labels = iframe.contentWindow.document.querySelector('.lh-audit__header lh-expandable-details__summary') as HTMLElement;
-        if (names_labels) {
-            names_labels.style.backgroundColor = '#3bbed9';
-            names_labels.style.color = 'white';
-        }
-    };
 
+        const doc = iframe.contentDocument;
+        // Hide the sticky header permanently
+        const stickHeader = doc.querySelectorAll('.lh-sticky-header');
+        stickHeader.forEach(header => {
+            (header as HTMLElement).style.display = 'none';
+        });
+
+        const categoryHeader = doc.querySelectorAll('.lh-category-header');
+        categoryHeader.forEach(header => {
+            (header as HTMLElement).style.display = 'none';
+        });
+
+        // Hide specific elements
+        const elementsToHide = [
+            '.lh-category-header.lh-category-header__finalscreenshot',
+            '.lh-audit-group.lh-audit-group--metrics',
+            '.lh-filmstrip-container',
+            '.lh-footer',
+            '.lh-topbar',
+            '.lh-scores-header',
+        ];
+        elementsToHide.forEach(selector => {
+            const element = doc.querySelector(selector) as HTMLElement;
+            element.style.display = 'none';
+        });
+    };
 
     return (
         <div className="mt-8 flex flex-col justify-center items-center">
@@ -236,8 +245,15 @@ function UrlInput() {
                 </button>
             }
 
+            {
+                jsonData !== null && (
+                    <Stats jsonData={jsonData} url={url} iframeSrc={iframeSrc} />
+                )
+            }
+
             {iframeSrc && (
                 <iframe
+                    id='reportIframe'
                     ref={iframeRef}
                     src={iframeSrc}
                     onLoad={manipulateDOM}
