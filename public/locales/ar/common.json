@@ -45,7 +45,8 @@
         "label_email": "عنوان البريد الإلكتروني",
         "label_password": "كلمة المرور",
         "button_signing_up": "جاري التسجيل...",
-        "button_signup": "ابدأ اليوم"
+        "button_signup": "ابدأ اليوم",
+        "resend_email": "إعادة إرسال البريد الإلكتروني"
     },
     "forget-password": {
         "title": "إعادة تعيين كلمة المرور",
@@ -178,6 +179,8 @@
         "error": "خطأ!",
         "password_mismatch": "كلمة المرور وتأكيد كلمة المرور لا يتطابقان",
         "subscription_cancel_success": "تم إلغاء الاشتراك بنجاح",
-        "subscription_cancel_fail": "فشل إلغاء الاشتراك. حدث خطأ ما"
+        "subscription_cancel_fail": "فشل إلغاء الاشتراك. حدث خطأ ما",
+        "email_resend": "تمت إعادة إرسال البريد الإلكتروني بنجاح",
+        "missing_info": "البريد الإلكتروني أو كلمة المرور مفقودة"
     }
 }

@@ -14,7 +14,7 @@ import LightHouseStart from './LightHouseStart';
 import Stats from './Report/page';
 
 function UrlInput() {
-    const [categories, setCategories] = useState({ performance: true, accessibility: true, bestPractices: true, seo: true, pwa: true });
+    const [categories, setCategories] = useState({ performance: true, accessibility: true, 'best-practices': true, seo: true, pwa: true });
     const [isLoading, setIsLoading] = useState(false);
     const [device, setDevice] = useState('desktop');
     const [iframeSrc, setIframeSrc] = useState('');

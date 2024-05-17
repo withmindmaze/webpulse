@@ -39,7 +39,7 @@ export default function RootLayout({
 
   useEffect(() => {
     const currentLnaguage = localStorage.getItem('language');
-    if (currentLnaguage === 'en') {
+    if (currentLnaguage === 'en' || currentLnaguage === undefined || currentLnaguage === null) {
       setDirection('ltr');
     } else {
       setDirection('rtl');

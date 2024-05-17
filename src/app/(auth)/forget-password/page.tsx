@@ -59,7 +59,7 @@ export default function ForgotPassword() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <Button disabled={loading} onClick={handleResetAction} color="cyan" className="mt-8 w-full">
+      <Button disabled={loading || email === ''} onClick={handleResetAction} color="cyan" className="mt-8 w-full">
         {loading ? t('forget-password.button_sending_link') : t('forget-password.button_forget_password')}
       </Button>
     </AuthLayout>

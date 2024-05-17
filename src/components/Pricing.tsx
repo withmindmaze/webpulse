@@ -1,3 +1,4 @@
+//@ts-nocheck
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -238,14 +239,15 @@ export function Pricing() {
   }, []);
 
   const handleCancelSubscription = async () => {
+    const getUser = await supabase.auth.getUser();
+
     const apiResponse = await fetch(`/api/stripe/cancelSubscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        //@ts-ignore
-        userId: user.id
+        userId: getUser.data.user?.id
       }),
     });
 

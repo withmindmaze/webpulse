@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
+  const [enableResend, setEnableResend] = useState(false);
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
@@ -62,16 +63,42 @@ export default function Register() {
         console.error('Error creating user plan:', planError);
         setLoading(false);
       } else {
-        console.log('User plan created:', planData);
         setLoading(false);
-        toast.success(t('toast.signup_success'))
-        router.push('/login');
+        toast.success(t('toast.signup_success'));
+        setEnableResend(true);
+        // router.push('/login');
       }
     }
     toast.success(t('toast.signup_success'))
     setLoading(false);
     return;
   };
+
+  const handleResendEmail = async () => {
+    setLoading(true);
+    if (email === '' || password === '') {
+      toast.error(t('missing_info'));
+      setLoading(false);
+      return;
+    }
+    const baseURL = `${window.location.protocol}//${window.location.host}`;
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${baseURL}/register/confirm`,
+      }
+    });
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    } else {
+      toast.success(t('toast.email_resend'));
+      setLoading(false);
+      return;
+    }
+  }
 
   return (
     <AuthLayout
@@ -109,7 +136,12 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <Button disabled={loading} type="submit" color="cyan" className="mt-8 w-full">
+        {enableResend === true && (
+          <span onClick={handleResendEmail} className="text-[#3bbed9] hover:text-[#3bbed9] focus:outline-none cursor-pointer">
+            {t('signUp.resend_email')}
+          </span>
+        )}
+        <Button disabled={loading || email === '' || password === ''} type="submit" color="cyan" className="mt-8 w-full">
           {loading ? t('signUp.button_signing_up') : t('signUp.button_signup')}
         </Button>
       </form>

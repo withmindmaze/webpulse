@@ -11,18 +11,6 @@ export function NavLinks() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const [user, setUser] = useState<object | null>(null);
-
-  const getUser = async () => {
-    const { data: user, error } = await supabase.auth.getUser();
-    if (user?.user?.id) {
-      setUser(user);
-    }
-  }
-
-  useEffect(() => {
-    getUser();
-  }, []);
-
   const links = [
     { label: `${user ? t('header.dashboard') : t('header.homepage')}`, href: '/' },
     { label: `${t('header.alerts')}`, href: '/alerts' },
@@ -32,13 +20,27 @@ export function NavLinks() {
     { label: `${t('header.about_us')}`, href: '/about' },
     { label: `${t('header.faq')}`, href: '/faq' },
   ];
+  const [filteredLinks, setFilteredLinks] = useState<object | null>(links);
 
-  // Filter links based on user authentication state
-  const filteredLinks = user ? links : links.filter(link =>
-    [t('header.homepage'), t('header.about_us'), t('header.faq')].includes(link.label)
-  );
+  const getUser = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    if (user?.user?.id) {
+      setUser(user);
+    } else {
+      const filtered = links.filter(link =>
+        [t('header.homepage'), t('header.about_us'), t('header.faq')].includes(link.label)
+      );
+      setFilteredLinks(filtered);
+    }
+  }
 
-  return filteredLinks.map((link, index) => (
+  useEffect(() => {
+    getUser();
+  }, []);
+
+
+
+  return filteredLinks?.map((link, index) => (
     <Link
       key={link.label}
       href={link.href}

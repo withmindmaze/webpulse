@@ -78,10 +78,10 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Link href="/forget-password" className="text-cyan-600">
+        <Link href="/forget-password" className="text-[#3bbed9]">
           {t('signIn.text_forgot_password')}
         </Link>
-        <Button type="submit" disabled={loading} color="cyan" className="mt-8 w-full">
+        <Button type="submit" disabled={loading || email === '' || password === ''} color="cyan" className="mt-8 w-full">
           {loading ? t('signIn.button_signing_in') : t('signIn.button_signin')}
         </Button>
       </form>
