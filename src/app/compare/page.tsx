@@ -12,11 +12,20 @@ function Alerts() {
     const [competitorUrl, setCompetitorUrl] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     // const [frequency, setFrequency] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
     const [saving, setSaving] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [email, setEmail] = useState('');
+    const [itemsPerPage] = useState(5);
     const [url, setUrl] = useState('');
     const { t } = useTranslation();
+
+    // Calculate current items
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = alerts.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const reloadStates = () => {
         setSaving(false);
@@ -297,8 +306,7 @@ function Alerts() {
                     </button>
                 </form>
             </div>
-            {
-                alerts?.length > 0 &&
+            {alerts?.length > 0 && (
                 <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-5">
                     <table className="w-full text-sm text-left text-gray-500">
                         <thead>
@@ -312,9 +320,6 @@ function Alerts() {
                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     {t('compare.table_header_metrics')}
                                 </th>
-                                {/* <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    {t('compare.table_header_frequency')}
-                                </th> */}
                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-[#3bbed9] text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     {t('compare.table_header_email')}
                                 </th>
@@ -324,23 +329,12 @@ function Alerts() {
                             </tr>
                         </thead>
                         <tbody>
-                            {alerts.map((alert) => (
+                            {currentItems.map((alert) => (
                                 <tr key={alert.id}>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        {alert.url}
-                                    </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        {alert.competitor_url}
-                                    </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        {formatMetrics(alert.metrics)}
-                                    </td>
-                                    {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        {alert.frequency}
-                                    </td> */}
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        {alert.email}
-                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{alert.url}</td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{alert.competitor_url}</td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{formatMetrics(alert.metrics)}</td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">{alert.email}</td>
                                     <td className="h-full px-5 py-10 border-b border-gray-200 bg-white text-sm flex flex-col justify-center space-y-2">
                                         <button onClick={() => handleDelete(alert.id)} className="text-red-500 hover:text-red-700 self-center">
                                             {t('compare.button_delete')}
@@ -353,8 +347,20 @@ function Alerts() {
                             ))}
                         </tbody>
                     </table>
+                    {/* Pagination Controls */}
+                    <div className="flex justify-center my-4">
+                        {Array.from({ length: Math.ceil(alerts.length / itemsPerPage) }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => paginate(index + 1)}
+                                className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-[#3bbed9] text-white' : 'bg-gray-200 text-gray-700'}`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            }
+            )}
             <EditAlertModal
                 isOpen={isModalOpen}
                 onClose={closeModal}

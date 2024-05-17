@@ -63,7 +63,7 @@ export default function ForgotPassword() {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </div>
-      <Button disabled={loading} onClick={handleResetPassword} color="cyan" className="mt-8 w-full">
+      <Button disabled={loading || password === '' || confirmPassword === ''} onClick={handleResetPassword} color="cyan" className="mt-8 w-full">
         {loading ? t('forget-password.button_resetting_password') : t('forget-password.button_reset_password')}
       </Button>
     </AuthLayout>

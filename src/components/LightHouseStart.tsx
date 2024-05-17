@@ -70,8 +70,8 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                     <label className="flex items-center">
                         <input
                             type="checkbox"
-                            name="bestPractices"
-                            checked={categories.bestPractices}
+                            name="best-practices"
+                            checked={categories['best-practices']}
                             onChange={handleCategoryChange}
                             className="form-checkbox"
                         />

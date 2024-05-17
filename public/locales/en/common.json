@@ -54,7 +54,8 @@
         "label_email": "Email address",
         "label_password": "Password",
         "button_signing_up": "Signing up...",
-        "button_signup": "Get started today"
+        "button_signup": "Get started today",
+        "resend_email": "Resend Email"
     },
     "auth": {
         "loading": "Loading"
@@ -180,6 +181,8 @@
         "error": "Error! ",
         "password_mismatch": "Password are Confirm Password do not match",
         "subscription_cancel_success": "Subscription cancelled successfully.",
-        "subscription_cancel_fail": "Subscription cancellation failed. Something goes wrong."
+        "subscription_cancel_fail": "Subscription cancellation failed. Something goes wrong.",
+        "email_resend": "Email resent successfully",
+        "missing_info": "Missing email or password"
     }
 }

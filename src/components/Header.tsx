@@ -88,7 +88,7 @@ function LanguageSwitcher() {
 
 export function Header() {
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const { t } = useTranslation();
 
   const userLoggedIn = async () => {
@@ -188,6 +188,12 @@ export function Header() {
                             </MobileNavLink>
                             <MobileNavLink href="/purchase">
                               {t('header.pricing')}
+                            </MobileNavLink>
+                            <MobileNavLink href="/purchase">
+                              {t('header.about_us')}
+                            </MobileNavLink>
+                            <MobileNavLink href="/purchase">
+                              {t('header.faq')}
                             </MobileNavLink>
                           </div>
                           <div className="mt-8 flex flex-col gap-4">
