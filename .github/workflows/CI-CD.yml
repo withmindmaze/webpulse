@@ -3,10 +3,10 @@ name: Next.js CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - final_deliverables
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,19 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Deploy to Server
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SERVER_IP: 15.184.4.64
+        SERVER_USER: ubuntu
+        DEPLOY_PATH: /home/ubuntu/webpulse
+      run: |
+        echo "$SSH_PRIVATE_KEY" > privatekey.pem
+        chmod 600 privatekey.pem
+        rsync -avz -e "ssh -i privatekey.pem -o StrictHostKeyChecking=no" --exclude=node_modules --exclude=.git ./ $SERVER_USER@$SERVER_IP:$DEPLOY_PATH
+        ssh -i privatekey.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          cd $DEPLOY_PATH
+          npm install --production
+          pm2 restart webpulse || pm2 start npm --name "webpulse" -- start
+        EOF
