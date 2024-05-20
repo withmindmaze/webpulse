@@ -34,7 +34,7 @@ jobs:
         SERVER_USER: ubuntu
         DEPLOY_PATH: /home/ubuntu/webpulse
       run: |
-        echo "$SSH_PRIVATE_KEY" > privatekey.pem
+        echo "$SSH_PRIVATE_KEY" | tr -d '\r' > privatekey.pem
         chmod 600 privatekey.pem
         rsync -avz -e "ssh -i privatekey.pem -o StrictHostKeyChecking=no" --exclude=node_modules --exclude=.git ./ $SERVER_USER@$SERVER_IP:$DEPLOY_PATH
         ssh -i privatekey.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
