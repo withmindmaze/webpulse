@@ -184,5 +184,47 @@
         "subscription_cancel_fail": "Subscription cancellation failed. Something goes wrong.",
         "email_resend": "Email resent successfully",
         "missing_info": "Missing email or password"
+    },
+    "faqs": {
+        "heading": "Frequently asked questions",
+        "feel_free": "If you have any other questions about WebPulse, feel free",
+        "reach_out": "to reach out for more information!."
+    },
+    "about_us": {
+        "heading_about_us": "About us",
+        "heading_our_mission": "Our Mission",
+        "heading_our_vission": "Our Vission",
+        "heading_what_we_offer": "What we offer",
+        "heading_why_choose": "Why Choose WebPulse?",
+        "heading_our_team": "Our team",
+        "heading_join_us": "Join us",
+        "about_us_p1": "Welcome to WebPulse, your go-to solution for enhancing the quality and performance of your web pages. Our mission is to empower businesses and developers with the tools they need to create fast, accessible, and SEO-friendly websites that deliver an exceptional user experience.",
+        "about_us_p2": "At WebPulse, we understand the challenges of maintaining a high-performing web presence in today's digital landscape. That’s why we’ve developed a comprehensive, automated tool that provides detailed audits and actionable insights across various critical areas, including performance, accessibility, SEO, best practices, and Progressive Web App (PWA) features.",
+        "vision": "We envision a web where every site is optimized for speed, usability, and searchability, ensuring that users have a seamless and satisfying experience, regardless of their device or network conditions. We strive to be at the forefront of web optimization, continually evolving to meet the changing needs of the industry and our clients.",
+        "mission": "Our mission is to provide a robust platform that simplifies the process of web optimization. By offering detailed, easy-to-understand reports and practical recommendations, we aim to help you enhance your website’s performance and achieve your digital goals.",
+        "we_offer": [
+            "Performance Audits: Analyze and improve your website’s load speed, interactivity, and stability.",
+            "Accessibility Audits: Ensure your content is accessible to all users, including those with disabilities.",
+            "SEO Audits: Optimize your website for search engines to improve visibility and rankings.",
+            "Best Practices Audits: Identify and fix common web development issues.",
+            "PWA Audits: Evaluate and implement Progressive Web App features for a modern web experience."
+        ],
+        "why_choose": [
+            {
+                "Comprehensive Analysis": " Get a complete overview of your website’s strengths and areas for improvement."
+            },
+            {
+                "Actionable Insights": "Receive clear, actionable recommendations to enhance your web pages."
+            },
+            {
+                "User-Friendly Interface": "Enjoy an intuitive interface that makes complex data easy to understand and act upon."
+            },
+            {
+                "Continuous Improvement": "Benefit from our commitment to staying current with the latest web standards and practices."
+            }
+        ],
+        "team": "Our team consists of experienced professionals passionate about web development and optimization. We are dedicated to providing you with the best tools and support to help you succeed online.",
+        "join_us": "Join us at WebPulse and take the first step towards a faster, more accessible, and highly optimized website. Whether you are a business owner, developer, or digital marketer, WebPulse has the solutions you need to thrive in the digital world.",
+        "for_more": "For more information or to get started, please contact us today!"
     }
 }
