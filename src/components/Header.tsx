@@ -79,6 +79,7 @@ function LanguageSwitcher() {
       value={i18n.language}
       onChange={(e) => changeLanguage(e.target.value)}
       className="border p-2 rounded w-[95px]"
+      style={{ direction: 'ltr' }}
     >
       <option value="en">English</option>
       <option value="ar">العربية</option>
@@ -116,7 +117,7 @@ export function Header() {
   }
 
   return (
-    <header>
+    <header className='bg-[#3bbed9] bg-opacity-10'>
       <nav>
         <Container className="relative z-50 flex justify-center items-center py-8">
           <div className="flex justify-between items-center w-full max-w-6xl px-4 lg:px-0">
