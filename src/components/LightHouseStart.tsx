@@ -10,7 +10,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-2">
                     <label className="flex items-center">
-                        <input type="radio" name="mode" className="form-radio" checked />
+                        <input type="radio" name="mode" className="form-radio m-2" checked />
                         <span className="ml-2">{t('dashboard.radio_navigation')}</span>
                     </label>
                 </div>
@@ -26,7 +26,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                         value="desktop"
                         checked={device === 'desktop'}
                         onChange={handleDeviceChange}
-                        className="form-radio"
+                        className="form-radio m-2"
                     />
                     <span className="ml-2">{t('dashboard.radio_desktop')}</span>
                 </label>
@@ -37,7 +37,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                         value="mobile"
                         checked={device === 'mobile'}
                         onChange={handleDeviceChange}
-                        className="form-radio"
+                        className="form-radio m-2"
                     />
                     <span className="ml-2">{t('dashboard.radio_mobile')}</span>
                 </label>
@@ -53,7 +53,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                             name="performance"
                             checked={categories.performance}
                             onChange={handleCategoryChange}
-                            className="form-checkbox"
+                            className="form-checkbox m-2"
                         />
                         <span className="ml-2">{t('dashboard.radio_performance')}</span>
                     </label>
@@ -63,7 +63,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                             name="accessibility"
                             checked={categories.accessibility}
                             onChange={handleCategoryChange}
-                            className="form-checkbox"
+                            className="form-checkbox m-2"
                         />
                         <span className="ml-2">{t('dashboard.radio_accessibility')}</span>
                     </label>
@@ -73,7 +73,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                             name="best-practices"
                             checked={categories['best-practices']}
                             onChange={handleCategoryChange}
-                            className="form-checkbox"
+                            className="form-checkbox m-2"
                         />
                         <span className="ml-2">{t('dashboard.radio_best_paracticies')}</span>
                     </label>
@@ -83,7 +83,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                             name="seo"
                             checked={categories.seo}
                             onChange={handleCategoryChange}
-                            className="form-checkbox"
+                            className="form-checkbox m-2"
                         />
                         <span className="ml-2">{t('dashboard.radio_seo')}</span>
                     </label>
@@ -93,7 +93,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
                             name="pwa"
                             checked={categories.pwa}
                             onChange={handleCategoryChange}
-                            className="form-checkbox"
+                            className="form-checkbox m-2"
                         />
                         <span className="ml-2">{t('dashboard.radio_pwa')}</span>
                     </label>

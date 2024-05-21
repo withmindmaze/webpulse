@@ -1,4 +1,5 @@
 //@ts-nocheck
+'use client'
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -7,11 +8,12 @@ import { usePathname } from 'next/navigation';
 import supabase from '@/utils/supabaseClient';
 
 export function NavLinks() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const pathName = usePathname();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const [user, setUser] = useState<object | null>(null);
+
   const links = [
     { label: `${user ? t('header.dashboard') : t('header.homepage')}`, href: '/' },
     { label: `${t('header.alerts')}`, href: '/alerts' },
@@ -21,25 +23,25 @@ export function NavLinks() {
     { label: `${t('header.about_us')}`, href: '/about' },
     { label: `${t('header.faq')}`, href: '/faq' },
   ];
+
   const [filteredLinks, setFilteredLinks] = useState<object | null>(links);
 
   const getUser = async () => {
     const { data: user, error } = await supabase.auth.getUser();
     if (user?.user?.id) {
       setUser(user);
+      setFilteredLinks(links);
     } else {
       const filtered = links.filter(link =>
         [t('header.homepage'), t('header.about_us'), t('header.faq')].includes(link.label)
       );
       setFilteredLinks(filtered);
     }
-  }
+  };
 
   useEffect(() => {
     getUser();
-  }, []);
-
-
+  }, [i18n.language]); 
 
   return filteredLinks?.map((link, index) => (
     <Link
