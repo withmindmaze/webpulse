@@ -4,7 +4,3 @@
 **/node_modules
 **/.next
 **/.coverage
-**/*.ppk
-**/*.pem
-# Sentry Config File
-.env.sentry-build-plugin
