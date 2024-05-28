@@ -176,24 +176,30 @@ export function Header() {
                         >
                           <div className="space-y-4">
                             <MobileNavLink href="/">
-                              {t('header.dashboard')}
+                              {isLogin === true ? t('header.dashboard') : t('header.homepage')}
                             </MobileNavLink>
-                            <MobileNavLink href="/reports">
-                              {t('header.reports')}
-                            </MobileNavLink>
-                            <MobileNavLink href="/alerts">
-                              {t('header.alerts')}
-                            </MobileNavLink>
-                            <MobileNavLink href="/compare">
-                              {t('header.compare')}
-                            </MobileNavLink>
-                            <MobileNavLink href="/purchase">
-                              {t('header.pricing')}
-                            </MobileNavLink>
-                            <MobileNavLink href="/purchase">
+                            {
+                              isLogin === true &&
+                              <div className="space-y-4">
+                                <MobileNavLink href="/alerts">
+                                  {t('header.alerts')}
+                                </MobileNavLink>
+
+                                <MobileNavLink href="/compare">
+                                  {t('header.compare')}
+                                </MobileNavLink>
+                                <MobileNavLink href="/reports">
+                                  {t('header.reports')}
+                                </MobileNavLink>
+                                <MobileNavLink href="/purchase">
+                                  {t('header.pricing')}
+                                </MobileNavLink>
+                              </div>
+                            }
+                            <MobileNavLink href="/about">
                               {t('header.about_us')}
                             </MobileNavLink>
-                            <MobileNavLink href="/purchase">
+                            <MobileNavLink href="/faq">
                               {t('header.faq')}
                             </MobileNavLink>
                           </div>

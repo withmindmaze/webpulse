@@ -1,16 +1,42 @@
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid';
+import { useTranslation } from 'react-i18next';
 
-function classNames(...classes: any) {
+function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-const getColorClass = (score: any) => {
+const getColorClass = (score) => {
     if (score >= 90) return 'bg-green-100 text-green-800';
     if (score >= 50) return 'bg-orange-100 text-orange-800';
     return 'bg-red-100 text-red-800';
 };
 
-export default function Metrics({ jsonData }: any) {
+const translationDictionary = {
+    'First Contentful Paint': {
+        en: 'First Contentful Paint',
+        ar: 'أول طلاء محتوى'
+    },
+    'Largest Contentful Paint': {
+        en: 'Largest Contentful Paint',
+        ar: 'أكبر طلاء محتوى'
+    },
+    'Total Blocking Time': {
+        en: 'Total Blocking Time',
+        ar: 'إجمالي وقت الحظر'
+    },
+    'Cumulative Layout Shift': {
+        en: 'Cumulative Layout Shift',
+        ar: 'تحول التخطيط التراكمي'
+    },
+    'Speed Index': {
+        en: 'Speed Index',
+        ar: 'مؤشر السرعة'
+    }
+};
+
+export default function Metrics({ jsonData }) {
+    const { i18n } = useTranslation();
+    const language = i18n.language || 'en';
+
     const metrics = [
         {
             name: 'First Contentful Paint',
@@ -49,26 +75,22 @@ export default function Metrics({ jsonData }: any) {
             <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-5 md:divide-x md:divide-y-0">
                 {metrics.map((item) => (
                     <div key={item.name} className="px-4 py-5 sm:p-6 relative group">
-                        <dt className="text-base font-normal text-gray-900">{item.name}
+                        <dt className="text-base font-normal text-gray-900">
+                            {translationDictionary[item.name][language]}
                             <span className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                                Score: {item.score}
+                                {`Score: ${item.score}`}
                             </span>
                         </dt>
-                        <span className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                            Score: {item.tooltip}
-                        </span>
                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
                             <div className="flex items-baseline text-2xl font-semibold text-[#3bbed9]">
                                 {item.score}
                             </div>
-
                             <div
                                 className={classNames(
                                     getColorClass(parseFloat(item.score)),
                                     'inline-flex items-baseline rounded-full px-2.5 py-2 text-sm font-medium md:mt-2 lg:mt-0'
                                 )}
-                            >
-                            </div>
+                            />
                         </dd>
                     </div>
                 ))}

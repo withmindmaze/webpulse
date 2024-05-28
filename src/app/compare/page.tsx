@@ -1,6 +1,7 @@
 //@ts-nocheck
 'use client'
 import supabase from "@/utils/supabaseClient";
+import { isValidEmail, validateURL } from "@/utils/urlValidator";
 import withAuth from "@/utils/withAuth";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,21 @@ function Alerts() {
 
     const handleSave = async (e: any) => {
         e.preventDefault();
+        if (competitorUrl === '' || url === '' || email === '') {
+            toast.error(t('toast.provide_all_details'));
+            return;
+        }
+        if (competitorUrl === url) {
+            toast.error(t('toast.same_url_compare_error'));
+            return;
+        }
+        if (await validateURL(url) === false || await validateURL(competitorUrl) === false) {
+            return;
+        }
+
+        if (isValidEmail(email) === false) {
+            return;
+        }
         setSaving(true);
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
@@ -273,7 +289,7 @@ function Alerts() {
                     </div>
                     <h5 className="text-xs mt-1 text-gray-500 flex-1">{t('compare.info_select_category')}</h5>
                     {Object.keys(metrics).map((metric) => (
-                        <div key={metric} className="flex items-center space-x-4 mb-2">
+                        <div key={metric} className="flex items-center space-x-4 mb-2 gap-2">
                             <input
                                 type="checkbox"
                                 checked={metrics[metric]}

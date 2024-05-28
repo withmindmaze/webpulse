@@ -32,8 +32,18 @@ export default function Register() {
   const handleSignUp = async (event: any) => {
     event.preventDefault();
     setLoading(true);
-    const baseURL = `${window.location.protocol}//${window.location.host}`;
+    // check if user has already signup with this email
+    const userPlan = await supabase
+      .from('user_metadata')
+      .select('*')
+      .eq('email', email);
+    if (userPlan?.data?.length > 0) {
+      setLoading(false);
+      toast.error(t('toast.signup_already'));
+      return;
+    }
 
+    const baseURL = `${window.location.protocol}//${window.location.host}`;
     // Sign up the user
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
@@ -63,6 +73,11 @@ export default function Register() {
         console.error('Error creating user plan:', planError);
         setLoading(false);
       } else {
+        const { data: user_metadata, error: user_metadata_error } = await supabase
+          .from('user_metadata')
+          .insert([
+            { email: email }
+          ]);
         setLoading(false);
         toast.success(t('toast.signup_success'));
         setEnableResend(true);

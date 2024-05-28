@@ -4,7 +4,7 @@ import supabase from './supabaseClient';
 import { useTranslation } from 'react-i18next';
 
 const withAuth = (WrappedComponent) => {
-    const allowedForGuestUser = ['/'];
+    const allowedForGuestUser = ['/', '/about', '/faq'];
 
     return (props) => {
         const { t } = useTranslation();
@@ -17,25 +17,27 @@ const withAuth = (WrappedComponent) => {
             if (allowedForGuestUser.includes(pathname)) {
                 setLoading(false);
                 return;
-            }
-            const getCurrentUser = async () => {
-                try {
-                    const { data: user, error } = await supabase.auth.getUser();
+            } else {
+                const getCurrentUser = async () => {
+                    try {
+                        const { data: user, error } = await supabase.auth.getUser();
 
-                    if (error) {
-                        throw error;
-                    }
+                        if (error) {
+                            throw error;
+                        }
 
-                    if (!user) {
+                        if (!user) {
+                            router.push('/login');
+                        } else {
+                            setLoading(false);
+                        }
+                    } catch (error) {
                         router.push('/login');
-                    } else {
-                        setLoading(false);
                     }
-                } catch (error) {
-                    router.push('/login');
-                }
-            };
-            getCurrentUser();
+                };
+                getCurrentUser();
+            }
+
         }, [router]);
 
         if (loading) {

@@ -4,8 +4,32 @@ import PerformanceTabs from "./Performance/tabs";
 import AccessibilityTabs from "./Accessibility/tabs";
 import SeoTabs from "./SEO/tabs";
 import PwaTabs from "./PWA/tabs";
+import { useTranslation } from 'react-i18next';
 
-const prepareStatsArray = (jsonData: any) => {
+const translationDictionary = {
+    Performance: {
+        en: 'Performance',
+        ar: 'الأداء',
+    },
+    Accessibility: {
+        en: 'Accessibility',
+        ar: 'إمكانية الوصول',
+    },
+    'Best Practices': {
+        en: 'Best Practices',
+        ar: 'أفضل الممارسات',
+    },
+    SEO: {
+        en: 'SEO',
+        ar: 'تحسين محركات البحث',
+    },
+    PWA: {
+        en: 'PWA',
+        ar: 'تطبيق ويب تقدمي',
+    },
+};
+
+const prepareStatsArray = (jsonData, language) => {
     const stats = [];
     const categories = jsonData.categories;
 
@@ -14,7 +38,7 @@ const prepareStatsArray = (jsonData: any) => {
         if (categories[key]) {
             stats.push({
                 id: idCounter++,
-                name: categories[key].title,
+                name: translationDictionary[categories[key].title][language],
                 value: (categories[key].score * 100).toFixed(1),
             });
         }
@@ -23,22 +47,23 @@ const prepareStatsArray = (jsonData: any) => {
     return stats;
 };
 
-const getColorClass = (score: number) => {
+const getColorClass = (score) => {
     if (score >= 90) return 'text-green-500';
     if (score >= 50) return 'text-orange-500';
     return 'text-red-500';
 };
 
-export default function Stats({ jsonData, url, iframeSrc }: any) {
-    const stats = prepareStatsArray(jsonData);
-    const [selectedCategory, setSelectedCategory] = useState(stats[0]?.name);
+export default function Stats({ jsonData, url, iframeSrc }) {
+    const { i18n } = useTranslation();
+    const language = i18n.language || 'en';
+    const stats = prepareStatsArray(jsonData, language);
+    const [selectedCategory, setSelectedCategory] = useState(0);
     const [selectedTab, setSelectedTab] = useState(1);
-    console.log({selectedCategory});
 
     return (
-        <div className="bg-white">
+        <div className="bg-white" style={{ minWidth: '-webkit-fill-available' }}>
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="mx-auto max-w-2xl lg:max-w-none">
+                <div className="mx-auto">
                     <div className="text-center">
                         <p className="mt-4 text-xl text-gray-600">
                             <span className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-800 rounded-md">
@@ -50,46 +75,38 @@ export default function Stats({ jsonData, url, iframeSrc }: any) {
                         </p>
                     </div>
                     <dl className="mt-8 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
-                        {stats.map((stat) => (
+                        {stats.map((stat, index) => (
                             <div
                                 key={stat.id}
-                                className={`rounded-2xl flex flex-col bg-gray-400/5 p-8 cursor-pointer ${selectedCategory === stat.name ? 'border-4 border-[#3bbed9]' : ''
-                                    }`}
-                                onClick={() => setSelectedCategory(stat.name)}
+                                className={`rounded-2xl flex flex-col bg-gray-400/5 p-8 cursor-pointer ${selectedCategory === index ? 'border-4 border-[#3bbed9]' : ''}`}
+                                onClick={() => setSelectedCategory(index)}
                             >
                                 <dt className={`text-sm font-semibold leading-6 ${getColorClass(parseFloat(stat.value))}`}>{stat.name}</dt>
                                 <dd className={`order-first text-3xl font-semibold tracking-tight ${getColorClass(parseFloat(stat.value))}`}>{stat.value}</dd>
                             </div>
                         ))}
                     </dl>
-                    {
-                        selectedCategory === 'Performance' &&
+                    {selectedCategory === 0 && (
                         <>
-                            < PerformanceMetrics jsonData={jsonData} />
+                            <PerformanceMetrics jsonData={jsonData} />
                             <PerformanceTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} iframeSrc={iframeSrc} />
                         </>
-                    }
-                    {
-                        selectedCategory === 'Accessibility' &&
+                    )}
+                    {selectedCategory === 1 && (
                         <>
-                            {/* <AccessibilityMetrics jsonData={jsonData} /> */}
                             <AccessibilityTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} iframeSrc={iframeSrc} />
                         </>
-                    }
-                    {
-                        selectedCategory === 'SEO' &&
+                    )}
+                    {selectedCategory === 2 && (
                         <>
-                            {/* <AccessibilityMetrics jsonData={jsonData} /> */}
                             <SeoTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} iframeSrc={iframeSrc} />
                         </>
-                    }
-                    {
-                        selectedCategory === 'PWA' &&
+                    )}
+                    {selectedCategory === 3 && (
                         <>
-                            {/* <AccessibilityMetrics jsonData={jsonData} /> */}
                             <PwaTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} iframeSrc={iframeSrc} />
                         </>
-                    }
+                    )}
                 </div>
             </div>
         </div>

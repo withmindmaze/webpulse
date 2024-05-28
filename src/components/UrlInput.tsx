@@ -12,18 +12,40 @@ import 'react-toastify/dist/ReactToastify.css';
 import { validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
 import Stats from './Report/page';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function UrlInput() {
     const [categories, setCategories] = useState({ performance: true, accessibility: true, 'best-practices': true, seo: true, pwa: true });
     const [isLoading, setIsLoading] = useState(false);
     const [device, setDevice] = useState('desktop');
     const [iframeSrc, setIframeSrc] = useState('');
+    const [fingerPrintExist, setFingerPrintExist] = useState(false);
     const [data, setData] = useState(null);
     const [jsonData, setJsonData] = useState(null);
     const [url, setUrl] = useState('');
     const { t } = useTranslation();
     const iframeRef = useRef(null);
     const router = useRouter();
+    const [fpHash, setFpHash] = useState('');
+    useEffect(() => {
+        const setFp = async () => {
+            setIsLoading(true);
+            const fp = await FingerprintJS.load();
+            const { visitorId } = await fp.get();
+            const existingFingerprint = await supabase
+                .from('browser_fingerprint')
+                .select('fingerprint')
+                .eq('fingerprint', visitorId);
+            if (existingFingerprint.data?.length > 0) {
+                setFingerPrintExist(true);
+            }
+            setFpHash(visitorId);
+            setIsLoading(false);
+        };
+        setFp();
+    }, []);
+
+    console.log({ fingerPrintExist });
 
     useEffect(() => {
         if (data) {
@@ -80,7 +102,7 @@ function UrlInput() {
 
         try {
             if (getUser.data.user?.id) {
-                if (localStorage.getItem('isFirstReport') === 'false') {
+                if (fingerPrintExist === true) {
                     const userPlan = await supabase
                         .from('user_plan')
                         .select('*')
@@ -102,7 +124,7 @@ function UrlInput() {
                     setJsonData(data.jsonReport);
                 }
             } else {
-                if (localStorage.getItem('isFirstReport') === 'false') {
+                if (fingerPrintExist === true) {
                     toast.info(t('toast.sign_up_to_use'));
                     router.push('/register');
                 } else {
@@ -112,7 +134,14 @@ function UrlInput() {
                     setJsonData(data.jsonReport);
                 }
             }
-            localStorage.setItem('isFirstReport', 'false');
+            // localStorage.setItem('isFirstReport', 'false');
+            await supabase
+                .from('browser_fingerprint')
+                .upsert([
+                    { fingerprint: fpHash }
+                ], { onConflict: 'fingerprint' });
+            setFingerPrintExist(true);
+
         } catch (error) {
             console.error('Error during API call:', error);
         } finally {
@@ -254,7 +283,7 @@ function UrlInput() {
                     onClick={printIframe}
                     className="my-4 bg-[#3bbed9] text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-[#32a8c1] transition-colors duration-300 ease-in-out"
                 >
-                    Print Report
+                    {t('dashboard.button_print_report')}
                 </button>
             }
 
