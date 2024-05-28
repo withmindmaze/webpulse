@@ -1,8 +1,7 @@
 //@ts-nocheck
 'use client'
+import withAuth from '@/utils/withAuth';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { Footer } from '@/components/Footer';
 
 const stats = [
   { label: 'Transactions every 24 hours', value: '44 million' },
@@ -10,7 +9,7 @@ const stats = [
   { label: 'New users annually', value: '46,000' },
 ];
 
-export default function About() {
+function About() {
   const { t } = useTranslation();
 
   const weOfferItems = t('about_us.we_offer', { returnObjects: true });
@@ -21,41 +20,10 @@ export default function About() {
       <main className="isolate">
         {/* Hero section */}
         <div className="relative isolate -z-10">
-          <svg
-            className="absolute inset-x-0 top-0 -z-10 h-[64rem] w-full stroke-gray-200 [mask-image:radial-gradient(32rem_32rem_at_center,white,transparent)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84"
-                width={200}
-                height={200}
-                x="50%"
-                y={-1}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M.5 200V.5H200" fill="none" />
-              </pattern>
-            </defs>
-            <svg x="50%" y={-1} className="overflow-visible fill-gray-50">
-              <path
-                d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
-                strokeWidth={0}
-              />
-            </svg>
-            <rect width="100%" height="100%" strokeWidth={0} fill="url(#1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84)" />
-          </svg>
           <div
             className="absolute left-1/2 right-0 top-0 -z-10 -ml-24 transform-gpu overflow-hidden blur-3xl lg:ml-24 xl:ml-48"
             aria-hidden="true"
           >
-            <div
-              className="aspect-[801/1036] w-[50.0625rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
-              style={{
-                clipPath:
-                  'polygon(63.1% 29.5%, 100% 17.1%, 76.6% 3%, 48.4% 0%, 44.6% 4.7%, 54.5% 25.3%, 59.8% 49%, 55.2% 57.8%, 44.4% 57.2%, 27.8% 47.9%, 35.1% 81.5%, 0% 97.7%, 39.2% 100%, 35.2% 81.4%, 97.2% 52.8%, 63.1% 29.5%)',
-              }}
-            />
           </div>
           <div className="overflow-hidden">
             <div className="mx-auto max-w-7xl px-6 pb-32 pt-36 sm:pt-60 lg:px-8 lg:pt-32">
@@ -136,27 +104,6 @@ export default function About() {
 
         {/* Logo cloud */}
         <div className="relative isolate -z-10 mt-32 sm:mt-48">
-          <div className="absolute inset-x-0 top-1/2 -z-10 flex -translate-y-1/2 justify-center overflow-hidden [mask-image:radial-gradient(50%_45%_at_50%_55%,white,transparent)]">
-            <svg className="h-[40rem] w-[80rem] flex-none stroke-gray-200" aria-hidden="true">
-              <defs>
-                <pattern
-                  id="e9033f3e-f665-41a6-84ef-756f6778e6fe"
-                  width={200}
-                  height={200}
-                  x="50%"
-                  y="50%"
-                  patternUnits="userSpaceOnUse"
-                  patternTransform="translate(-100 0)"
-                >
-                  <path d="M.5 200V.5H200" fill="none" />
-                </pattern>
-              </defs>
-              <svg x="50%" y="50%" className="overflow-visible fill-gray-50">
-                <path d="M-300 0h201v201h-201Z M300 200h201v201h-201Z" strokeWidth={0} />
-              </svg>
-              <rect width="100%" height="100%" strokeWidth={0} fill="url(#e9033f3e-f665-41a6-84ef-756f6778e6fe)" />
-            </svg>
-          </div>
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <h2 className="text-center text-lg font-semibold leading-8 text-gray-900">
               {/* {t('about_us.trusted')} */}
@@ -227,3 +174,5 @@ export default function About() {
     </div>
   );
 }
+
+export default withAuth(About);

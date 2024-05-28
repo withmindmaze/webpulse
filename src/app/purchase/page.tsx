@@ -9,7 +9,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || ''
 
 function Purchase() {
     return (
-        <Elements stripe={stripePromise}>
+        <Elements stripe={stripePromise} options={{ locale: 'ar' }}>
             <Pricing />
         </Elements>
 

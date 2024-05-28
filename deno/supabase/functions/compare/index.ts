@@ -65,7 +65,7 @@ Deno.serve(async (req: any) => {
 });
 
 const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
-  const apiUrl = `http://zk4gkk8.141.164.47.85.sslip.io/api/audit`;
+  const apiUrl = `http://v44kk0w.15.184.4.64.sslip.io/api/audit`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {

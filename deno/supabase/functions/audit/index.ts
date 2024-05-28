@@ -39,8 +39,7 @@ Deno.serve(async (req: any) => {
   const alert = alerts[0];
 
   // Process each alert record
-  // alerts.forEach(async (alert: any) => {
-  const apiUrl = `http://zk4gkk8.141.164.47.85.sslip.io/api/audit`;
+  const apiUrl = `http://v44kk0w.15.184.4.64.sslip.io/api/audit`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -58,7 +57,6 @@ Deno.serve(async (req: any) => {
   const data = await apiResponse.json();
   const generatedReport = data.data.lhr;
   await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
-  // });
 
   // Update the last_executed_at field for the processed alert
   const { error: updateError } = await supabase
@@ -77,7 +75,6 @@ Deno.serve(async (req: any) => {
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
   });
-
 })
 
 async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {

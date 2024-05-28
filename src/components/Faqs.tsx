@@ -180,12 +180,12 @@ export function Faqs() {
             {t('faqs.heading')}
           </h2>
           <p className="mt-2 text-lg text-gray-600">
-            {t('feel_free')}{' '}
+            {t('faqs.feel_free')}{' '}
             <a
               href="mailto:webpulse@testcrew.com"
               className="text-gray-900 underline"
             >
-              {t('reach_out')}
+              {t('faqs.reach_out')}
             </a>
             .
           </p>
