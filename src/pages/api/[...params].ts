@@ -3,8 +3,6 @@ import lighthouse, { OutputMode, Config } from 'lighthouse';
 import * as ChromeLauncher from 'chrome-launcher';
 import nextCors from 'nextjs-cors';
 import supabase from '@/utils/supabaseClient';
-import {wrapApiHandlerWithSentry, setContext, captureSession, captureMessage, captureException} from '@sentry/nextjs';
-
 import fs from 'fs';
 import path from 'path';
 
@@ -90,7 +88,7 @@ async function uploadReportFile(userId: any, url: any, htmlContent: any) {
   return filePath;
 }
 
-const handler= async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Initialize CORS middleware
   await nextCors(req, res, {
     methods: ['POST', 'OPTIONS'],
@@ -111,9 +109,6 @@ const handler= async (req: NextApiRequest, res: NextApiResponse) => {
 
   console.log("🚀 ~ handler ~ params[0:", params[0]);
   console.log("🚀 ~ handler ~ req.body:", req.body)
-  setContext('report context', {request: req.body, params: params});
-  captureMessage('request', req.body);
-  
   switch (params[0]) {
     case 'audit':
       const { url, categories, device, user_id, generatedBy } = req.body;
@@ -148,7 +143,6 @@ const handler= async (req: NextApiRequest, res: NextApiResponse) => {
         }
         res.status(200).json({ data: runnerResult, jsonReport: jsonReport });
       } catch (error) {
-        captureException(error);
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });
       }
       break;
@@ -157,4 +151,3 @@ const handler= async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
 }
-export default wrapApiHandlerWithSentry(handler, '/api/');
