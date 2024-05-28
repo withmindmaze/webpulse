@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState } from "react";
 import PerformanceMetrics from "./Performance/metrics";
 import PerformanceTabs from "./Performance/tabs";

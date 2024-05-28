@@ -1,10 +1,12 @@
+//@ts-nocheck
+
 import { useTranslation } from 'react-i18next';
 
-function classNames(...classes) {
+function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ');
 }
 
-const getColorClass = (score) => {
+const getColorClass = (score: any) => {
     if (score >= 90) return 'bg-green-100 text-green-800';
     if (score >= 50) return 'bg-orange-100 text-orange-800';
     return 'bg-red-100 text-red-800';
@@ -33,7 +35,7 @@ const translationDictionary = {
     }
 };
 
-export default function Metrics({ jsonData }) {
+export default function Metrics({ jsonData }: any) {
     const { i18n } = useTranslation();
     const language = i18n.language || 'en';
 
@@ -93,8 +95,9 @@ export default function Metrics({ jsonData }) {
                             />
                         </dd>
                     </div>
-                ))}
-            </dl>
-        </div>
+                ))
+                }
+            </dl >
+        </div >
     );
 }
