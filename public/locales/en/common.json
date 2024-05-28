@@ -13,7 +13,7 @@
     },
     "dashboard": {
         "searchHeading": "Analyze your website",
-        "urlPlaceHolder": "Enter URL",
+        "urlPlaceHolder": "https://your_domain.com",
         "analyseButton": "Analyze",
         "radio_navigation": "Navigation (Default)",
         "radio_desktop": "Desktop",
@@ -24,7 +24,9 @@
         "radio_seo": "SEO",
         "radio_pwa": "Progressive Web App",
         "label_categories": "Categories",
-        "device_lable": "Device"
+        "device_lable": "Device",
+        "button_print_report": "Print Report",
+        "password_invalid": "Password must contain alphabet and number"
     },
     "signIn": {
         "title": "Sign in to account",
@@ -183,7 +185,10 @@
         "subscription_cancel_success": "Subscription cancelled successfully.",
         "subscription_cancel_fail": "Subscription cancellation failed. Something goes wrong.",
         "email_resend": "Email resent successfully",
-        "missing_info": "Missing email or password"
+        "missing_info": "Missing email or password",
+        "same_url_compare_error": "Competitor and your URL should be different",
+        "provide_all_details": "Provide all required details",
+        "signup_already": "You have already signed up with this email"
     },
     "faqs": {
         "heading": "Frequently asked questions",

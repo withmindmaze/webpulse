@@ -27,15 +27,14 @@ export const validateURL = async (url) => {
 
     if (!isValidURL(url)) {
         if (localStorage.getItem('language') === 'ar') {
-            toast.error("الرجاء إدخال عنوان URL صالح.");
+            toast.error("أدخل رابط صحيح من فضلك");
         } else {
             toast.error("Please enter a valid URL.");
-
         }
         return false;
     } else if (!await isURLAccessible(url)) {
         if (localStorage.getItem('language') === 'ar') {
-            toast.error("عنوان URL غير متاح. يرجى التحقق من العنوان والمحاولة مرة أخرى.");
+            toast.error("لا يمكن الوصول إلى الموقع. يرجى التحقق من العنوان ثم حاول مرة أخرى.");
         } else {
             toast.error("URL is not accessible. Please check the URL and try again.");
         }
@@ -43,3 +42,22 @@ export const validateURL = async (url) => {
     }
     return true;
 }
+
+export const isValidEmail = (email) => {
+    const pattern = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$');
+    if (!pattern.test(email)) {
+        const language = localStorage.getItem('language');
+        if (language === 'ar') {
+            toast.error("الرجاء إدخال بريد إلكتروني صحيح.");
+        } else {
+            toast.error("Please enter a valid email address.");
+        }
+        return false;
+    }
+    return true;
+}
+
+export const isValidPassword = (password) => {
+    const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return pattern.test(password);
+};

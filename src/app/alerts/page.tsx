@@ -1,6 +1,7 @@
 //@ts-nocheck
 'use client'
 import supabase from "@/utils/supabaseClient";
+import { isValidEmail } from "@/utils/urlValidator";
 import withAuth from "@/utils/withAuth";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,14 +41,25 @@ function Alerts() {
     };
 
     const handleThresholdChange = (metric: any, value: any) => {
-        setMetrics(prevMetrics => ({
-            ...prevMetrics,
-            [metric]: value
-        }));
+        if (value <= 100) {
+            setMetrics(prevMetrics => ({
+                ...prevMetrics,
+                [metric]: value
+            }));
+        } else {
+            return;
+        }
     };
 
     const handleSave = async (e: any) => {
         e.preventDefault();
+        if (url === '' || email === '') {
+            toast.error(t('toast.provide_all_details'));
+            return;
+        }
+        if (isValidEmail(email) === false) {
+            return;
+        }
         setSaving(true);
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
@@ -255,7 +267,7 @@ function Alerts() {
                     </div>
                     <h5 className="text-xs mt-1 text-gray-500 flex-1">{t('alert.info_threshold')}</h5>
                     {Object.keys(metrics).map((metric) => (
-                        <div key={metric} className="flex items-center space-x-4 mb-2">
+                        <div key={metric} className="flex items-center space-x-4 mb-2 gap-2">
                             <input
                                 type="checkbox"
                                 checked={metrics[metric] !== ''}

@@ -284,7 +284,7 @@ export function Pricing() {
           :
           //@ts-ignore
           <stripe-pricing-table
-          //@ts-ignore
+            //@ts-ignore
             customer-email={user.email}
             pricing-table-id="prctbl_1PDoCjAth9C2NE0MgZRLSDBE"
             publishable-key="pk_test_51O0jx3Ath9C2NE0MvIrV1nitk2yYftCYjwr2v2HPghQNJrTuVXbN8R82JPw3DSQzZjm2MBuB69nn88kbYQ4azLOW00WCTYP7Wg"

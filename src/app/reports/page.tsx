@@ -158,7 +158,7 @@ function Reports() {
             } else if (metric_english === "PWA Score") {
                 return "درجة تحسين محركات البحث";
             } else if (metric_english === "SEO Score") {
-                return  "درجة تطبيق الويب التقدمي";
+                return "درجة تطبيق الويب التقدمي";
             }
         }
         return metric_english;
@@ -176,6 +176,7 @@ function Reports() {
         return (
             <div className="flex flex-col items-center justify-center p-8">
                 <select
+                    style={{ direction: 'ltr' }}
                     value={selectedUrl}
                     onChange={(e) => setSelectedUrl(e.target.value)}
                     className="w-96 mb-4 p-3 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:border-[#3bbed9] transition duration-300 ease-in-out cursor-pointer hover:bg-blue-50"

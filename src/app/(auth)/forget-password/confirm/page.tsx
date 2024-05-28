@@ -3,6 +3,7 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
+import { isValidPassword } from '@/utils/urlValidator';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +22,13 @@ export default function ForgotPassword() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
+      setLoading(false);
       toast.error(t('password_mismatch'));
+      return;
+    }
+    if (!isValidPassword(password)) {
+      toast.error(t('password_invalid'));
+      setLoading(false);
       return;
     }
 
