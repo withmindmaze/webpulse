@@ -101,9 +101,12 @@ export function Pricing() {
       .eq('user_id', getUser.data.user?.id);
 
     const paymentDetails = userSubscriptions.data[userSubscriptions.data?.length - 1];
-    if (paymentDetails.data?.payment_detail !== null && paymentDetails.data?.plan === "premium") {
-      setIsPremiumUser(true);
+    if (paymentDetails) {
+      if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
+        setIsPremiumUser(true);
+      }
     }
+    console.log(paymentDetails);
     setLoading(false);
   }
 

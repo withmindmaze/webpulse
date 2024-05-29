@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    image: browserless/chrome:latest
+    container_name: nextjs_app
+    user: root
+    working_dir: /app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+        NEXT_PUBLIC_STRIPE_SECRET_KEY: ${NEXT_PUBLIC_STRIPE_SECRET_KEY}
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+      NEXT_PUBLIC_STRIPE_SECRET_KEY: ${NEXT_PUBLIC_STRIPE_SECRET_KEY}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    command: sh -c "npm run build && npm run start"
