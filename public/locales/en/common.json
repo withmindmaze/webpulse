@@ -73,7 +73,18 @@
         "feature_3": "Compare with Competitors",
         "already_subscribed": "You have already subscribed 🙂",
         "button_manage_subscription": "Manage your subscription",
-        "button_cancel_subscription": "Cancel subscription"
+        "button_cancel_subscription": "Cancel subscription",
+        "button_subscribe": "Subscribe",
+        "text_offer": "This includes:",
+        "offer_1": "Generate audit reports",
+        "offer_2": "Configure alerts to monitor metrics",
+        "offer_3": "Compare performance with competitors",
+        "yearly_label": "Yearly",
+        "monthly_label": "Monthly",
+        "testcrew_plan_text_monthly": "Testcrew Monthly Plan",
+        "testcrew_plan_text_yearly": "Testcrew Yearly Plan",
+        "us_ten_dollar_month": "US$10 per month",
+        "us_hunred_dollar_year": "US$100 per year"
     },
     "alert": {
         "heading_top": "Configure URL Monitoring",
@@ -188,7 +199,8 @@
         "missing_info": "Missing email or password",
         "same_url_compare_error": "Competitor and your URL should be different",
         "provide_all_details": "Provide all required details",
-        "signup_already": "You have already signed up with this email"
+        "signup_already": "You have already signed up with this email",
+        "subscription_success": "Subscription successfull"
     },
     "faqs": {
         "heading": "Frequently asked questions",

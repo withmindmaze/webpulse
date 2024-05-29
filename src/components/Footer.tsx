@@ -53,7 +53,7 @@ export function Footer() {
         <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
           {i18n.language === 'en' && isUserLoggedIn === true &&
             links_english_logged_in?.map((item, index) => (
-              <div className="pb-6">
+              <div className="pb-6" key={index}>
                 <a href={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900" style={{ marginLeft: index === 0 ? "40px" : "0px" }}>
                   {item.label}
                 </a>
@@ -65,7 +65,7 @@ export function Footer() {
               { label: "About Us", href: '/about' },
               { label: "FAQ", href: '/faq' }
             ]?.map((item, index) => (
-              <div className="pb-6">
+              <div className="pb-6" key={index}>
                 <a href={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900" style={{ marginLeft: index === 0 ? "40px" : "0px" }}>
                   {item.label}
                 </a>
@@ -73,7 +73,7 @@ export function Footer() {
             ))}
           {i18n.language === 'ar' && isUserLoggedIn === true &&
             links_arabic_logged_in?.map((item, index) => (
-              <div className="pb-6">
+              <div className="pb-6" key={index}>
                 <a href={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900" style={{ marginLeft: index === 0 ? "40px" : "0px" }}>
                   {item.label}
                 </a>
@@ -85,7 +85,7 @@ export function Footer() {
               { label: "معلومات عنا", href: '/about' },
               { label: "التعليمات", href: '/faq' },
             ]?.map((item, index) => (
-              <div className="pb-6">
+              <div className="pb-6" key={index}>
                 <a href={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900" style={{ marginLeft: index === 0 ? "40px" : "0px" }}>
                   {item.label}
                 </a>

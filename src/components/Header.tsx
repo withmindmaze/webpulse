@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import '../utils/i18n';
+import { usePathname } from 'next/navigation';
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -59,11 +60,15 @@ function MobileNavLink(
 
 function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  const pathName = usePathname();
 
   // Function to change language and store selection in localStorage
   const changeLanguage = (lang: any) => {
     i18n.changeLanguage(lang);
-    localStorage.setItem('language', lang); // Store the language preference
+    localStorage.setItem('language', lang);
+    if (pathName === '/purchase') {
+      // window.location.reload();
+    }
   };
 
   // Effect hook to load language preference from localStorage

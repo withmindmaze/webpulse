@@ -47,7 +47,9 @@ async function runLighthouse(url: string, categories: string[], device: string):
   };
 
   const runnerResult = await lighthouse(url, options, config);
+  console.log("before chrome kill");
   chrome.kill();
+  console.log("after chrome kill");
   // const result = runnerResult?.report as string;
   return runnerResult;
 }
