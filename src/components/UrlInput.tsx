@@ -105,8 +105,8 @@ function UrlInput() {
                         .from('user_plan')
                         .select('*')
                         .eq('user_id', getUser.data.user?.id);
-                    const userPlan = userSubscriptions.data[userSubscriptions.data?.length - 1];
-                    if (userPlan.data.plan === "free") {
+                    const userPlan = userSubscriptions?.data[userSubscriptions?.data?.length - 1];
+                    if (userPlan.plan === "free") {
                         toast.info(t('toast.payment_info'));
                         router.push('/purchase');
                     } else {
