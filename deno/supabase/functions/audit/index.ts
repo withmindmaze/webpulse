@@ -39,7 +39,7 @@ Deno.serve(async (req: any) => {
   const alert = alerts[0];
 
   // Process each alert record
-  const apiUrl = `http://v44kk0w.15.184.4.64.sslip.io/api/audit`;
+  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/audit`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
