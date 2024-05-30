@@ -86,7 +86,7 @@ const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
 }
 
 const generateCompetitorReport = async (url: any, user_id: any) => {
-  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/audit`;
+  const apiUrl = `http://15.184.4.64/api/audit`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -102,20 +102,20 @@ const generateCompetitorReport = async (url: any, user_id: any) => {
   });
 
   const data = await apiResponse.json();
-  const generatedReport = data.data.lhr;
+  const generatedReport = data.data;
   return generatedReport;
 }
 
 async function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any) {
-  const myPerformanceScore = myReport.categories.performance.score * 100;
-  const myAccessibilityScore = myReport.categories.accessibility.score * 100;
-  const mySeoScore = myReport.categories.seo.score * 100;
-  const myPwaScore = myReport.categories.pwa.score * 100;
+  const myPerformanceScore = myReport.performance * 100;
+  const myAccessibilityScore = myReport.accessibility * 100;
+  const mySeoScore = myReport.seo * 100;
+  const myPwaScore = myReport.pwa * 100;
 
-  const competitorPerformanceScore = competitorReport.categories.performance.score * 100;
-  const competitorAccessibilityScore = competitorReport.categories.accessibility.score * 100;
-  const competitorSeoScore = competitorReport.categories.seo.score * 100;
-  const competitorPwaScore = competitorReport.categories.pwa.score * 100;
+  const competitorPerformanceScore = competitorReport.performance * 100;
+  const competitorAccessibilityScore = competitorReport.accessibility * 100;
+  const competitorSeoScore = competitorReport.seo * 100;
+  const competitorPwaScore = competitorReport.pwa * 100;
 
   if (metrics.includes("Performance")) {
     const isReduced = myPerformanceScore < parseInt(competitorPerformanceScore)

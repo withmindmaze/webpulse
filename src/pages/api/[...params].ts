@@ -1,93 +1,67 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import lighthouse, { OutputMode, Config } from 'lighthouse';
-import * as ChromeLauncher from 'chrome-launcher';
-import nextCors from 'nextjs-cors';
 import supabase from '@/utils/supabaseClient';
-import fs from 'fs';
-import path from 'path';
+import * as ChromeLauncher from 'chrome-launcher';
+import lighthouse, { Config, OutputMode } from 'lighthouse';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import nextCors from 'nextjs-cors';
 
-async function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
+function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
+  return ChromeLauncher.launch({
+    chromeFlags: ['--no-sandbox', '--disable-dev-shm-usage'],
+  })
+    .then(chrome => {
+      console.log(`Chrome launched with debugging port: ${chrome.port}`);
 
-  const chrome = await ChromeLauncher.launch({
-    startingUrl: 'https://google.com',
-    chromeFlags: ['--headless', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
-  }).catch(err => {
-    console.error("Failed to launch Chrome:", err);
-    throw err;
-  });
+      const options = {
+        port: chrome.port,
+        onlyCategories: categories,
+        output: "html" as OutputMode,
+      };
+      const mobileEmulation = {
+        mobile: true,
+        width: 360,
+        height: 640,
+        deviceScaleFactor: 2.625,
+        disabled: false,
+      };
+      const desktopEmulation = {
+        mobile: false,
+        width: 1350,
+        height: 940,
+        deviceScaleFactor: 1,
+        disabled: false,
+      };
 
-  console.log(`Chrome launched with debugging port: ${chrome.port}`);
+      const config = {
+        extends: 'lighthouse:default',
+        settings: {
+          formFactor: device === 'desktop' ? 'desktop' : 'mobile',
+          screenEmulation: device === 'desktop' ? desktopEmulation : mobileEmulation,
+        } as Config.Settings
+      };
 
-  const options = {
-    port: chrome.port,
-    onlyCategories: categories,
-    output: "html" as OutputMode,
-  };
-  const mobileEmulation = {
-    mobile: true,
-    width: 360,
-    height: 640,
-    deviceScaleFactor: 2.625,
-    disabled: false,
-  };
-  const desktopEmulation = {
-    mobile: false,
-    width: 1350,
-    height: 940,
-    deviceScaleFactor: 1,
-    disabled: false,
-  }
-
-  const config = {
-    extends: 'lighthouse:default',
-    settings: {
-      formFactor: device === 'desktop' ? 'desktop' : 'mobile',
-      screenEmulation: device === 'desktop' ? desktopEmulation : mobileEmulation,
-    } as Config.Settings
-  };
-
-  const runnerResult = await lighthouse(url, options, config);
-  chrome.kill();
-  console.log("Chrome killed successfully");
-  // const result = runnerResult?.report as string;
-  return runnerResult;
-}
-
-// type MiddlewareFn = (
-//   req: NextApiRequest,
-//   res: NextApiResponse,
-//   next: (err?: any) => void
-// ) => void;
-
-// function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: MiddlewareFn): Promise<any> {
-//   return new Promise((resolve, reject) => {
-//     fn(req, res, (result?: any) => {
-//       if (result instanceof Error) {
-//         return reject(result);
-//       }
-//       return resolve(result);
-//     });
-//   });
-// }
-
-async function uploadReportFile(userId: any, url: any, htmlContent: any) {
-  const fileName = `${url}_${userId}.html`;
-  const filePath = `reports/${fileName}`;  // Path within the bucket
-
-  const { data, error } = await supabase.storage
-    .from('webpulse')
-    .upload(filePath, htmlContent, {
-      contentType: 'text/html',
-      upsert: true
+      return lighthouse(url, options, config)
+        .then(runnerResult => {
+          chrome.kill();
+          console.log("Chrome was killed");
+          console.error("Lighthouse run successfully.");
+          return runnerResult;
+        })
+        .catch(err => {
+          chrome.kill();
+          console.log("Chrome was killed");
+          console.error("Error during Lighthouse run:", err);
+          throw err;
+        }).finally(() => {
+          chrome.kill();
+          console.log("Chrome was killed (Finally block)");
+        });
+    })
+    .catch(err => {
+      console.error("Failed to launch Chrome:", err);
+      throw err;
     });
-
-  if (error) {
-    console.error('Failed to upload HTML report:', error);
-    throw new Error('Failed to upload HTML report');
-  }
-
-  return filePath;
 }
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Initialize CORS middleware
@@ -109,7 +83,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   console.log("🚀 ~ handler ~ params[0:", params[0]);
-  console.log("🚀 ~ handler ~ req.body:", req.body)
+  console.log("🚀 ~ handler ~ req.body:", req.body);
+
   switch (params[0]) {
     case 'audit':
       const { url, categories, device, user_id, generatedBy } = req.body;
@@ -134,13 +109,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .from('report')
             .insert([{
               user_id,
-              // html_report: `${url}_${user_id}.html`,
               json_report: jsonReport,
               url,
               generated_by: generatedBy ? generatedBy : 'user'
             }]);
           console.log(reportData);
-          // await uploadReportFile(user_id, url, runnerResult.report)
         }
         res.status(200).json({ data: runnerResult, jsonReport: jsonReport });
       } catch (error) {

@@ -106,7 +106,7 @@ function UrlInput() {
                         .select('*')
                         .eq('user_id', getUser.data.user?.id);
                     const userPlan = userSubscriptions?.data[userSubscriptions?.data?.length - 1];
-                    if (userPlan.plan === "free") {
+                    if (userPlan === undefined || userPlan.plan === "free") {
                         toast.info(t('toast.payment_info'));
                         router.push('/purchase');
                     } else {
@@ -132,7 +132,6 @@ function UrlInput() {
                     setJsonData(data.jsonReport);
                 }
             }
-            // localStorage.setItem('isFirstReport', 'false');
             await supabase
                 .from('browser_fingerprint')
                 .upsert([
@@ -191,6 +190,12 @@ function UrlInput() {
             (header as HTMLElement).style.display = 'none';
         });
 
+        //@ts-ignore
+        const warnings = doc.querySelectorAll('.lh-warnings__msg');
+        warnings.forEach(warning => {
+            (warning as HTMLElement).style.display = 'none';
+        });
+
         const topHeader = doc.querySelectorAll('.lh-topbar');
         topHeader.forEach(header => {
             (header as HTMLElement).style.display = 'none';
@@ -213,6 +218,7 @@ function UrlInput() {
             '.lh-audit-group.lh-audit-group--metrics',
             '.lh-filmstrip-container',
             '.lh-footer',
+            '.lh-warnings lh-warnings--toplevel'
         ];
         elementsToHide.forEach(selector => {
             const element = doc.querySelector(selector) as HTMLElement;
