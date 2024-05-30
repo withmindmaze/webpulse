@@ -39,7 +39,7 @@ Deno.serve(async (req: any) => {
   const alert = alerts[0];
 
   // Process each alert record
-  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/audit`;
+  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -47,7 +47,6 @@ Deno.serve(async (req: any) => {
     },
     body: JSON.stringify({
       url: alert.url,
-      categories: ["performance", "accessibility", "seo", "pwa"],
       device: "desktop",
       user_id: alert.user_id,
       generatedBy: "system",
@@ -55,7 +54,7 @@ Deno.serve(async (req: any) => {
   });
 
   const data = await apiResponse.json();
-  const generatedReport = data.data.lhr;
+  const generatedReport = data.data;
   await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
 
   // Update the last_executed_at field for the processed alert
@@ -78,10 +77,10 @@ Deno.serve(async (req: any) => {
 })
 
 async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {
-  const generatedPerformanceScore = generatedReport.categories.performance.score * 100;
-  const generatedAccessibilityScore = generatedReport.categories.accessibility.score * 100;
-  const generatedSeoScore = generatedReport.categories.seo.score * 100;
-  const generatedPwaScore = generatedReport.categories.pwa.score * 100;
+  const generatedPerformanceScore = generatedReport.performance * 100;
+  const generatedAccessibilityScore = generatedReport.accessibility * 100;
+  const generatedSeoScore = generatedReport.seo * 100;
+  const generatedPwaScore = generatedReport.pwa * 100;
 
   const storedPerformanceScore = storedMetrics.Performance;
   const storedAccessibilityScore = storedMetrics.Accessibility;
