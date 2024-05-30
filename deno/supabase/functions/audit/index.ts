@@ -37,9 +37,9 @@ Deno.serve(async (req: any) => {
   }
 
   const alert = alerts[0];
-
+  
   // Process each alert record
-  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
+  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {

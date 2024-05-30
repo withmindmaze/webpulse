@@ -41,19 +41,16 @@ function runLighthouse(url: string, device: string): Promise<any> {
             return lighthouse(url, options, config)
                 .then(runnerResult => {
                     chrome.kill();
-                    ChromeLauncher.killAll();
                     console.error("Chrome killed successfully");
                     return runnerResult;
                 })
                 .catch(err => {
                     chrome.kill();
-                    ChromeLauncher.killAll();
                     console.error("Chrome killed successfully");
                     console.log({ err: err });
                     throw err;
                 }).finally(() => {
                     chrome.kill();
-                    ChromeLauncher.killAll();
                     console.error("Chrome killed successfully");
                 });
         })
