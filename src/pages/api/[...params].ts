@@ -6,7 +6,7 @@ import nextCors from 'nextjs-cors';
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
   return ChromeLauncher.launch({
-    chromeFlags: ['--no-sandbox', '--disable-dev-shm-usage'],
+    chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
   })
     .then(chrome => {
       console.log(`Chrome launched with debugging port: ${chrome.port}`);
