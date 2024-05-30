@@ -86,7 +86,7 @@ const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
 }
 
 const generateCompetitorReport = async (url: any, user_id: any) => {
-  const apiUrl = `http://15.184.4.64/api/audit`;
+  const apiUrl = `https://15.184.4.64/api/audit`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
