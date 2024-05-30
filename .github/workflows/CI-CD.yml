@@ -70,7 +70,7 @@ jobs:
           docker load -i nextjs-app.tar
           docker stop nextjs-app || true
           docker rm nextjs-app || true
-          docker run -d -p 80:3000 \
+          docker run -d -p 80:80 -p 443:443 \
             -e NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
             -e NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY} \
             -e NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL} \
