@@ -15,6 +15,7 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
         port: chrome.port,
         onlyCategories: categories,
         output: "html" as OutputMode,
+        preset: 'desktop',
       };
       const mobileEmulation = {
         mobile: true,

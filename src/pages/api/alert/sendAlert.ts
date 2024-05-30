@@ -14,6 +14,7 @@ function runLighthouse(url: string, device: string): Promise<any> {
             const options = {
                 port: chrome.port,
                 output: "json" as OutputMode,
+                preset: 'desktop',
             };
             const mobileEmulation = {
                 mobile: true,
