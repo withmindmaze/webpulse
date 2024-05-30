@@ -29,18 +29,18 @@ jobs:
                      --build-arg NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL \
                      --build-arg NEXT_PUBLIC_STRIPE_PUBLIC_KEY=$NEXT_PUBLIC_STRIPE_PUBLIC_KEY \
                      --build-arg NEXT_PUBLIC_STRIPE_SECRET_KEY=$NEXT_PUBLIC_STRIPE_SECRET_KEY \
-                     -t nextjs-app .
+                     -t webpulse .
 
     - name: Save Docker image to file
       run: |
-        docker save nextjs-app -o nextjs-app.tar
-        tar -czvf nextjs-app.tar.gz nextjs-app.tar
+        docker save webpulse -o webpulse.tar
+        tar -czvf webpulse.tar.gz webpulse.tar
 
     - name: Upload Docker image
       uses: actions/upload-artifact@v2
       with:
-        name: nextjs-app
-        path: nextjs-app.tar.gz
+        name: webpulse
+        path: webpulse.tar.gz
 
   deploy-to-ec2:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
     - name: Download Docker image
       uses: actions/download-artifact@v2
       with:
-        name: nextjs-app
+        name: webpulse
 
     - name: Setup SSH
       run: |
@@ -61,22 +61,24 @@ jobs:
 
     - name: Copy Docker image to EC2
       run: |
-        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no nextjs-app.tar.gz ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/nextjs-app.tar.gz
+        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no webpulse.tar.gz ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/webpulse.tar.gz
 
     - name: SSH to EC2 and deploy
       run: |
         ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          tar -xzvf nextjs-app.tar.gz
-          docker load -i nextjs-app.tar
+          tar -xzvf webpulse.tar.gz
+          docker load -i webpulse.tar
           docker stop nextjs-app || true
           docker rm nextjs-app || true
+          docker stop webpulse || true
+          docker rm webpulse || true
           docker run -d -p 80:80 -p 443:443 \
             -e NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL} \
             -e NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY} \
             -e NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL} \
             -e NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${NEXT_PUBLIC_STRIPE_PUBLIC_KEY} \
             -e NEXT_PUBLIC_STRIPE_SECRET_KEY=${NEXT_PUBLIC_STRIPE_SECRET_KEY} \
-            --name nextjs-app nextjs-app
+            --name webpulse webpulse
         EOF
       env:
         NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
