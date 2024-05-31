@@ -6,6 +6,9 @@ USER root
 # Set the working directory in the container
 WORKDIR /app
 
+# Install Nginx
+RUN apt-get update && apt-get install -y nginx
+
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
 
@@ -14,6 +17,10 @@ RUN npm ci
 
 # Copy the rest of your application
 COPY . .
+
+# Copy SSL certificates and Nginx configuration
+COPY ssl/ /etc/ssl/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Build the Next.js application
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -37,6 +44,7 @@ RUN npm run build
 
 # Expose the ports needed for your app and Chrome
 EXPOSE 3000
+EXPOSE 443
 
-# Start your application
-CMD ["npm", "run", "start"]
+# Start Nginx and your application
+CMD service nginx start && npm run start
