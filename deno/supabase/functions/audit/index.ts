@@ -91,7 +91,7 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
     const isReduced = generatedPerformanceScore < parseInt(storedPerformanceScore);
     metrics.push({
       name: "Performance",
-      score: generatedPerformanceScore,
+      score: generatedPerformanceScore.toFixed(1),
       threshold: storedPerformanceScore,
       isReduced: isReduced
     });
@@ -104,7 +104,7 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
     const isReduced = generatedAccessibilityScore < parseInt(storedAccessibilityScore);
     metrics.push({
       name: "Accessibility",
-      score: generatedAccessibilityScore,
+      score: generatedAccessibilityScore.toFixed(1),
       threshold: storedAccessibilityScore,
       isReduced: isReduced
     });
@@ -117,7 +117,7 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
     const isReduced = generatedSeoScore < parseInt(storedSeoScore);
     metrics.push({
       name: "SEO",
-      score: generatedSeoScore,
+      score: generatedSeoScore.toFixed(1),
       threshold: storedSeoScore,
       isReduced: isReduced
     });
@@ -129,7 +129,7 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
     const isReduced = generatedPwaScore < parseInt(storedPwaScore);
     metrics.push({
       name: "PWA",
-      score: generatedPwaScore,
+      score: generatedPwaScore.toFixed(1),
       threshold: storedPwaScore,
       isReduced: isReduced
     });

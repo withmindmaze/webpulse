@@ -87,6 +87,7 @@ export function Pricing() {
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
+  const [redirectButtonLoading, setRedirectButtonLoading] = useState(false);
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
@@ -193,6 +194,32 @@ export function Pricing() {
     setPriceId(interval === 'monthly' ? 'price_1PDo1vAth9C2NE0Mg3hisgmf' : 'price_1PDo2HAth9C2NE0MPCFNRlNL');
   };
 
+  const handleUpdatePaymentMethod = async () => {
+    setRedirectButtonLoading(true);
+    const getUser = await supabase.auth.getUser();
+    const baseURL = `${window.location.protocol}//${window.location.host}`;
+
+    const response = await fetch('/api/stripe/customerPortal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: getUser.data.user?.id,
+        return_url: baseURL
+      }),
+    });
+
+    const data = await response.json();
+    if (data.url) {
+      router.push(data.url);
+    } else {
+      toast.error('Failed to create customer portal session');
+    }
+    setRedirectButtonLoading(false);
+
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -213,10 +240,17 @@ export function Pricing() {
             </h2>
             <div className="flex flex-col items-center space-y-4">
               <button
+                disabled={redirectButtonLoading}
+                onClick={handleUpdatePaymentMethod}
+                className={`w-full p-2 mt-4 rounded-lg ${redirectButtonLoading === true ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
+              >
+                {redirectButtonLoading === true ? t('pricing.button_manage_subscription_redirecting') : t('pricing.button_manage_subscription')}
+              </button>
+              <button
                 onClick={handleCancelSubscription}
                 className={`w-full p-2 mt-4 rounded-lg ${buttonLoading ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
                 disabled={buttonLoading}>
-                {t('pricing.button_cancel_subscription')}
+                {buttonLoading === true ? t('pricing.button_canceling_subscription') : t('pricing.button_cancel_subscription')}
               </button>
             </div>
           </div>

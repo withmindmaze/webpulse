@@ -21,6 +21,13 @@ Deno.serve(async (req: any) => {
     .is('last_executed_at', null)
     .limit(1);
 
+  if (comparisonAlerts.length === 0) {
+    return new Response(JSON.stringify({ message: 'No alerts to process' }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const comparisonAlert = comparisonAlerts[0];
 
   if (error) {
@@ -38,11 +45,9 @@ Deno.serve(async (req: any) => {
     });
   }
   // Process each alert record
-  // comparisonAlert.forEach(async (alert: any) => {
   const myReport = await generateMyWebsiteReport(comparisonAlert.url, comparisonAlert.user_id);
   const competitorReport = await generateCompetitorReport(comparisonAlert.competitor_url, comparisonAlert.user_id);
   await compareMetrics(myReport, competitorReport, comparisonAlert.metrics, comparisonAlert.url, comparisonAlert.competitor_url, comparisonAlert.email);
-  // });
 
   // Update the last_executed_at field for the processed alert
   const { error: updateError } = await supabase
@@ -65,7 +70,7 @@ Deno.serve(async (req: any) => {
 });
 
 const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
-  const apiUrl = `http://v44kk0w.15.184.4.64.sslip.io/api/audit`;
+  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -81,12 +86,12 @@ const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
   });
 
   const data = await apiResponse.json();
-  const generatedReport = data.data.lhr;
+  const generatedReport = data.data;
   return generatedReport;
 }
 
 const generateCompetitorReport = async (url: any, user_id: any) => {
-  const apiUrl = `https://15.184.4.64/api/audit`;
+  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -121,8 +126,8 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
     const isReduced = myPerformanceScore < parseInt(competitorPerformanceScore)
     emailMetrics.push({
       name: "Performance",
-      myScore: myPerformanceScore,
-      competitorScore: competitorPerformanceScore,
+      myScore: myPerformanceScore.toFixed(1),
+      competitorScore: competitorPerformanceScore.toFixed(1),
       isReduced: isReduced
     });
     if (myPerformanceScore < parseInt(competitorPerformanceScore)) {
@@ -134,8 +139,8 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
     const isReduced = myAccessibilityScore < parseInt(competitorAccessibilityScore);
     emailMetrics.push({
       name: "Accessibility",
-      myScore: myAccessibilityScore,
-      competitorScore: competitorAccessibilityScore,
+      myScore: myAccessibilityScore.toFixed(1),
+      competitorScore: competitorAccessibilityScore.toFixed(1),
       isReduced: isReduced
     });
     if (myAccessibilityScore < parseInt(competitorAccessibilityScore)) {
@@ -146,8 +151,8 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
   if (metrics.includes("SEO")) {
     emailMetrics.push({
       name: "SEO",
-      myScore: mySeoScore,
-      competitorScore: competitorSeoScore,
+      myScore: mySeoScore.toFixed(1),
+      competitorScore: competitorSeoScore.toFixed(1),
     });
     if (mySeoScore < parseInt(competitorSeoScore)) {
       console.log("SEO score is reduced");
@@ -156,8 +161,8 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
   if (metrics.includes("PWA")) {
     emailMetrics.push({
       name: "PWA",
-      myScore: myPwaScore,
-      competitorScore: competitorPwaScore,
+      myScore: myPwaScore.toFixed(1),
+      competitorScore: competitorPwaScore.toFixed(1),
     });
     if (myPwaScore < parseInt(competitorPwaScore)) {
       console.log("PWA score is reduced");

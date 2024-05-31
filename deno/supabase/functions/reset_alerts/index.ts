@@ -8,13 +8,22 @@ const supabase = createClient('https://kckpcztvngcakrpuxvcj.supabase.co', 'eyJhb
 console.log("Hello from reset_alerts Function!")
 
 Deno.serve(async (req) => {
-  const { error } = await supabase
+  const { error: error1 } = await supabase
     .from('alert')
     .update({ last_executed_at: null })
     .gt('id', 0);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  if (error1) {
+    return new Response(JSON.stringify({ error: error1.message }), { status: 500 });
+  }
+
+  const { error: error2 } = await supabase
+    .from('comparison_alert')
+    .update({ last_executed_at: null })
+    .gt('id', 0);
+
+  if (error2) {
+    return new Response(JSON.stringify({ error: error2.message }), { status: 500 });
   }
 
   return new Response(
