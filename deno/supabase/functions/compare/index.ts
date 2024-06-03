@@ -47,21 +47,7 @@ Deno.serve(async (req: any) => {
   // Process each alert record
   const myReport = await generateMyWebsiteReport(comparisonAlert.url, comparisonAlert.user_id);
   const competitorReport = await generateCompetitorReport(comparisonAlert.competitor_url, comparisonAlert.user_id);
-  await compareMetrics(myReport, competitorReport, comparisonAlert.metrics, comparisonAlert.url, comparisonAlert.competitor_url, comparisonAlert.email);
-
-  // Update the last_executed_at field for the processed alert
-  const { error: updateError } = await supabase
-    .from('comparison_alert')
-    .update({ last_executed_at: new Date().toISOString() })
-    .eq('id', comparisonAlert.id);
-
-  if (updateError) {
-    console.error('Error updating comparison alert:', updateError);
-    return new Response(JSON.stringify({ error: 'Failed to update comparison alert' }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  await compareMetrics(myReport, competitorReport, comparisonAlert.metrics, comparisonAlert.url, comparisonAlert.competitor_url, comparisonAlert.email, comparisonAlert);
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
@@ -111,7 +97,7 @@ const generateCompetitorReport = async (url: any, user_id: any) => {
   return generatedReport;
 }
 
-async function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any) {
+async function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any, comparisonAlert: any) {
   const myPerformanceScore = myReport.performance * 100;
   const myAccessibilityScore = myReport.accessibility * 100;
   const mySeoScore = myReport.seo * 100;
@@ -168,10 +154,10 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
       console.log("PWA score is reduced");
     }
   }
-  sendEmail(url, competitor_url, toEmail);
+  sendEmail(url, competitor_url, toEmail, comparisonAlert);
 }
 
-const sendEmail = async (url: any, competitor_url: any, toEmail: any) => {
+const sendEmail = async (url: any, competitor_url: any, toEmail: any, comparisonAlert: any) => {
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -197,6 +183,16 @@ const sendEmail = async (url: any, competitor_url: any, toEmail: any) => {
     console.log({ error });
   } finally {
     await client.close();
+
+    // Update the last_executed_at field for the processed alert
+    const { error: updateError } = await supabase
+      .from('comparison_alert')
+      .update({ last_executed_at: new Date().toISOString() })
+      .eq('id', comparisonAlert.id);
+
+    if (updateError) {
+      console.error('Error updating comparison alert:', updateError);
+    }
   }
 }
 
