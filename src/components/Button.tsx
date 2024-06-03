@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import clsx from 'clsx'
+import Link from 'next/link'
 
 const baseStyles = {
   solid:
@@ -22,37 +22,43 @@ const variantStyles = {
 
 type ButtonProps = (
   | {
-      variant?: 'solid'
-      color?: keyof typeof variantStyles.solid
-    }
+    variant?: 'solid'
+    color?: keyof typeof variantStyles.solid
+  }
   | {
-      variant: 'outline'
-      color?: keyof typeof variantStyles.outline
-    }
+    variant: 'outline'
+    color?: keyof typeof variantStyles.outline
+  }
 ) &
   (
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'color'>
     | (Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> & {
-        href?: undefined
-      })
-  )
+      href?: undefined
+    })
+  ) & {
+    disabled?: boolean
+  }
 
-export function Button({ className, ...props }: ButtonProps) {
+export function Button({ className, disabled, ...props }: ButtonProps) {
   props.variant ??= 'solid'
   props.color ??= 'gray'
+
+  const appliedColor =
+    disabled ? 'gray' : props.color
 
   className = clsx(
     baseStyles[props.variant],
     props.variant === 'outline'
-      ? variantStyles.outline[props.color]
+      ? variantStyles.outline[appliedColor]
       : props.variant === 'solid'
-        ? variantStyles.solid[props.color]
+        ? variantStyles.solid[appliedColor]
         : undefined,
     className,
+    disabled && 'cursor-not-allowed opacity-50'
   )
 
   return typeof props.href === 'undefined' ? (
-    <button className={className} {...props} />
+    <button className={className} disabled={disabled} {...props} />
   ) : (
     <Link className={className} {...props} />
   )

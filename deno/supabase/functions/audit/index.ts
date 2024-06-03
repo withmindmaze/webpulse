@@ -14,11 +14,11 @@ const metrics = [];
 Deno.serve(async (req: any) => {
   const { } = await req.json();
 
-  // Fetch the first alert where last_executed_at is null
+  // Fetch the first alert where execution_timestamp is null or greater than 24 hours from now
   const { data: alerts, error } = await supabase
     .from('alert')
     .select('*')
-    .is('last_executed_at', null)
+    .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
     .limit(1);
 
   if (error) {
@@ -37,9 +37,9 @@ Deno.serve(async (req: any) => {
   }
 
   const alert = alerts[0];
-  
+
   // Process each alert record
-  const apiUrl = `https://15.184.4.64/api/alert/sendAlert`;
+  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -55,28 +55,14 @@ Deno.serve(async (req: any) => {
 
   const data = await apiResponse.json();
   const generatedReport = data.data;
-  await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email);
-
-  // Update the last_executed_at field for the processed alert
-  const { error: updateError } = await supabase
-    .from('alert')
-    .update({ last_executed_at: new Date().toISOString() })
-    .eq('id', alert.id);
-
-  if (updateError) {
-    console.error('Error updating alert:', updateError);
-    return new Response(JSON.stringify({ error: 'Failed to update alert' }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email, alert);
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
   });
 })
 
-async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any) {
+async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any, alert: any) {
   const generatedPerformanceScore = generatedReport.performance * 100;
   const generatedAccessibilityScore = generatedReport.accessibility * 100;
   const generatedSeoScore = generatedReport.seo * 100;
@@ -137,10 +123,10 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
       console.log("PWA score is reduced");
     }
   }
-  sendEmail(url, toEmail);
+  sendEmail(url, toEmail, alert);
 }
 
-const sendEmail = async (url: any, toEmail: any) => {
+const sendEmail = async (url: any, toEmail: any, alert: any) => {
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -166,6 +152,15 @@ const sendEmail = async (url: any, toEmail: any) => {
     console.log({ error });
   } finally {
     await client.close();
+    // Update the execution_timestamp field for the processed alert
+    const { error: updateError } = await supabase
+      .from('alert')
+      .update({ execution_timestamp: Math.floor(Date.now() / 1000) })
+      .eq('id', alert.id);
+
+    if (updateError) {
+      console.error('Error updating alert:', updateError);
+    }
   }
 }
 

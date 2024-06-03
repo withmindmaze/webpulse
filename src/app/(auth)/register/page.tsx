@@ -85,7 +85,7 @@ export default function Register() {
         // router.push('/login');
       }
     }
-    toast.success(t('toast.signup_success'))
+    // toast.success(t('toast.signup_success'))
     setLoading(false);
     return;
   };
@@ -157,7 +157,12 @@ export default function Register() {
             {t('signUp.resend_email')}
           </span>
         )}
-        <Button disabled={loading || email === '' || password === ''} type="submit" color="cyan" className="mt-8 w-full">
+        <Button
+          disabled={loading || email === '' || password === ''}
+          type="submit"
+          color="cyan"
+          className="mt-8 w-full"
+        >
           {loading ? t('signUp.button_signing_up') : t('signUp.button_signup')}
         </Button>
       </form>
