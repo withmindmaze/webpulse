@@ -1,7 +1,7 @@
 //@ts-nocheck
 'use client'
 import supabase from "@/utils/supabaseClient";
-import { isValidEmail } from "@/utils/urlValidator";
+import { isValidEmail, validateURL } from "@/utils/urlValidator";
 import withAuth from "@/utils/withAuth";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,6 +55,9 @@ function Alerts() {
         e.preventDefault();
         if (url === '' || email === '') {
             toast.error(t('toast.provide_all_details'));
+            return;
+        }
+        if (await validateURL(url) === false) {
             return;
         }
         if (isValidEmail(email) === false) {

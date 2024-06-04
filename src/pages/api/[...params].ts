@@ -58,7 +58,7 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
         });
     })
     .catch(err => {
-      console.error("Failed to launch Chrome:", err);
+      console.error("Failed to generate report:", err);
       throw err;
     });
 }
