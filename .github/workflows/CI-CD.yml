@@ -33,7 +33,6 @@ jobs:
                      --build-arg NEXT_PUBLIC_STRIPE_SECRET_KEY=$NEXT_PUBLIC_STRIPE_SECRET_KEY \
                      --build-arg NEXT_PUBLIC_STRIPE_YEARLY_PRICE_KEY=$NEXT_PUBLIC_STRIPE_YEARLY_PRICE_KEY \
                      --build-arg NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY=$NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY \
-         
                      -t webpulse .
 
     - name: Save Docker image to file
