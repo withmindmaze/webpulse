@@ -18,30 +18,6 @@ Deno.serve(async (req: any) => {
     env1: Deno.env.get('NEXT_JS_API_BASE_URL'),
   });
 
-  // Fetch the first alert where execution_timestamp is null or greater than 24 hours from now
-  // const { data: alerts, error } = await supabase
-  //   .from('alert')
-  //   .select('*')
-  //   .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
-  //   .limit(1);
-
-  // if (error) {
-  //   console.error('Error fetching alerts:', error);
-  //   return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
-  //     status: 500,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
-
-  // if (alerts.length === 0) {
-  //   return new Response(JSON.stringify({ message: 'No alerts to process' }), {
-  //     status: 200,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
-
-  // const alert = alerts[0];
-
   // Process each alert record
   const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {

@@ -15,37 +15,6 @@ Deno.serve(async (req: any) => {
   const { comparisonAlert } = await req.json();
   console.log({ comparisonAlert })
 
-  // // Fetch the first alert where last_executed_at is null
-  // const { data: comparisonAlerts, error } = await supabase
-  //   .from('comparison_alert')
-  //   .select('*')
-  //   .is('last_executed_at', null)
-  //   .limit(1);
-
-  // if (comparisonAlerts.length === 0) {
-  //   return new Response(JSON.stringify({ message: 'No alerts to process' }), {
-  //     status: 200,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
-
-  // const comparisonAlert = comparisonAlerts[0];
-
-  // if (error) {
-  //   console.error('Error fetching comparison alerts:', error);
-  //   return new Response(JSON.stringify({ error: 'Failed to fetch comparison alerts' }), {
-  //     status: 500,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
-
-  // if (comparisonAlert.length === 0) {
-  //   return new Response(JSON.stringify({ message: 'No comparison alerts to process' }), {
-  //     status: 200,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
-  // Process each alert record
   const myReport = await generateMyWebsiteReport(comparisonAlert.url, comparisonAlert.user_id);
   const competitorReport = await generateCompetitorReport(comparisonAlert.competitor_url, comparisonAlert.user_id);
   await compareMetrics(myReport, competitorReport, comparisonAlert.metrics, comparisonAlert.url, comparisonAlert.competitor_url, comparisonAlert.email, comparisonAlert);
