@@ -4,6 +4,7 @@ import stripe from 'stripe';
 import supabase from '@/utils/supabaseClient';
 
 const stripeClient = new stripe(`${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`);
+console.log('ENV Secrets==============',process.env, '==============ENV Secrets');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
