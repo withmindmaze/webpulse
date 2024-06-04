@@ -87,7 +87,16 @@ function UrlInput() {
             }),
         });
         const data = await response.json();
-        return data;
+        if (data?.data?.report && data.jsonReport) {
+            return data;
+        } else {
+            if (localStorage.getItem('language') === 'ar') {
+                toast.error("هناك خطأ ما");
+            } else {
+                toast.error("Something went wrong");
+            }
+            return null;
+        }
     }
 
     const authUserClick = async () => {
@@ -111,15 +120,24 @@ function UrlInput() {
                         router.push('/purchase');
                     } else {
                         const data = await callAuditApi(selectedCategories, getUser);
+                        if (data !== null) {
+                            toast.success(t('toast.audit_report_success'));
+                            setData(data.data.report);
+                            setJsonData(data.jsonReport);
+                        } else {
+                            return;
+                        }
+                    }
+                } else {
+                    const data = await callAuditApi(selectedCategories, getUser);
+                    if (data !== null) {
                         toast.success(t('toast.audit_report_success'));
                         setData(data.data.report);
                         setJsonData(data.jsonReport);
                     }
-                } else {
-                    const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success(t('toast.audit_report_success'));
-                    setData(data.data.report);
-                    setJsonData(data.jsonReport);
+                    else {
+                        return;
+                    }
                 }
             } else {
                 if (fingerPrintExist === true) {
@@ -127,9 +145,13 @@ function UrlInput() {
                     router.push('/register');
                 } else {
                     const data = await callAuditApi(selectedCategories, getUser);
-                    toast.success(t('toast.audit_report_success'));
-                    setData(data.data.report);
-                    setJsonData(data.jsonReport);
+                    if (data !== null) {
+                        toast.success(t('toast.audit_report_success'));
+                        setData(data.data.report);
+                        setJsonData(data.jsonReport);
+                    } else {
+                        return;
+                    }
                 }
             }
             await supabase

@@ -3,6 +3,8 @@ import * as ChromeLauncher from 'chrome-launcher';
 import lighthouse, { Config, OutputMode } from 'lighthouse';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nextCors from 'nextjs-cors';
+import stripe from 'stripe';
+const stripeClient = new stripe(`${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`);
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
   return ChromeLauncher.launch({
@@ -58,7 +60,7 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
         });
     })
     .catch(err => {
-      console.error("Failed to launch Chrome:", err);
+      console.error("Failed to generate report:", err);
       throw err;
     });
 }
@@ -121,6 +123,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });
       }
       break;
+    case 'temp':
+      const price = await stripeClient.prices.create({
+        currency: 'usd',
+        unit_amount: 1,
+        recurring: {
+          interval: 'year',
+        },
+        product_data: {
+          name: 'Webpulse Yearly Subscription',
+        },
+      });
+      return res.status(200).json({ data: price });
     default:
       return res.status(500).json({ error: 'Function not found' });
   }

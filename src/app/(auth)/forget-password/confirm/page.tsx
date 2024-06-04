@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 
     if (password !== confirmPassword) {
       setLoading(false);
-      toast.error(t('password_mismatch'));
+      toast.error(t('toast.password_mismatch'));
       return;
     }
     if (!isValidPassword(password)) {
