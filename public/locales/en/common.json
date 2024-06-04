@@ -85,8 +85,8 @@
         "monthly_label": "Monthly",
         "testcrew_plan_text_monthly": "Testcrew Monthly Plan",
         "testcrew_plan_text_yearly": "Testcrew Yearly Plan",
-        "us_ten_dollar_month": "US$10 per month",
-        "us_hunred_dollar_year": "US$100 per year"
+        "us_ten_dollar_month": "AED1 per month",
+        "us_hunred_dollar_year": "AED1 per year"
     },
     "alert": {
         "heading_top": "Configure URL Monitoring",
