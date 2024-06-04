@@ -7,8 +7,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const supabase = createClient('https://kckpcztvngcakrpuxvcj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMzUyNzUwNiwiZXhwIjoyMDI5MTAzNTA2fQ.pgBXRDZcnq8J78ClKyT5vp6_ZfE1ZluXXNFgB7CJdms');
 import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-console.log("Hello from comparison Function!")
 const emailMetrics = [];
+// TODO: update according to the last message: https://chatgpt.com/share/c01cd5bf-ef44-4a33-aba8-3942d196b158
 
 
 Deno.serve(async (req: any) => {

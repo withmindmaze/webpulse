@@ -12,55 +12,71 @@ console.log("Hello from send alert Function!");
 const metrics = [];
 
 Deno.serve(async (req: any) => {
-  const { } = await req.json();
+  const { alert } = await req.json();
 
+  //TODO: 
+  // 1. run cron job every 12 hours
+  // 2. Fetch the all the rows inside the cron job 
+  // 3. Trigger the rows and Trigger Webhook one-by-one and process the row from the edge function. 
+  // 4. END Process
+  // 
   // Fetch the first alert where execution_timestamp is null or greater than 24 hours from now
-  const { data: alerts, error } = await supabase
-    .from('alert')
-    .select('*')
-    .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
-    .limit(1);
+  // const { data: alerts, error } = await supabase
+  //   .from('alert')
+  //   .select('*')
+  //   .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
+  //   // .limit(1);
 
-  if (error) {
-    console.error('Error fetching alerts:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  if (alert) { // validate alert row
 
-  if (alerts.length === 0) {
-    return new Response(JSON.stringify({ message: 'No alerts to process' }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
   }
+  // if (error) {
+  //   console.error('Error fetching alerts:', error);
+  //   return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
+  //     status: 500,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
+
+  // if (alerts.length === 0) {
+  //   return new Response(JSON.stringify({ message: 'No alerts to process' }), {
+  //     status: 200,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
   const alert = alerts[0];
 
-  // Process each alert record
-  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
-  const apiResponse = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      url: alert.url,
-      device: "desktop",
-      user_id: alert.user_id,
-      generatedBy: "system",
-    }),
-  });
-
-  const data = await apiResponse.json();
-  const generatedReport = data.data;
-  await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email, alert);
+  // for (const alert of alerts) {
+    await validateRecord(alert); // Invalid due to 2 mins execution timeout
+  // }
 
   return new Response(JSON.stringify({ message: "Processes initiated", }), {
     headers: { "Content-Type": "application/json" },
   });
 })
+
+const validateRecord = async (alert) => {
+    // Process each alert record
+    //TODO fetch from secrets
+    const apiUrl = `http://15.184.4.64/api/alert/sendAlert`; // DENO.environment 
+    const apiResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: alert.url,
+        device: "desktop",
+        user_id: alert.user_id,
+        generatedBy: "system",
+      }),
+    });
+  
+    const data = await apiResponse.json();
+    const generatedReport = data.data;
+    await compareMetrics(alert.metrics, generatedReport, alert.url, alert.email, alert);
+}
 
 async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any, alert: any) {
   const generatedPerformanceScore = generatedReport.performance * 100;
@@ -127,6 +143,7 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
 }
 
 const sendEmail = async (url: any, toEmail: any, alert: any) => {
+  // TODO Update this to breavo SMTP server.
   const client = new SMTPClient({
     connection: {
       hostname: "smtp.gmail.com",
@@ -134,7 +151,7 @@ const sendEmail = async (url: any, toEmail: any, alert: any) => {
       tls: true,
       auth: {
         username: "jawadakhter7@gmail.com",
-        password: "xquzjmzerdumzpen",
+        password: "xquzjmzerdumzpen", // DENO ENVIRONMENT
       },
     },
   });
@@ -149,14 +166,15 @@ const sendEmail = async (url: any, toEmail: any, alert: any) => {
     });
 
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
   } finally {
     await client.close();
     // Update the execution_timestamp field for the processed alert
-    const { error: updateError } = await supabase
-      .from('alert')
-      .update({ execution_timestamp: Math.floor(Date.now() / 1000) })
-      .eq('id', alert.id);
+    // TODO: No need to update the execution_timestamp;
+    // const { error: updateError } = await supabase
+    //   .from('alert')
+    //   .update({ execution_timestamp: Math.floor(Date.now() / 1000) })
+    //   .eq('id', alert.id);
 
     if (updateError) {
       console.error('Error updating alert:', updateError);
