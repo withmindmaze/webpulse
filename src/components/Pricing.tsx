@@ -91,7 +91,7 @@ export function Pricing() {
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
-  const [priceId, setPriceId] = useState('price_1PDo1vAth9C2NE0Mg3hisgmf');
+  const [priceId, setPriceId] = useState(process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY);
   const [billingInterval, setBillingInterval] = useState('monthly');
 
   const checkPaymentStatus = async () => {
@@ -191,7 +191,7 @@ export function Pricing() {
 
   const handleIntervalChange = (interval: string) => {
     setBillingInterval(interval);
-    setPriceId(interval === 'monthly' ? 'price_1PDo1vAth9C2NE0Mg3hisgmf' : 'price_1PDo2HAth9C2NE0MPCFNRlNL');
+    setPriceId(interval === 'monthly' ? process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY : process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_KEY);
   };
 
   const handleUpdatePaymentMethod = async () => {

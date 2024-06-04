@@ -12,38 +12,39 @@ const emailMetrics = [];
 
 
 Deno.serve(async (req: any) => {
-  // const { } = await req.json();
+  const { comparisonAlert } = await req.json();
+  console.log({ comparisonAlert })
 
-  // Fetch the first alert where last_executed_at is null
-  const { data: comparisonAlerts, error } = await supabase
-    .from('comparison_alert')
-    .select('*')
-    .is('last_executed_at', null)
-    .limit(1);
+  // // Fetch the first alert where last_executed_at is null
+  // const { data: comparisonAlerts, error } = await supabase
+  //   .from('comparison_alert')
+  //   .select('*')
+  //   .is('last_executed_at', null)
+  //   .limit(1);
 
-  if (comparisonAlerts.length === 0) {
-    return new Response(JSON.stringify({ message: 'No alerts to process' }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (comparisonAlerts.length === 0) {
+  //   return new Response(JSON.stringify({ message: 'No alerts to process' }), {
+  //     status: 200,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
-  const comparisonAlert = comparisonAlerts[0];
+  // const comparisonAlert = comparisonAlerts[0];
 
-  if (error) {
-    console.error('Error fetching comparison alerts:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch comparison alerts' }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (error) {
+  //   console.error('Error fetching comparison alerts:', error);
+  //   return new Response(JSON.stringify({ error: 'Failed to fetch comparison alerts' }), {
+  //     status: 500,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
-  if (comparisonAlert.length === 0) {
-    return new Response(JSON.stringify({ message: 'No comparison alerts to process' }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (comparisonAlert.length === 0) {
+  //   return new Response(JSON.stringify({ message: 'No comparison alerts to process' }), {
+  //     status: 200,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
   // Process each alert record
   const myReport = await generateMyWebsiteReport(comparisonAlert.url, comparisonAlert.user_id);
   const competitorReport = await generateCompetitorReport(comparisonAlert.competitor_url, comparisonAlert.user_id);
@@ -56,7 +57,7 @@ Deno.serve(async (req: any) => {
 });
 
 const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
-  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
+  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -77,7 +78,7 @@ const generateMyWebsiteReport = async (myUrl: any, user_id: any) => {
 }
 
 const generateCompetitorReport = async (url: any, user_id: any) => {
-  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
+  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -98,17 +99,17 @@ const generateCompetitorReport = async (url: any, user_id: any) => {
 }
 
 async function compareMetrics(myReport: any, competitorReport: any, metrics: any, url: any, competitor_url: any, toEmail: any, comparisonAlert: any) {
-  const myPerformanceScore = myReport.performance * 100;
-  const myAccessibilityScore = myReport.accessibility * 100;
-  const mySeoScore = myReport.seo * 100;
-  const myPwaScore = myReport.pwa * 100;
+  const myPerformanceScore = myReport?.performance * 100;
+  const myAccessibilityScore = myReport?.accessibility * 100;
+  const mySeoScore = myReport?.seo * 100;
+  const myPwaScore = myReport?.pwa * 100;
 
-  const competitorPerformanceScore = competitorReport.performance * 100;
-  const competitorAccessibilityScore = competitorReport.accessibility * 100;
-  const competitorSeoScore = competitorReport.seo * 100;
-  const competitorPwaScore = competitorReport.pwa * 100;
+  const competitorPerformanceScore = competitorReport?.performance * 100;
+  const competitorAccessibilityScore = competitorReport?.accessibility * 100;
+  const competitorSeoScore = competitorReport?.seo * 100;
+  const competitorPwaScore = competitorReport?.pwa * 100;
 
-  if (metrics.includes("Performance")) {
+  if (metrics.hasOwnProperty("Performance")) {
     const isReduced = myPerformanceScore < parseInt(competitorPerformanceScore)
     emailMetrics.push({
       name: "Performance",
@@ -121,7 +122,7 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
     }
   }
 
-  if (metrics.includes("Accessibility")) {
+  if (metrics.hasOwnProperty("Accessibility")) {
     const isReduced = myAccessibilityScore < parseInt(competitorAccessibilityScore);
     emailMetrics.push({
       name: "Accessibility",
@@ -134,7 +135,7 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
     }
   }
 
-  if (metrics.includes("SEO")) {
+  if (metrics.hasOwnProperty("SEO")) {
     emailMetrics.push({
       name: "SEO",
       myScore: mySeoScore.toFixed(1),
@@ -144,7 +145,7 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
       console.log("SEO score is reduced");
     }
   }
-  if (metrics.includes("PWA")) {
+  if (metrics.hasOwnProperty("PWA")) {
     emailMetrics.push({
       name: "PWA",
       myScore: myPwaScore.toFixed(1),
@@ -160,19 +161,19 @@ async function compareMetrics(myReport: any, competitorReport: any, metrics: any
 const sendEmail = async (url: any, competitor_url: any, toEmail: any, comparisonAlert: any) => {
   const client = new SMTPClient({
     connection: {
-      hostname: "smtp.gmail.com",
+      hostname: Deno.env.get('SMTP_HOST'),
       port: 465,
       tls: true,
       auth: {
-        username: "jawadakhter7@gmail.com",
-        password: "xquzjmzerdumzpen",
+        username: Deno.env.get('SMTP_USERNAME'),
+        password: Deno.env.get('SMPTP_PASSWORD'),
       },
     },
   });
 
   try {
     await client.send({
-      from: "jawadakhter7@gmail.com",
+      from: Deno.env.get('EMAIL_FROM'),
       to: toEmail,
       subject: "Audit Alert",
       content: htmlReport(url, competitor_url),
@@ -183,16 +184,15 @@ const sendEmail = async (url: any, competitor_url: any, toEmail: any, comparison
     console.log({ error });
   } finally {
     await client.close();
-
     // Update the last_executed_at field for the processed alert
-    const { error: updateError } = await supabase
-      .from('comparison_alert')
-      .update({ last_executed_at: new Date().toISOString() })
-      .eq('id', comparisonAlert.id);
+    // const { error: updateError } = await supabase
+    //   .from('comparison_alert')
+    //   .update({ last_executed_at: new Date().toISOString() })
+    //   .eq('id', comparisonAlert.id);
 
-    if (updateError) {
-      console.error('Error updating comparison alert:', updateError);
-    }
+    // if (updateError) {
+    //   console.error('Error updating comparison alert:', updateError);
+    // }
   }
 }
 

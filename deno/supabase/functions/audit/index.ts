@@ -12,34 +12,38 @@ console.log("Hello from send alert Function!");
 const metrics = [];
 
 Deno.serve(async (req: any) => {
-  const { } = await req.json();
+  const { alert } = await req.json();
+  console.log({ alert: alert });
+  console.log({
+    env1: Deno.env.get('NEXT_JS_API_BASE_URL'),
+  });
 
   // Fetch the first alert where execution_timestamp is null or greater than 24 hours from now
-  const { data: alerts, error } = await supabase
-    .from('alert')
-    .select('*')
-    .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
-    .limit(1);
+  // const { data: alerts, error } = await supabase
+  //   .from('alert')
+  //   .select('*')
+  //   .or(`execution_timestamp.is.null,execution_timestamp.lt.${Math.floor(Date.now() / 1000) - 24 * 60 * 60}`)
+  //   .limit(1);
 
-  if (error) {
-    console.error('Error fetching alerts:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (error) {
+  //   console.error('Error fetching alerts:', error);
+  //   return new Response(JSON.stringify({ error: 'Failed to fetch alerts' }), {
+  //     status: 500,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
-  if (alerts.length === 0) {
-    return new Response(JSON.stringify({ message: 'No alerts to process' }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (alerts.length === 0) {
+  //   return new Response(JSON.stringify({ message: 'No alerts to process' }), {
+  //     status: 200,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
-  const alert = alerts[0];
+  // const alert = alerts[0];
 
   // Process each alert record
-  const apiUrl = `http://15.184.4.64/api/alert/sendAlert`;
+  const apiUrl = `${Deno.env.get('NEXT_JS_API_BASE_URL')}/api/alert/sendAlert`;
   const apiResponse = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -63,15 +67,15 @@ Deno.serve(async (req: any) => {
 })
 
 async function compareMetrics(storedMetrics: any, generatedReport: any, url: any, toEmail: any, alert: any) {
-  const generatedPerformanceScore = generatedReport.performance * 100;
-  const generatedAccessibilityScore = generatedReport.accessibility * 100;
-  const generatedSeoScore = generatedReport.seo * 100;
-  const generatedPwaScore = generatedReport.pwa * 100;
+  const generatedPerformanceScore = generatedReport?.performance * 100;
+  const generatedAccessibilityScore = generatedReport?.accessibility * 100;
+  const generatedSeoScore = generatedReport?.seo * 100;
+  const generatedPwaScore = generatedReport?.pwa * 100;
 
-  const storedPerformanceScore = storedMetrics.Performance;
-  const storedAccessibilityScore = storedMetrics.Accessibility;
-  const storedSeoScore = storedMetrics.SEO;
-  const storedPwaScore = storedMetrics.PWA;
+  const storedPerformanceScore = storedMetrics?.Performance;
+  const storedAccessibilityScore = storedMetrics?.Accessibility;
+  const storedSeoScore = storedMetrics?.SEO;
+  const storedPwaScore = storedMetrics?.PWA;
 
   if (storedPerformanceScore) {
     const isReduced = generatedPerformanceScore < parseInt(storedPerformanceScore);
@@ -129,19 +133,19 @@ async function compareMetrics(storedMetrics: any, generatedReport: any, url: any
 const sendEmail = async (url: any, toEmail: any, alert: any) => {
   const client = new SMTPClient({
     connection: {
-      hostname: "smtp.gmail.com",
+      hostname: Deno.env.get('SMTP_HOST'),
       port: 465,
       tls: true,
       auth: {
-        username: "jawadakhter7@gmail.com",
-        password: "xquzjmzerdumzpen",
+        username: Deno.env.get('SMTP_USERNAME'),
+        password: Deno.env.get('SMPTP_PASSWORD'),
       },
     },
   });
 
   try {
     await client.send({
-      from: "jawadakhter7@gmail.com",
+      from: Deno.env.get('EMAIL_FROM'),
       to: toEmail,
       subject: "Audit Alert",
       content: htmlReport(url),
@@ -152,15 +156,6 @@ const sendEmail = async (url: any, toEmail: any, alert: any) => {
     console.log({ error });
   } finally {
     await client.close();
-    // Update the execution_timestamp field for the processed alert
-    const { error: updateError } = await supabase
-      .from('alert')
-      .update({ execution_timestamp: Math.floor(Date.now() / 1000) })
-      .eq('id', alert.id);
-
-    if (updateError) {
-      console.error('Error updating alert:', updateError);
-    }
   }
 }
 
