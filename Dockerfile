@@ -21,6 +21,7 @@ COPY . .
 # Copy SSL certificates and Nginx configuration
 COPY ssl/ /etc/ssl/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY .env .env
 
 # Build the Next.js application
 ARG NEXT_PUBLIC_API_BASE_URL

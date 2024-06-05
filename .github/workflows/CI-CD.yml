@@ -16,6 +16,17 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
+    - name: Create .env file
+      run: |
+        echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" >> .env
+        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
+        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
+        echo "NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLIC_KEY }}" >> .env
+        echo "NEXT_PUBLIC_STRIPE_SECRET_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_SECRET_KEY }}" >> .env
+        echo "NEXT_PUBLIC_STRIPE_YEARLY_PRICE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_KEY }}" >> .env
+        echo "NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY }}" >> .env
+        echo ".env file created successfully"
+
     - name: Build Docker image
       env:
         NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
