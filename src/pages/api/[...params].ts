@@ -123,20 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });
       }
       break;
-    case 'temp':
-      const price = await stripeClient.prices.create({
-        currency: 'usd',
-        unit_amount: 1,
-        recurring: {
-          interval: 'year',
-        },
-        product_data: {
-          name: 'Webpulse Yearly Subscription',
-        },
-      });
-      return res.status(200).json({ data: price });
     default:
       return res.status(500).json({ error: 'Function not found' });
   }
-
 }

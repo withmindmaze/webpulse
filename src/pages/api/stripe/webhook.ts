@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     //@ts-ignore
                     const customerEmail = customer.email;
                     console.log('Customer Email:', customerEmail);
+                    
                     // Query Supabase to update user plan
                     const { error: updateError } = await supabase
                         .from('user_plan')

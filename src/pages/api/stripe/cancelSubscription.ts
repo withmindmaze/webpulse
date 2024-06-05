@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 .single();
 
             const subScriptionId = subscriptionDetails.data?.subscription_id;
-            stripeClient.subscriptions.update(subScriptionId, { cancel_at_period_end: false });
+            // stripeClient.subscriptions.update(subScriptionId, { cancel_at_period_end: false });
             const subscription = await stripeClient.subscriptions.cancel(
                 subScriptionId
             );
