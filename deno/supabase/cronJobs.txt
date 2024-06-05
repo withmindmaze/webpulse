@@ -1,0 +1,53 @@
+// to unshcedule a cron job
+select cron.unschedule('cron_job_name');
+
+// alert_cron_job
+SELECT cron.schedule(
+    'invoke-alert-function',
+    '0 0 * * *',
+    'SELECT send_alerts_to_edge_function();'
+);
+
+// send_alerts_to_edge_function
+CREATE OR REPLACE FUNCTION send_alerts_to_edge_function()
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+    alert_record RECORD;
+BEGIN
+    FOR alert_record IN SELECT * FROM alert LOOP
+        PERFORM net.http_post(
+            url := 'https://kckpcztvngcakrpuxvcj.supabase.co/functions/v1/audit',
+            headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM1Mjc1MDYsImV4cCI6MjAyOTEwMzUwNn0._H7cuZ7o2l7g35qfjeElNmexkswTw89OwEw6sX9StJQ"}'::jsonb,
+            body := jsonb_build_object('alert', alert_record)
+        );
+        -- Add delay if needed, for example, using pg_sleep(seconds)
+        -- PERFORM pg_sleep(1);
+    END LOOP;
+END;
+$$;
+
+// invoke-comparison-alert-function
+SELECT cron.schedule(
+    'invoke-comparison-alert-function',
+    '0 0 * * *',
+    'SELECT send_comparison_alert_to_edge_function();'
+);
+
+// send_comparison_alert_to_edge_function
+CREATE OR REPLACE FUNCTION send_comparison_alert_to_edge_function()
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+    comparison_alert_record RECORD;
+BEGIN
+    FOR comparison_alert_record IN SELECT * FROM comparison_alert LOOP
+        PERFORM net.http_post(
+            url := 'https://kckpcztvngcakrpuxvcj.supabase.co/functions/v1/compare',
+            headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3BjenR2bmdjYWtycHV4dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM1Mjc1MDYsImV4cCI6MjAyOTEwMzUwNn0._H7cuZ7o2l7g35qfjeElNmexkswTw89OwEw6sX9StJQ"}'::jsonb,
+            body := jsonb_build_object('comparisonAlert', comparison_alert_record)
+        );
+        -- Add delay if needed, for example, using pg_sleep(seconds)
+        -- PERFORM pg_sleep(1);
+    END LOOP;
+END;
+$$;
+
