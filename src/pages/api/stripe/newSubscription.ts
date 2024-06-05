@@ -36,6 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } finally {
         try {
             // Save the customer and subscription to Supabase
+            if(subscription?.status !== 'active'){
+                throw new Error('Something went wrong with your subscription.')
+            }
+            if(supabase.auth.getSession() === null){
+                console.log(supabase.auth.getSession());
+                // throw new Error('User is not authenticated.')
+            }
+            // console.log(supabase)
             const { data, error } = await supabase
                 .from('user_plan')
                 .upsert([{
@@ -49,14 +57,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     onConflict: 'user_id'
                 });
             console.log("newSubscription.ts ~ handler ~ data:", data)
-            console.log()
 
             if (error) throw error;
 
             res.status(200).json({ subscriptionId: subscription.id, clientSecret: subscription.latest_invoice.payment_intent.client_secret });
         } catch (error) {
-            console.error('Supabase error:', error);
-            res.status(500).json({ error: 'Failed to save subscription details to Supabase.', message: error.message });
+            console.error('Error:', error);
+            res.status(500).json({ error: 'Failed to save subscription details.', message: error.message });
         }
     }
 }

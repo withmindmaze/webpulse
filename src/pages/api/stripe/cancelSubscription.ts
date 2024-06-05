@@ -17,9 +17,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const subScriptionId = subscriptionDetails.data?.subscription_id;
             // stripeClient.subscriptions.update(subScriptionId, { cancel_at_period_end: false });
+            const sub = await stripeClient.subscriptions.retrieve(subScriptionId);
+            console.log(sub);
+            if(sub.status === 'canceled'){
+                return res.status(200).json({ success: 'Subscription already cancelled' });
+            }
             const subscription = await stripeClient.subscriptions.cancel(
                 subScriptionId
             );
+            // console.log(subscription);
             return res.status(200).json({ success: subscription });
         } catch (error) {
             if (error instanceof Error)

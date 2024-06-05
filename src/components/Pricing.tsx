@@ -97,6 +97,7 @@ export function Pricing() {
   const [priceId, setPriceId] = useState(process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY);
   const [billingInterval, setBillingInterval] = useState('monthly');
   const [stripePriceObject, setStripePriceObject] = useState();
+  const [paymentDetailsObject, setPaymentDetailsObject] = useState();
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -111,6 +112,7 @@ export function Pricing() {
       if (paymentDetails) {
         if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
           setIsPremiumUser(true);
+          setPaymentDetailsObject(paymentDetails);
         }
       }
       setLoading(false);
@@ -158,8 +160,10 @@ export function Pricing() {
     });
 
     const data = await apiResponse.json();
+    // console.log(data);
     if (data.success) {
-      toast.success(t('toast.subscription_cancel_success'));
+      // toast.success(t('toast.subscription_cancel_success'));
+      toast.success(data.success);
       router.push('/');
     } else {
       toast.error(t('toast.subscription_cancel_fail'));
@@ -268,7 +272,7 @@ export function Pricing() {
         <div className="flex justify-center items-center min-h-screen">
           <div className="flex flex-col items-center space-y-4">
             <h2 id="pricing-title" className="text-3xl font-medium tracking-tight text-gray-900">
-              {t('pricing.already_subscribed')}
+              {t('pricing.already_subscribed')} {(new Date(paymentDetailsObject.payment_detail.current_period_end*1000).toDateString())}
             </h2>
             <div className="flex flex-col items-center space-y-4">
               <button
