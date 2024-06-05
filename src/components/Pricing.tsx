@@ -28,7 +28,7 @@ function CheckIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   )
 }
 
-const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, buttonLoading }) => {
+const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, buttonLoading, stripePriceObject }) => {
   const { t } = useTranslation();
 
   return (
@@ -49,7 +49,10 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
       </div>
       <div className="p-4">
         <h2 className="text-2xl font-semibold text-center mt-4">{billingInterval === 'monthly' ? t('pricing.testcrew_plan_text_monthly') : t('pricing.testcrew_plan_text_yearly')}</h2>
-        <p className="text-center text-gray-700 mt-2">{billingInterval === 'monthly' ? t('pricing.us_ten_dollar_month') : t('pricing.us_hunred_dollar_year')}</p>
+        {
+          stripePriceObject?.currency !== null && stripePriceObject?.currency !== undefined &&
+          <p className="text-center text-gray-700 mt-2 font-bold">{`${stripePriceObject?.currency.toUpperCase()} ${stripePriceObject?.unit_amount / 1000}`}</p>
+        }
         <form onSubmit={handleSubmit}>
           <CardElement className="p-2 border rounded-md" />
           <button
@@ -93,27 +96,52 @@ export function Pricing() {
   const elements = useElements();
   const [priceId, setPriceId] = useState(process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY);
   const [billingInterval, setBillingInterval] = useState('monthly');
-
-  const checkPaymentStatus = async () => {
-    const getUser = await supabase.auth.getUser();
-    const userSubscriptions = await supabase
-      .from('user_plan')
-      .select('*')
-      .eq('user_id', getUser.data.user?.id);
-
-    const paymentDetails = userSubscriptions.data[userSubscriptions.data?.length - 1];
-    if (paymentDetails) {
-      if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
-        setIsPremiumUser(true);
-      }
-    }
-    console.log(paymentDetails);
-    setLoading(false);
-  }
+  const [stripePriceObject, setStripePriceObject] = useState();
 
   useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const getUser = await supabase.auth.getUser();
+      const userSubscriptions = await supabase
+        .from('user_plan')
+        .select('*')
+        .eq('user_id', getUser.data.user?.id)
+        .single();
+
+      const paymentDetails = userSubscriptions.data;
+      if (paymentDetails) {
+        if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
+          setIsPremiumUser(true);
+        }
+      }
+      setLoading(false);
+    }
     checkPaymentStatus();
   }, [router]);
+
+  useEffect(() => {
+    if (priceId !== null && priceId !== undefined) {
+      setLoading(true);
+      const fetchPriceFromStripe = async () => {
+        const apiResponse = await fetch(`/api/stripe/getStripePriceObject`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            priceId: priceId
+          }),
+        });
+        const data = await apiResponse.json();
+        setLoading(false);
+        if (apiResponse.ok && data.priceObject) {
+          setStripePriceObject(data.priceObject);
+        } else {
+          toast.error('Unable to fetch stripe products');
+        }
+      }
+      fetchPriceFromStripe();
+    }
+  }, [priceId]);
 
   const handleCancelSubscription = async () => {
     setButtonLoading(true);
@@ -140,12 +168,12 @@ export function Pricing() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     setButtonLoading(true);
+    e.preventDefault();
     const getUser = await supabase.auth.getUser();
 
-
     if (!stripe || !elements) {
+      setButtonLoading(false);
       return;
     }
 
@@ -153,6 +181,7 @@ export function Pricing() {
 
     if (!cardElement) {
       console.error("CardElement not found");
+      setButtonLoading(false);
       return;
     }
 
@@ -163,6 +192,8 @@ export function Pricing() {
 
     if (error) {
       console.error(error);
+      setButtonLoading(false);
+      toast.error(error.message);
       return;
     }
 
@@ -179,9 +210,10 @@ export function Pricing() {
 
     const subscription = await response.json();
     setButtonLoading(false);
-    if (subscription.error) {
-      toast.error(subscription.error);
-      console.error(subscription.error);
+    // Handle subscription errors or success
+    if (!response.ok || subscription.error) {
+      console.error("Subscription error:", subscription.error);
+      toast.error(`Subscription failed: ${subscription.error}`);
     } else {
       toast.success(t('toast.subscription_success'));
       console.log('Subscription successful:', subscription);
@@ -257,6 +289,7 @@ export function Pricing() {
         </div>
       ) : (
         <SubscribeForm
+          stripePriceObject={stripePriceObject}
           handleSubmit={handleSubmit}
           billingInterval={billingInterval}
           handleIntervalChange={handleIntervalChange}

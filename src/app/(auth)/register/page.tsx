@@ -66,9 +66,11 @@ export default function Register() {
     if (data?.user?.id) {
       const { data: planData, error: planError } = await supabase
         .from('user_plan')
-        .insert([
+        .upsert([
           { user_id: data.user.id, email: data.user.email }
-        ]);
+        ], {
+          onConflict: 'user_id'
+        });
 
       if (planError) {
         console.error('Error creating user plan:', planError);
