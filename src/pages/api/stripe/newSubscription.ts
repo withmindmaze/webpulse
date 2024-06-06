@@ -43,7 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 console.log(supabase.auth.getSession());
                 // throw new Error('User is not authenticated.')
             }
-            // console.log(supabase)
+            // Format date as YYYY-MM-DD
+            const subscriptionDate = new Date().toISOString().split('T')[0];
             const { data, error } = await supabase
                 .from('user_plan')
                 .upsert([{
@@ -52,7 +53,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     stripe_customer_id: customer.id,
                     subscription_id: subscription.id,
                     plan: 'premium',
-                    user_id: user_id
+                    user_id: user_id,
+                    subscription_date: subscriptionDate,
+                    cancellation_date: null
                 }], {
                     onConflict: 'user_id'
                 });

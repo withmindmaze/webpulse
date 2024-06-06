@@ -13,22 +13,26 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
+  // const [pageLoading, setPageLoading] = useState(true);
   const [password, setPassword] = useState('');
   const [enableResend, setEnableResend] = useState(false);
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
 
-  const handleRedirection = async () => {
-    const { data: user, error } = await supabase.auth.getUser();
-    if (user.user?.id) {
-      router.back();
-    }
-  }
+  // useEffect(() => {
+  //   const handleRedirection = async () => {
+  //     const { data: user, error } = await supabase.auth.getUser();
+  //     if (user.user?.id) {
+  //       setPageLoading(true);
+  //       router.back();
+  //     } else {
+  //       pageLoading(false);
+  //     }
+  //   }
 
-  useEffect(() => {
-    handleRedirection();
-  }, [router]);
+  //   handleRedirection();
+  // }, [router]);
 
   const handleSignUp = async (event: any) => {
     event.preventDefault();
@@ -118,6 +122,16 @@ export default function Register() {
     }
   }
 
+  // if (pageLoading === true) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen bg-[#3bbed9] bg-opacity-10">
+  //       <div className="text-lg font-semibold text-gray-800">
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   )
+  // }
+  // else {
   return (
     <AuthLayout
       title={t('signUp.title')}
@@ -171,3 +185,5 @@ export default function Register() {
     </AuthLayout>
   );
 }
+
+// }

@@ -166,7 +166,7 @@ function Reports() {
 
     if (loading === true) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="flex items-center justify-center min-h-screen bg-[#3bbed9] bg-opacity-10">
                 <div className="text-lg font-semibold text-gray-800">
                     Loading...
                 </div>

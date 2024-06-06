@@ -71,6 +71,8 @@
         "feature_2": "مراقبة مستمرة",
         "feature_3": "المقارنة مع المنافسين",
         "already_subscribed": "لقد اشتركت بالفعل ",
+        "subscribe_again": "اشترك مرة أخرى",
+        "cancellation_period": "تم إلغاء الاشتراك. يمكنك استخدام الخدمات حتى",
         "button_manage_subscription": "إدارة اشتراكك",
         "button_manage_subscription_redirecting": "إعادة التوجيه إلى البوابة",
         "button_cancel_subscription": "إلغاء الاشتراك",
@@ -200,7 +202,8 @@
         "provide_all_details": "تقديم كافة التفاصيل المطلوبة",
         "password_invalid": "يجب أن تحتوي كلمة المرور على الحروف الأبجدية والأرقام",
         "signup_already": "لقد قمت بالتسجيل بالفعل باستخدام هذا البريد الإلكتروني",
-        "subscription_success": "اشتراك_النجاح"
+        "subscription_success": "اشتراك_النجاح",
+        "logged_in": "لقد قمت بتسجيل الدخول مع"
     },
     "faqs": {
         "heading": "الأسئلة الشائعة",
