@@ -4,7 +4,6 @@ import lighthouse, { Config, OutputMode } from 'lighthouse';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nextCors from 'nextjs-cors';
 import stripe from 'stripe';
-const stripeClient = new stripe(`${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`);
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
   return ChromeLauncher.launch({
