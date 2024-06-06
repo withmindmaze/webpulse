@@ -1,3 +1,4 @@
+'use client'
 import { useTranslation } from 'react-i18next';
 
 export default function LightHouseStart({ device, categories, handleDeviceChange, handleCategoryChange }: any) {
@@ -10,7 +11,7 @@ export default function LightHouseStart({ device, categories, handleDeviceChange
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-2">
                     <label className="flex items-center">
-                        <input type="radio" name="mode" className="form-radio m-2" checked />
+                        <input type="radio" name="mode" className="form-radio m-2" defaultChecked />
                         <span className="ml-2">{t('dashboard.radio_navigation')}</span>
                     </label>
                 </div>

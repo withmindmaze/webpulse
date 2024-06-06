@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const [isClient, setIsClient] = useState(false);
-  const [direction, setDirection] = useState('ltr');
+  const [direction, setDirection] = useState<string>('ltr');
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -50,9 +50,9 @@ export default function RootLayout({
     <html
       dir={direction}
       lang="en"
-      className={clsx('h-full bg-gray-50 antialiased', inter.variable)}
     >
-      <body className="flex h-full flex-col">
+      <body className={clsx('flex h-full flex-col h-full bg-gray-50 antialiased', inter.variable)}
+      >
         <div className="flex min-h-full flex-col">{children}</div>
       </body>
       {isClient && <ToastContainer progressStyle={{ background: "#3bbed9" }} />}
