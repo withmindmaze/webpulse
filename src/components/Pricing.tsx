@@ -51,7 +51,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
         <h2 className="text-2xl font-semibold text-center mt-4">{billingInterval === 'monthly' ? t('pricing.testcrew_plan_text_monthly') : t('pricing.testcrew_plan_text_yearly')}</h2>
         {
           stripePriceObject?.currency !== null && stripePriceObject?.currency !== undefined &&
-          <p className="text-center text-gray-700 mt-2 font-bold">{`${stripePriceObject?.currency.toUpperCase()} ${stripePriceObject?.unit_amount / 1000}`}</p>
+          <p className="text-center text-gray-700 mt-2 font-bold">{`${stripePriceObject?.currency.toUpperCase()} ${stripePriceObject?.unit_amount / 100}`}</p>
         }
         <form onSubmit={handleSubmit}>
           <CardElement className="p-2 border rounded-md" />
@@ -207,10 +207,8 @@ export function Pricing() {
     });
 
     const data = await apiResponse.json();
-    // console.log(data);
     if (data.success) {
-      // toast.success(t('toast.subscription_cancel_success'));
-      toast.success(data.success);
+      toast.success(t('toast.subscription_cancel_success'));
       router.push('/');
     } else {
       toast.error(t('toast.subscription_cancel_fail'));
