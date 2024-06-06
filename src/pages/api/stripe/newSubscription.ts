@@ -36,10 +36,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } finally {
         try {
             // Save the customer and subscription to Supabase
-            if(subscription?.status !== 'active'){
+            if (subscription?.status !== 'active') {
                 throw new Error('Something went wrong with your subscription.')
             }
-            if(supabase.auth.getSession() === null){
+            if (supabase.auth.getSession() === null) {
                 console.log(supabase.auth.getSession());
                 // throw new Error('User is not authenticated.')
             }
@@ -58,9 +58,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 });
             console.log("newSubscription.ts ~ handler ~ data:", data)
 
-            if (error) throw error;
+            if (error) {
+                console.log("error while storing user_plan", error)
+            }
 
-            res.status(200).json({ subscriptionId: subscription.id, clientSecret: subscription.latest_invoice.payment_intent.client_secret });
+            return res.status(200).json({ subscriptionId: subscription.id });
         } catch (error) {
             console.error('Error:', error);
             res.status(500).json({ error: 'Failed to save subscription details.', message: error.message });
