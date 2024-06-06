@@ -99,6 +99,27 @@ function UrlInput() {
         }
     }
 
+    const canGenerateReport = (userPlan) => {
+        if (userPlan.plan !== "free") {
+            return true;  // Allow report generation for any paid plans.
+        }
+
+        // For free plan, check if there is a valid cancellation within the last 30 days.
+        if (userPlan.cancellation_date) {
+            const cancellationDate = new Date(userPlan.cancellation_date);
+            const currentDate = new Date();
+            const thirtyDaysAfterCancellation = new Date(cancellationDate);
+            thirtyDaysAfterCancellation.setDate(cancellationDate.getDate() + 30);
+
+            if (currentDate <= thirtyDaysAfterCancellation) {
+                return true;  // Allow if within 30 days after cancellation.
+            }
+        }
+
+        return false;  // Do not allow otherwise.
+    }
+
+
     const authUserClick = async () => {
         const getUser = await supabase.auth.getUser();
         // Prepare categories array
@@ -116,7 +137,7 @@ function UrlInput() {
                         .eq('user_id', getUser.data.user?.id)
                         .single();
                     const userPlan = userSubscriptions?.data;
-                    if (userPlan === undefined || userPlan.plan === "free") {
+                    if (userPlan === undefined || !canGenerateReport(userPlan)) {
                         toast.info(t('toast.payment_info'));
                         router.push('/purchase');
                     } else {

@@ -1,3 +1,4 @@
+//@ts-nocheck
 'use client'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,20 +14,24 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
+  // const [pageLoading, setPageLoading] = useState(true);
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
 
-  const handleRedirection = async () => {
-    const { data: user, error } = await supabase.auth.getUser();
-    if (user?.user?.id) {
-      router.back();
-    }
-  }
+  // const handleRedirection = async () => {
+  //   const { data: user, error } = await supabase.auth.getUser();
+  //   if (user.user?.id) {
+  //     setPageLoading(true);
+  //     router.back();
+  //   } else {
+  //     pageLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    handleRedirection();
-  }, [router]);
+  // useEffect(() => {
+  //   handleRedirection();
+  // }, [router]);
 
   const handleLogin = async (e: any) => {
     e.preventDefault();  // Prevent the form from submitting traditionally
@@ -45,6 +50,16 @@ export default function Login() {
     }
     setLoading(false);
   };
+
+  // if (pageLoading === true) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen bg-[#3bbed9] bg-opacity-10">
+  //       <div className="text-lg font-semibold text-gray-800">
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <AuthLayout

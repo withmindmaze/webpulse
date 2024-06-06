@@ -87,7 +87,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
 
 export function Pricing() {
   const router = useRouter();
-  const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
   const [redirectButtonLoading, setRedirectButtonLoading] = useState(false);
@@ -101,6 +101,7 @@ export function Pricing() {
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
+      setLoading(true);
       const getUser = await supabase.auth.getUser();
       const userSubscriptions = await supabase
         .from('user_plan')
@@ -110,15 +111,61 @@ export function Pricing() {
 
       const paymentDetails = userSubscriptions.data;
       if (paymentDetails) {
-        if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
-          setIsPremiumUser(true);
-          setPaymentDetailsObject(paymentDetails);
+        const now = new Date();
+        let isPremium = false;
+
+        if (paymentDetails.payment_detail !== null && paymentDetails.plan === "premium") {
+          isPremium = true;
+        } else if (paymentDetails.cancellation_date) {
+          const cancellationDate = new Date(paymentDetails.cancellation_date);
+          const oneMonthLater = new Date(cancellationDate);
+          oneMonthLater.setMonth(cancellationDate.getMonth() + 1);
+
+          if (now <= oneMonthLater) {
+            isPremium = true;
+          }
         }
+
+        setIsPremiumUser(isPremium);
+        if (isPremium) {
+          setPaymentDetailsObject(paymentDetails);
+        } else {
+          setPaymentDetailsObject({});
+        }
+      } else {
+        setIsPremiumUser(false);
+        setPaymentDetailsObject({});
       }
       setLoading(false);
-    }
+    };
+
     checkPaymentStatus();
   }, [router]);
+  // useEffect(() => {
+  //   const checkPaymentStatus = async () => {
+  //     setLoading(true);
+  //     const getUser = await supabase.auth.getUser();
+  //     const userSubscriptions = await supabase
+  //       .from('user_plan')
+  //       .select('*')
+  //       .eq('user_id', getUser.data.user?.id)
+  //       .single();
+
+  //     const paymentDetails = userSubscriptions.data;
+  //     if (paymentDetails) {
+  //       if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
+  //         setIsPremiumUser(true);
+  //         setPaymentDetailsObject(paymentDetails);
+  //       } else {
+  //         setIsPremiumUser(false);
+  //       }
+  //     } else {
+  //       setIsPremiumUser(false);
+  //     }
+  //     setLoading(false);
+  //   }
+  //   checkPaymentStatus();
+  // }, [router]);
 
   useEffect(() => {
     if (priceId !== null && priceId !== undefined) {
@@ -253,45 +300,72 @@ export function Pricing() {
       toast.error('Failed to create customer portal session');
     }
     setRedirectButtonLoading(false);
-
   };
 
-  if (loading) {
+  const addThirtyDays = (dateString) => {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 30); // Add 30 days to the date
+    return date.toDateString();
+  };
+
+  if (loading || isPremiumUser === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg font-semibold text-gray-800">
           Loading...
         </div>
       </div>
     );
-  }
-
-  return (
-    <div>
-      {isPremiumUser ? (
+  } else {
+    if (isPremiumUser === true) {
+      return (
         <div className="flex justify-center items-center min-h-screen">
           <div className="flex flex-col items-center space-y-4">
             <h2 id="pricing-title" className="text-3xl font-medium tracking-tight text-gray-900">
-              {t('pricing.already_subscribed')} {(new Date(paymentDetailsObject.payment_detail.current_period_end*1000).toDateString())}
+              {
+                paymentDetailsObject.payment_detail?.lines?.data[0].period?.end ?
+                  `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.lines?.data[0].period?.end * 1000).toDateString())}` :
+                  `${t('pricing.cancellation_period')} ${(addThirtyDays(new Date(paymentDetailsObject.cancellation_date).toDateString()))}`
+              }
             </h2>
-            <div className="flex flex-col items-center space-y-4">
-              <button
-                disabled={redirectButtonLoading}
-                onClick={handleUpdatePaymentMethod}
-                className={`w-full p-2 mt-4 rounded-lg ${redirectButtonLoading === true ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
-              >
-                {redirectButtonLoading === true ? t('pricing.button_manage_subscription_redirecting') : t('pricing.button_manage_subscription')}
-              </button>
-              <button
-                onClick={handleCancelSubscription}
-                className={`w-full p-2 mt-4 rounded-lg ${buttonLoading ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
-                disabled={buttonLoading}>
-                {buttonLoading === true ? t('pricing.button_canceling_subscription') : t('pricing.button_cancel_subscription')}
-              </button>
-            </div>
+            {
+              paymentDetailsObject.payment_detail !== null &&
+              <div className="flex flex-col items-center space-y-4">
+                <button
+                  disabled={redirectButtonLoading}
+                  onClick={handleUpdatePaymentMethod}
+                  className={`w-full p-2 mt-4 rounded-lg ${redirectButtonLoading === true ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
+                >
+                  {redirectButtonLoading === true ? t('pricing.button_manage_subscription_redirecting') : t('pricing.button_manage_subscription')}
+                </button>
+                <button
+                  onClick={handleCancelSubscription}
+                  className={`w-full p-2 mt-4 rounded-lg ${buttonLoading ? 'bg-gray-400' : 'bg-[#3bbed9] text-white'}`}
+                  disabled={buttonLoading}>
+                  {buttonLoading === true ? t('pricing.button_canceling_subscription') : t('pricing.button_cancel_subscription')}
+                </button>
+              </div>
+            }
+            {
+              paymentDetailsObject.payment_detail === null &&
+              <div className="flex flex-col items-center space-y-4">
+                <h4 id="pricing-title" className="text-xl font-medium tracking-tight text-gray-900">
+                  {t('pricing.subscribe_again')}
+                </h4>
+                <SubscribeForm
+                  stripePriceObject={stripePriceObject}
+                  handleSubmit={handleSubmit}
+                  billingInterval={billingInterval}
+                  handleIntervalChange={handleIntervalChange}
+                  buttonLoading={buttonLoading}
+                />
+              </div>
+            }
           </div>
         </div>
-      ) : (
+      )
+    } else if (isPremiumUser === false) {
+      return (
         <SubscribeForm
           stripePriceObject={stripePriceObject}
           handleSubmit={handleSubmit}
@@ -299,10 +373,12 @@ export function Pricing() {
           handleIntervalChange={handleIntervalChange}
           buttonLoading={buttonLoading}
         />
-      )
-      }
-    </div >
-  );
+      );
+    }
+
+  }
+
+
 }
 
 export default Pricing;

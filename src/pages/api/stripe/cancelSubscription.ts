@@ -24,9 +24,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const subscription = await stripeClient.subscriptions.cancel(
                 subScriptionId
             );
+            const cancellation_date = new Date().toISOString().split('T')[0];
             await supabase
                 .from('user_plan')
-                .update({ plan: 'free', payment_detail: null, stripe_customer_id: null, subscription_id: null })
+                .update({
+                    plan: 'free',
+                    payment_detail: null,
+                    stripe_customer_id: null,
+                    subscription_id: null,
+                    cancellation_date: cancellation_date,
+                    subscription_date: null
+                })
                 .eq('user_id', userId);
             return res.status(200).json({ success: subscription });
         } catch (error) {
