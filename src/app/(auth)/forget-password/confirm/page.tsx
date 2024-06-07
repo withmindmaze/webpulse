@@ -27,7 +27,7 @@ export default function ForgotPassword() {
       return;
     }
     if (!isValidPassword(password)) {
-      toast.error(t('password_invalid'));
+      toast.error(t('toast.password_invalid'));
       setLoading(false);
       return;
     }
