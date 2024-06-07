@@ -60,6 +60,7 @@ export const isValidEmail = (email) => {
 }
 
 export const isValidPassword = (password) => {
-    const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    console.log(password);
+    const pattern = /^(?=.*[A-Za-z])(?=.*\d).*$/;
     return pattern.test(password);
 };

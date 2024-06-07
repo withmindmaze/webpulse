@@ -4,6 +4,7 @@ import { CirclesBackground } from '@/components/CirclesBackground';
 import { useEffect, useState } from 'react';
 import supabase from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export function AuthLayout({
   title,
@@ -16,6 +17,7 @@ export function AuthLayout({
 }) {
   const [pageLoading, setPageLoading] = useState(true);
   const router = useRouter();
+  const pathName = usePathname();
 
   const handleRedirection = async () => {
     const { data: user, error } = await supabase.auth.getUser();
@@ -28,7 +30,11 @@ export function AuthLayout({
   }
 
   useEffect(() => {
-    handleRedirection();
+    if (pathName === '/forget-password/confirm') {
+      setPageLoading(false);
+    } else {
+      handleRedirection();
+    }
   }, [router]);
 
   if (pageLoading === true) {
