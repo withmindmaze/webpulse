@@ -117,7 +117,7 @@ export function Pricing() {
         if (paymentDetails.payment_detail !== null && paymentDetails.plan === "premium") {
           isPremium = true;
         } else if (paymentDetails.cancellation_date) {
-          const cancellationDate = new Date(paymentDetails.cancellation_date);
+          const cancellationDate = new Date(paymentDetails.created_at);
           const oneMonthLater = new Date(cancellationDate);
           oneMonthLater.setMonth(cancellationDate.getMonth() + 1);
 
@@ -303,7 +303,7 @@ export function Pricing() {
   const addThirtyDays = (dateString) => {
     const date = new Date(dateString);
     date.setDate(date.getDate() + 30); // Add 30 days to the date
-    return date.toDateString();
+    return date;
   };
 
   if (loading || isPremiumUser === null) {
@@ -319,11 +319,12 @@ export function Pricing() {
       return (
         <div className="flex justify-center items-center">
           <div className="flex flex-col items-center space-y-6">
+            {console.log(paymentDetailsObject)}
             <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
               { 
                 paymentDetailsObject.payment_detail?.current_period_end && !paymentDetailsObject.payment_detail?.cancel_at_period_end ?
                   `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}` :
-                  `${t('pricing.cancellation_period')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}`
+                  `${t('pricing.cancellation_period')} ${(addThirtyDays(new Date(paymentDetailsObject.created_at)).toDateString())}`
               }
             </h2>
             {
