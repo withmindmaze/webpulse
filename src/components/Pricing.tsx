@@ -35,7 +35,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
     if (i18n.language === 'en') {
       return stripePriceObject?.currency.toUpperCase();
     } else {
-      return 'دولار أمريكي';
+      return 'دولار';
     }
   }
 
