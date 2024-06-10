@@ -3,11 +3,16 @@ import * as ChromeLauncher from 'chrome-launcher';
 import lighthouse, { Config, OutputMode } from 'lighthouse';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nextCors from 'nextjs-cors';
-import stripe from 'stripe';
+
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+}
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
   return ChromeLauncher.launch({
-    chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
+    chromeFlags: ['--headless'],
   })
     .then(chrome => {
       console.log(`Chrome launched with debugging port: ${chrome.port}`);
@@ -45,17 +50,16 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
         .then(runnerResult => {
           chrome.kill();
           console.log("Chrome was killed");
-          console.error("Lighthouse run successfully.");
           return runnerResult;
         })
         .catch(err => {
           chrome.kill();
-          console.log("Chrome was killed");
+          console.error("Chrome was killed");
           console.error("Error during Lighthouse run:", err);
           throw err;
         }).finally(() => {
-          chrome.kill();
-          console.log("Chrome was killed (Finally block)");
+          if(chrome)
+            chrome.kill();
         });
     })
     .catch(err => {

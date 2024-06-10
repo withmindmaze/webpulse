@@ -36,6 +36,7 @@ const prepareStatsArray = (jsonData, language) => {
 
     let idCounter = 1;
     for (const key in categories) {
+        console.log(key, categories);
         if (categories[key]) {
             stats.push({
                 id: idCounter++,

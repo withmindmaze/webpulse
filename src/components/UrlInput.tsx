@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import 'react-json-view-lite/dist/index.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { validateURL } from '../utils/urlValidator';
+import { stringToUrl, validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
 import Stats from './Report/page';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
@@ -80,7 +80,7 @@ function UrlInput() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url: url,
+                url: stringToUrl(url),
                 categories: selectedCategories,
                 device: device,
                 user_id: getUser?.data?.user?.id ? getUser?.data?.user?.id : undefined
@@ -291,7 +291,7 @@ function UrlInput() {
                             className="block w-full border-0 py-2 pl-10 text-gray-900 ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:border-[#3bbed9] focus:outline-none focus:ring-[#3bbed9] focus:ring-1 sm:text-sm sm:leading-6"
                             placeholder={t('dashboard.urlPlaceHolder')}
                             value={url}
-                            onChange={(e) => setUrl(e.target.value)}
+                            onChange={(e) => setUrl((e.target.value))}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     handleAnalyzeClick();

@@ -24,9 +24,25 @@ export const isURLAccessible = async (url) => {
         return false;
     }
 }
-// Function to validate URL before proceeding
-export const validateURL = async (url) => {
 
+export function stringToUrl(input) {
+    try {
+      // Check if the input string starts with 'http://' or 'https://'
+      if (!input.startsWith('http://') && !input.startsWith('https://')) {
+        // Prepend 'https://' if the protocol is missing
+        input = 'https://' + input;
+      }
+      // Create a new URL object
+      const url = new URL(input);
+      return url;
+    } catch (error) {
+      console.error("Invalid URL", error);
+      return null;
+    }
+  }
+// Function to validate URL before proceeding
+export const validateURL = async (urlOriginal) => {
+    const url = (stringToUrl(urlOriginal));
     if (!isValidURL(url)) {
         if (localStorage.getItem('language') === 'ar') {
             toast.error("أدخل رابط صحيح من فضلك");
