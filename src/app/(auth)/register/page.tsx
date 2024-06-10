@@ -1,38 +1,22 @@
 //@ts-nocheck
 'use client'
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
+import withAuth from '@/utils/withAuth';
+import Link from 'next/link';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function Register() {
+const Register = () => {
   const [loading, setLoading] = useState(false);
-  // const [pageLoading, setPageLoading] = useState(true);
   const [password, setPassword] = useState('');
   const [enableResend, setEnableResend] = useState(false);
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   const handleRedirection = async () => {
-  //     const { data: user, error } = await supabase.auth.getUser();
-  //     if (user.user?.id) {
-  //       setPageLoading(true);
-  //       router.back();
-  //     } else {
-  //       pageLoading(false);
-  //     }
-  //   }
-
-  //   handleRedirection();
-  // }, [router]);
 
   const handleSignUp = async (event: any) => {
     event.preventDefault();
@@ -88,10 +72,8 @@ export default function Register() {
         setLoading(false);
         toast.success(t('toast.signup_success'));
         setEnableResend(true);
-        // router.push('/login');
       }
     }
-    // toast.success(t('toast.signup_success'))
     setLoading(false);
     return;
   };
@@ -122,16 +104,6 @@ export default function Register() {
     }
   }
 
-  // if (pageLoading === true) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen bg-[#3bbed9] bg-opacity-10">
-  //       <div className="text-lg font-semibold text-gray-800">
-  //         Loading...
-  //       </div>
-  //     </div>
-  //   )
-  // }
-  // else {
   return (
     <AuthLayout
       title={t('signUp.title')}
@@ -186,4 +158,4 @@ export default function Register() {
   );
 }
 
-// }
+export default withAuth(Register)
