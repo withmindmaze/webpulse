@@ -4,7 +4,7 @@ import supabase from './supabaseClient';
 import { useTranslation } from 'react-i18next';
 
 const withAuth = (WrappedComponent) => {
-    const allowedForGuestUser = ['/', '/about', '/faq'];
+    const allowedForGuestUser = ['/', '/about', '/faq', '/login', '/register', '/forget-password', '/forget-password/confirm'];
 
     return (props) => {
         const { t } = useTranslation();

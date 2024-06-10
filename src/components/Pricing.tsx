@@ -29,7 +29,15 @@ function CheckIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 }
 
 const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, buttonLoading, stripePriceObject }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const renderCurrency = () => {
+    if (i18n.language === 'en') {
+      return stripePriceObject?.currency.toUpperCase();
+    } else {
+      return 'دولار أمريكي';
+    }
+  }
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-md rounded-lg overflow-hidden">
@@ -51,7 +59,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
         <h2 className="text-2xl font-semibold text-center mt-4">{billingInterval === 'monthly' ? t('pricing.testcrew_plan_text_monthly') : t('pricing.testcrew_plan_text_yearly')}</h2>
         {
           stripePriceObject?.currency !== null && stripePriceObject?.currency !== undefined &&
-          <p className="text-center text-gray-700 mt-2 font-bold">{`${stripePriceObject?.currency.toUpperCase()} ${stripePriceObject?.unit_amount / 100}`}</p>
+          <p className="text-center text-gray-700 mt-2 font-bold">{`${renderCurrency()} ${stripePriceObject?.unit_amount / 100}`}</p>
         }
         <form onSubmit={handleSubmit}>
           <CardElement className="p-2 border rounded-md" />
@@ -117,7 +125,7 @@ export function Pricing() {
         if (paymentDetails.payment_detail !== null && paymentDetails.plan === "premium") {
           isPremium = true;
         } else if (paymentDetails.cancellation_date) {
-          const cancellationDate = new Date(paymentDetails.created_at);
+          const cancellationDate = new Date(paymentDetails.cancellation_date);
           const oneMonthLater = new Date(cancellationDate);
           oneMonthLater.setMonth(cancellationDate.getMonth() + 1);
 
@@ -303,7 +311,7 @@ export function Pricing() {
   const addThirtyDays = (dateString) => {
     const date = new Date(dateString);
     date.setDate(date.getDate() + 30); // Add 30 days to the date
-    return date;
+    return date.toDateString();
   };
 
   if (loading || isPremiumUser === null) {
@@ -319,12 +327,11 @@ export function Pricing() {
       return (
         <div className="flex justify-center items-center">
           <div className="flex flex-col items-center space-y-6">
-            {console.log(paymentDetailsObject)}
             <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
-              { 
+              {
                 paymentDetailsObject.payment_detail?.current_period_end && !paymentDetailsObject.payment_detail?.cancel_at_period_end ?
                   `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}` :
-                  `${t('pricing.cancellation_period')} ${(addThirtyDays(new Date(paymentDetailsObject.created_at)).toDateString())}`
+                  `${t('pricing.cancellation_period')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}`
               }
             </h2>
             {

@@ -4,13 +4,14 @@ import { Button } from '@/components/Button';
 import { TextField } from '@/components/Fields';
 import supabase from '@/utils/supabaseClient';
 import { isValidPassword } from '@/utils/urlValidator';
+import withAuth from '@/utils/withAuth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function ForgotPassword() {
+const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
@@ -76,3 +77,5 @@ export default function ForgotPassword() {
     </AuthLayout>
   );
 }
+
+export default withAuth(ForgotPassword);

@@ -9,8 +9,9 @@ import supabase from '@/utils/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import withAuth from '@/utils/withAuth';
 
-export default function ForgotPassword() {
+const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
@@ -65,3 +66,5 @@ export default function ForgotPassword() {
     </AuthLayout>
   );
 }
+
+export default withAuth(ForgotPassword)
