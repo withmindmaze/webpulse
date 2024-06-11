@@ -65,13 +65,76 @@ function UrlInput() {
         setCategories({ ...categories, [event.target.name]: event.target.checked });
     };
 
+    // const printIframe = () => {
+    //     var printContents = document.getElementById("statsDiv").innerHTML;
+    //     var originalContents = document.body.innerHTML;
+    //     document.body.innerHTML = printContents;
+    //     window.print();
+    //     document.body.innerHTML = originalContents;
+
+    //     // const iframe = iframeRef.current;
+    //     // if (iframe) {
+    //     //     //@ts-ignore
+    //     //     iframe?.contentWindow?.print();
+    //     // }
+    // };
+
     const printIframe = () => {
-        const iframe = iframeRef.current;
-        if (iframe) {
-            //@ts-ignore
-            iframe?.contentWindow?.print();
+        // Open a new window for printing
+        var printWindow = window.open('', '_blank');
+
+        // Get the specific iframe by its title
+        var iframe = document.querySelector('iframe[title="Audit Report"]') as HTMLIFrameElement;
+        if (!iframe) {
+            console.error('Audit Report iframe not found');
+            return;
         }
+
+        // Get the contents of statsDiv
+        var statsContents = document.getElementById("statsDiv").innerHTML;
+
+        // Clone the document of the iframe
+        var iframeDocument = iframe.contentDocument.cloneNode(true) as Document;
+
+        // Serialize the manipulated iframe content to HTML string
+        var iframeContents = new XMLSerializer().serializeToString(iframeDocument.documentElement);
+
+        // Create full HTML content by combining both parts, including necessary styles
+        var fullContent = `
+            <html>
+                <head>
+                    <style>
+                        /* Add any styles that apply globally on your site */
+                        body { font-family: 'Arial', sans-serif; }
+                    </style>
+                    ${Array.from(document.getElementsByTagName('link')).map(link => `<link rel="stylesheet" href="${link.href}">`).join('')}
+                </head>
+                <body>
+                    <div class="stats-content">
+                        ${statsContents}
+                    </div>
+                    <div class="iframe-content">
+                        ${iframeContents}
+                    </div>
+                </body>
+            </html>`;
+
+        // Write the combined HTML content into the new window
+        printWindow.document.write(fullContent);
+        printWindow.document.close();
+
+        // Print the new window's content after it has loaded
+        printWindow.onload = function () {
+            printWindow.focus(); // Focus the new window to ensure the print dialog covers it
+            printWindow.print();
+            printWindow.close(); // Close the new window after printing
+        };
     };
+
+
+
+
+
 
     const callAuditApi = async (selectedCategories: any, getUser: any) => {
         const response = await fetch(`/api/audit`, {
@@ -200,7 +263,7 @@ function UrlInput() {
     };
 
     const manipulateDOM = () => {
-        const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
+        const iframe = document.querySelector('iframe[title="Audit Report"]') as HTMLIFrameElement;
         if (iframe?.contentWindow?.document) {
             // Import Montserrat font into iframe
             const style = document.createElement('style');
@@ -211,6 +274,13 @@ function UrlInput() {
                 font-family: 'Montserrat', sans-serif;
             }`;
             iframe.contentWindow.document.head.appendChild(style);
+
+            // Change the document title
+            const title = iframe.contentWindow.document.querySelector('title');
+            if (title) {
+                title.textContent = "Webpulse Audit Report";
+            }
+
             // Locate the article tag and change its class from lh-dark to lh-light
             const article = iframe.contentWindow.document.querySelector('article.lh-root') as HTMLElement;
             if (article) {
@@ -334,13 +404,13 @@ function UrlInput() {
                     {t('dashboard.button_print_report')}
                 </button>
             }
-
-            {
-                jsonData !== null && (
-                    <Stats jsonData={jsonData} url={url} iframeSrc={iframeSrc} />
-                )
-            }
-
+            <div id="statsDiv" style={{ minWidth: '-webkit-fill-available' }}>
+                {
+                    jsonData !== null && (
+                        <Stats jsonData={jsonData} url={url} iframeSrc={iframeSrc} />
+                    )
+                }
+            </div>
             {iframeSrc && (
                 <iframe
                     id='reportIframe'
@@ -350,7 +420,7 @@ function UrlInput() {
                     width="100%"
                     height="100%"
                     style={{ border: 'none', height: '100vh' }}
-                    title="Lighthouse Report"
+                    title='Audit Report'
                 />
             )}
         </div>
