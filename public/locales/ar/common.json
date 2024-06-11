@@ -13,7 +13,7 @@
     },
     "dashboard": {
         "searchHeading": "تحليل موقعك الإلكتروني",
-        "urlPlaceHolder": "https://your_domain.com",
+        "urlPlaceHolder": "اكتب عنوان URL",
         "analyseButton": "تحليل",
         "radio_navigation": "التنقل (افتراضي)",
         "radio_desktop": "سطح المكتب",
