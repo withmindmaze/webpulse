@@ -96,6 +96,8 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
 export function Pricing() {
   const router = useRouter();
   const [isPremiumUser, setIsPremiumUser] = useState(null);
+  const [isEndPeriodRemaining, setIsEndPeriodRemaining] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
   const [redirectButtonLoading, setRedirectButtonLoading] = useState(false);
@@ -125,11 +127,12 @@ export function Pricing() {
         if (paymentDetails.payment_detail !== null && paymentDetails.plan === "premium") {
           isPremium = true;
         } else if (paymentDetails.cancellation_date) {
-          const cancellationDate = new Date(paymentDetails.cancellation_date);
+          const cancellationDate = new Date(paymentDetails.subscription_date);
           const oneMonthLater = new Date(cancellationDate);
           oneMonthLater.setMonth(cancellationDate.getMonth() + 1);
 
           if (now <= oneMonthLater) {
+            setIsEndPeriodRemaining(true)
             isPremium = true;
           }
         }
@@ -148,32 +151,7 @@ export function Pricing() {
     };
 
     checkPaymentStatus();
-  }, [router]);
-  // useEffect(() => {
-  //   const checkPaymentStatus = async () => {
-  //     setLoading(true);
-  //     const getUser = await supabase.auth.getUser();
-  //     const userSubscriptions = await supabase
-  //       .from('user_plan')
-  //       .select('*')
-  //       .eq('user_id', getUser.data.user?.id)
-  //       .single();
-
-  //     const paymentDetails = userSubscriptions.data;
-  //     if (paymentDetails) {
-  //       if (paymentDetails?.payment_detail !== null && paymentDetails?.plan === "premium") {
-  //         setIsPremiumUser(true);
-  //         setPaymentDetailsObject(paymentDetails);
-  //       } else {
-  //         setIsPremiumUser(false);
-  //       }
-  //     } else {
-  //       setIsPremiumUser(false);
-  //     }
-  //     setLoading(false);
-  //   }
-  //   checkPaymentStatus();
-  // }, [router]);
+  }, []);
 
   useEffect(() => {
     if (priceId !== null && priceId !== undefined) {
@@ -327,15 +305,20 @@ export function Pricing() {
       return (
         <div className="flex justify-center items-center">
           <div className="flex flex-col items-center space-y-6">
+
+            {/** If the user is simply subscribed */}
             <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
               {
-                paymentDetailsObject.payment_detail?.current_period_end && !paymentDetailsObject.payment_detail?.cancel_at_period_end ?
-                  `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}` :
-                  `${t('pricing.cancellation_period')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}`
+                paymentDetailsObject.payment_detail && paymentDetailsObject.cancellation_date === null && (
+                  paymentDetailsObject.payment_detail?.current_period_end && !paymentDetailsObject.payment_detail?.cancel_at_period_end &&
+                  `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}`
+                )
               }
             </h2>
+
+            {/** If the user is simply subscribed */}
             {
-              paymentDetailsObject.payment_detail !== null &&
+              paymentDetailsObject.payment_detail !== null && paymentDetailsObject.cancellation_date === null &&
               <div className="flex flex-col items-center space-y-4">
                 <button
                   disabled={redirectButtonLoading}
@@ -352,8 +335,19 @@ export function Pricing() {
                 </button>
               </div>
             }
+
+            {/** If the user has cancelled subscription and subscription period is not ended yet */}
+            <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
+              {
+                isEndPeriodRemaining === true && (
+                  `${t('pricing.cancellation_period')} ${addThirtyDays(new Date(paymentDetailsObject.subscription_date).toDateString())}`
+                )
+              }
+            </h2>
+
+            {/** If the user has cancelled subscription and subscription period is not ended yet */}
             {
-              paymentDetailsObject.payment_detail === null &&
+              isEndPeriodRemaining === true &&
               <div className="flex flex-col items-center space-y-4">
                 <h4 id="pricing-title" className="text-xl font-medium tracking-tight text-gray-900">
                   {t('pricing.subscribe_again')}
