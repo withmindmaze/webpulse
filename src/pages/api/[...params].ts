@@ -12,7 +12,7 @@ export const config = {
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
   return ChromeLauncher.launch({
-    chromeFlags: ['--headless'],
+    chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
   })
     .then(chrome => {
       console.log(`Chrome launched with debugging port: ${chrome.port}`);
@@ -42,7 +42,16 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
         extends: 'lighthouse:default',
         settings: {
           formFactor: device === 'desktop' ? 'desktop' : 'mobile',
+          throttling: {
+            rttMs: 40,
+            throughputKbps: 10240,
+            cpuSlowdownMultiplier: 1,
+            requestLatencyMs: 0,
+            downloadThroughputKbps: 0,
+            uploadThroughputKbps: 0
+          },
           screenEmulation: device === 'desktop' ? desktopEmulation : mobileEmulation,
+          emulatedUserAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Safari/537.36 Chrome-Lighthouse'
         } as Config.Settings
       };
 
@@ -58,7 +67,7 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
           console.error("Error during Lighthouse run:", err);
           throw err;
         }).finally(() => {
-          if(chrome)
+          if (chrome)
             chrome.kill();
         });
     })
