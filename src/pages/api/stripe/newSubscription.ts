@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             customer: customer.id,
             items: [{ price: priceId }],
             expand: ['latest_invoice.payment_intent'],
+            cancel_at_period_end: true
         });
 
     } catch (stripeError) {

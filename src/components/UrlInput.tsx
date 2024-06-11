@@ -130,7 +130,7 @@ function UrlInput() {
             printWindow.close(); // Close the new window after printing
         };
     };
-    
+
     const callAuditApi = async (selectedCategories: any, getUser: any) => {
         const response = await fetch(`/api/audit`, {
             method: 'POST',
@@ -163,8 +163,8 @@ function UrlInput() {
         }
 
         // For free plan, check if there is a valid cancellation within the last 30 days.
-        if (userPlan.cancellation_date) {
-            const cancellationDate = new Date(userPlan.cancellation_date);
+        if (userPlan.cancellation_date !== null) {
+            const cancellationDate = new Date(userPlan.subscription_date);
             const currentDate = new Date();
             const thirtyDaysAfterCancellation = new Date(cancellationDate);
             thirtyDaysAfterCancellation.setDate(cancellationDate.getDate() + 30);
