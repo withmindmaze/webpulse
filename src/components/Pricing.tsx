@@ -59,7 +59,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
         <h2 className="text-2xl font-semibold text-center mt-4">{billingInterval === 'monthly' ? t('pricing.testcrew_plan_text_monthly') : t('pricing.testcrew_plan_text_yearly')}</h2>
         {
           stripePriceObject?.currency !== null && stripePriceObject?.currency !== undefined &&
-          <p className="text-center text-gray-700 mt-2 font-bold">{`${renderCurrency()} ${stripePriceObject?.unit_amount / 100}`}</p>
+          <p className="text-center text-gray-700 mt-2 font-bold">{`${renderCurrency()} ${stripePriceObject?.unitAmount / 100}`}</p>
         }
         <form onSubmit={handleSubmit}>
           <CardElement className="p-2 border rounded-md" />
@@ -106,8 +106,8 @@ export function Pricing() {
   const elements = useElements();
   const [priceId, setPriceId] = useState(process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_KEY);
   const [billingInterval, setBillingInterval] = useState('monthly');
-  const [stripePriceObject, setStripePriceObject] = useState();
-  const [paymentDetailsObject, setPaymentDetailsObject] = useState();
+  const [stripePriceObject, setStripePriceObject] = useState(null);
+  const [paymentDetailsObject, setPaymentDetailsObject] = useState(null);
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -137,14 +137,14 @@ export function Pricing() {
           }
         }
 
-        setIsPremiumUser(isPremium);
+        // setIsPremiumUser(isPremium);
         if (isPremium) {
           setPaymentDetailsObject(paymentDetails);
         } else {
           setPaymentDetailsObject({});
         }
       } else {
-        setIsPremiumUser(false);
+        // setIsPremiumUser(false);
         setPaymentDetailsObject({});
       }
       setLoading(false);
@@ -154,29 +154,31 @@ export function Pricing() {
   }, []);
 
   useEffect(() => {
-    if (priceId !== null && priceId !== undefined) {
+    if (paymentDetailsObject !== null && paymentDetailsObject !== undefined) {
       setLoading(true);
       const fetchPriceFromStripe = async () => {
-        const apiResponse = await fetch(`/api/stripe/getStripePriceObject`, {
+        const apiResponse = await fetch(`/api/stripe/getSubscription`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            priceId: priceId
+            subscriptionId: paymentDetailsObject.subscription_id
           }),
         });
         const data = await apiResponse.json();
         setLoading(false);
-        if (apiResponse.ok && data.priceObject) {
-          setStripePriceObject(data.priceObject);
+        if (apiResponse.ok) {
+          setStripePriceObject(data);
         } else {
           toast.error('Unable to fetch stripe products');
         }
       }
       fetchPriceFromStripe();
     }
-  }, [priceId]);
+  }, [paymentDetailsObject]);
+
+  console.log({ stripePriceObject });
 
   const handleCancelSubscription = async () => {
     setButtonLoading(true);
@@ -292,7 +294,7 @@ export function Pricing() {
     return date.toDateString();
   };
 
-  if (loading || isPremiumUser === null) {
+  if (loading || stripePriceObject === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg font-semibold text-gray-800">
@@ -301,24 +303,25 @@ export function Pricing() {
       </div>
     );
   } else {
-    if (isPremiumUser === true) {
+    if (stripePriceObject.isValid === true) {
       return (
         <div className="flex justify-center items-center">
           <div className="flex flex-col items-center space-y-6">
 
             {/** If the user is simply subscribed */}
-            <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
-              {
-                paymentDetailsObject.payment_detail && paymentDetailsObject.cancellation_date === null && (
-                  paymentDetailsObject.payment_detail?.current_period_end && !paymentDetailsObject.payment_detail?.cancel_at_period_end &&
-                  `${t('pricing.already_subscribed')} ${(new Date(paymentDetailsObject.payment_detail?.current_period_end * 1000).toDateString())}`
-                )
-              }
-            </h2>
+            {
+              stripePriceObject.isCancelled === false && stripePriceObject.isValid === true &&
+              <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
+                {
+                  `${t('pricing.already_subscribed')} ${(new Date(stripePriceObject?.nextChargeDate))}`
+                }
+              </h2>
+            }
+
 
             {/** If the user is simply subscribed */}
             {
-              paymentDetailsObject.payment_detail !== null && paymentDetailsObject.cancellation_date === null &&
+              stripePriceObject.isCancelled === false && stripePriceObject.isValid === true &&
               <div className="flex flex-col items-center space-y-4">
                 <button
                   disabled={redirectButtonLoading}
@@ -337,17 +340,18 @@ export function Pricing() {
             }
 
             {/** If the user has cancelled subscription and subscription period is not ended yet */}
-            <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
-              {
-                isEndPeriodRemaining === true && (
-                  `${t('pricing.cancellation_period')} ${addThirtyDays(new Date(paymentDetailsObject.subscription_date).toDateString())}`
-                )
-              }
-            </h2>
+            {
+              stripePriceObject.isCancelled === true && stripePriceObject.isValid === true &&
+              <h2 id="pricing-title" className="text-2xl text-center font-medium tracking-tight text-gray-900">
+                {
+                  `${t('pricing.cancellation_period')} ${stripePriceObject.currentPeriodEndDate}`
+                }
+              </h2>
+            }
 
             {/** If the user has cancelled subscription and subscription period is not ended yet */}
             {
-              isEndPeriodRemaining === true &&
+              stripePriceObject.isCancelled === true && stripePriceObject.isValid === true &&
               <div className="flex flex-col items-center space-y-4">
                 <h4 id="pricing-title" className="text-xl font-medium tracking-tight text-gray-900">
                   {t('pricing.subscribe_again')}
@@ -364,7 +368,7 @@ export function Pricing() {
           </div>
         </div>
       )
-    } else if (isPremiumUser === false) {
+    } else if (stripePriceObject.isValid === false) {
       return (
         <SubscribeForm
           stripePriceObject={stripePriceObject}
