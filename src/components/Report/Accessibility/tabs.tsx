@@ -16,7 +16,7 @@ function classNames(...classes: any) {
 export default function Tabs({ selectedTab, setSelectedTab, iframeSrc }: any) {
 
     const manipulateDOM = () => {
-        const iframe = document.querySelector('iframe[title="Lighthouse Report"]') as HTMLIFrameElement;
+        const iframe = document.querySelector('iframe[title="Audit Report"]') as HTMLIFrameElement;
         const doc = iframe.contentDocument;
         const performanceElement = doc?.getElementById('performance') as HTMLElement;
         const accessibilityElement = doc?.getElementById('accessibility') as HTMLElement;
