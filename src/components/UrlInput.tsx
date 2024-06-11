@@ -130,12 +130,7 @@ function UrlInput() {
             printWindow.close(); // Close the new window after printing
         };
     };
-
-
-
-
-
-
+    
     const callAuditApi = async (selectedCategories: any, getUser: any) => {
         const response = await fetch(`/api/audit`, {
             method: 'POST',
