@@ -13,7 +13,7 @@
     },
     "dashboard": {
         "searchHeading": "Analyze your website",
-        "urlPlaceHolder": "https://your_domain.com",
+        "urlPlaceHolder": "Enter URL",
         "analyseButton": "Analyze",
         "radio_navigation": "Navigation (Default)",
         "radio_desktop": "Desktop",
