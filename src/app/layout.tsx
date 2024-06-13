@@ -19,25 +19,34 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const [direction, setDirection] = useState('ltr');
   const [isClient, setIsClient] = useState(false);
   const { i18n } = useTranslation();
 
   useEffect(() => {
+    i18n.on('languageChanged', () => {
+      if (i18n.language === 'en') {
+        setDirection('ltr');
+      }
+      if (i18n.language === 'ar') {
+        setDirection('rtl');
+      }
+    });
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    const currentLanguage = localStorage.getItem('language');
-    if (currentLanguage === 'en') {
-      i18n.changeLanguage('en')
-    } else if (currentLanguage === 'ar') {
-      i18n.changeLanguage('ar')
-    }
-  }, [i18n]);
+  // useEffect(() => {
+  //   const currentLanguage = localStorage.getItem('language');
+  //   if (currentLanguage === 'en') {
+  //     i18n.changeLanguage('en')
+  //   } else if (currentLanguage === 'ar') {
+  //     i18n.changeLanguage('ar')
+  //   }
+  // }, [i18n]);
 
   return (
     <html
-      dir={i18n.language === 'en' ? 'ltr' : 'rtl'}
+      dir={direction}
       lang="en"
       className={clsx('h-full bg-gray-50 antialiased', inter.variable)}
     >
