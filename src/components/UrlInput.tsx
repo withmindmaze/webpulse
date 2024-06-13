@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { stringToUrl, validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
 
-function UrlInput() {
+function UrlInput({ user }) {
     const [categories, setCategories] = useState({ performance: true, accessibility: true, 'best-practices': true, seo: true, pwa: true });
     const [isLoading, setIsLoading] = useState(false);
     const [device, setDevice] = useState('desktop');
