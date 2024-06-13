@@ -25,6 +25,8 @@ export default function RootLayout({
 
   useEffect(() => {
     i18n.on('languageChanged', () => {
+      console.log("languageChanged");
+
       if (i18n.language === 'en') {
         setDirection('ltr');
       }
@@ -35,14 +37,15 @@ export default function RootLayout({
     setIsClient(true);
   }, []);
 
-  // useEffect(() => {
-  //   const currentLanguage = localStorage.getItem('language');
-  //   if (currentLanguage === 'en') {
-  //     i18n.changeLanguage('en')
-  //   } else if (currentLanguage === 'ar') {
-  //     i18n.changeLanguage('ar')
-  //   }
-  // }, [i18n]);
+  useEffect(() => {
+    const currentLanguage = localStorage.getItem('language');
+    if (currentLanguage === 'en') {
+      i18n.changeLanguage('en')
+    } else if (currentLanguage === 'ar') {
+      i18n.changeLanguage('ar')
+    }
+  }, []);
+
 
   return (
     <html
