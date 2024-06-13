@@ -2,7 +2,9 @@
 "use client"
 import supabase from '@/utils/supabaseClient';
 import withAuth from '@/utils/withAuth';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { BarsArrowUpIcon, GlobeAltIcon } from '@heroicons/react/20/solid';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +13,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { stringToUrl, validateURL } from '../utils/urlValidator';
 import LightHouseStart from './LightHouseStart';
-import Stats from './Report/page';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function UrlInput() {
     const [categories, setCategories] = useState({ performance: true, accessibility: true, 'best-practices': true, seo: true, pwa: true });
@@ -27,6 +27,12 @@ function UrlInput() {
     const iframeRef = useRef(null);
     const router = useRouter();
     const [fpHash, setFpHash] = useState('');
+
+    const Stats = dynamic(() => import('./Report/page'), {
+        loading: () => <div>Loading report...</div>,
+        ssr: false
+    });
+
     useEffect(() => {
         const setFp = async () => {
             setIsLoading(true);
