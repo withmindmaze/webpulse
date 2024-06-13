@@ -28,7 +28,7 @@ interface TableRow {
     date: string;
 }
 
-function Reports() {
+function Reports({ user }) {
     const [graphData, setGraphData] = useState<GraphData | null>(null);
     const [individualGraphData, setIndividualGraphData] = useState({});
     const [tableData, setTableData] = useState<TableRow[]>([]);
@@ -45,11 +45,11 @@ function Reports() {
 
     useEffect(() => {
         const fetchUrls = async () => {
-            const { data: user } = await supabase.auth.getUser();
+            // const { data: user } = await supabase.auth.getUser();
             const { data, error } = await supabase
                 .from('report')
                 .select('url')
-                .eq('user_id', user?.user?.id);
+                .eq('user_id', user?.id);
 
             if (error) console.error('error fetching urls', error);
             else {

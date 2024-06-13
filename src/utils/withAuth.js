@@ -11,16 +11,16 @@ const withAuth = (WrappedComponent) => {
         const pathname = usePathname();
         const router = useRouter();
         const [loading, setLoading] = useState(true);
+        const [user, setUser] = useState(null);
 
         useEffect(() => {
-            // Check if the current path is allowed for guest users
             if (allowedForGuestUser.includes(pathname)) {
                 setLoading(false);
                 return;
             } else {
                 const getCurrentUser = async () => {
                     try {
-                        const { data: user, error } = await supabase.auth.getUser();
+                        const { data: { user }, error } = await supabase.auth.getUser();
 
                         if (error) {
                             throw error;
@@ -29,6 +29,7 @@ const withAuth = (WrappedComponent) => {
                         if (!user) {
                             router.push('/login');
                         } else {
+                            setUser(user);
                             setLoading(false);
                         }
                     } catch (error) {
@@ -37,8 +38,7 @@ const withAuth = (WrappedComponent) => {
                 };
                 getCurrentUser();
             }
-
-        }, [router]);
+        }, [pathname]);
 
         if (loading) {
             return (
@@ -50,7 +50,7 @@ const withAuth = (WrappedComponent) => {
             );
         }
 
-        return <WrappedComponent {...props} />;
+        return <WrappedComponent {...props} user={user} />;
     };
 };
 

@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { Popover } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -8,14 +6,12 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
 import { NavLinks } from '@/components/NavLinks'
-import supabase from '@/utils/supabaseClient'
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import '../utils/i18n';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import supabase from '@/utils/supabaseClient'
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -58,30 +54,28 @@ function MobileNavLink(
   )
 }
 
-function LanguageSwitcher() {
+function LanguageSwitcher({ language }: any) {
   const { i18n } = useTranslation();
   const pathName = usePathname();
 
   // Function to change language and store selection in localStorage
   const changeLanguage = (lang: any) => {
-    i18n.changeLanguage(lang);
     localStorage.setItem('language', lang);
-    if (pathName === '/purchase') {
-      // window.location.reload();
-    }
+    i18n.changeLanguage(lang);
   };
 
   // Effect hook to load language preference from localStorage
-  useEffect(() => {
-    const savedLang = localStorage.getItem('language');
-    if (savedLang) {
-      i18n.changeLanguage(savedLang);
-    }
-  }, [i18n]);
+  // useEffect(() => {
+  //   const savedLang = localStorage.getItem('language');
+  //   if (savedLang) {
+  //     i18n.changeLanguage(savedLang);
+
+  //   }
+  // }, [i18n]);
 
   return (
     <select
-      value={i18n.language}
+      value={language}
       onChange={(e) => changeLanguage(e.target.value)}
       className="border p-2 rounded w-[95px]"
       style={{ direction: 'ltr' }}
@@ -92,24 +86,9 @@ function LanguageSwitcher() {
   );
 }
 
-export function Header() {
+export function Header({ isLogin, language }: any) {
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(true);
   const { t } = useTranslation();
-
-  const userLoggedIn = async () => {
-    const getUser = await supabase.auth.getUser();
-    if (getUser.data.user?.id) {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
-    }
-  }
-
-  useEffect(() => {
-    userLoggedIn();
-  }, [router]);
-
 
   const handleLogout = () => {
     supabase.auth.signOut();
@@ -135,11 +114,8 @@ export function Header() {
 
             {/* Centered NavLinks */}
             <div className="flex-grow-0 hidden lg:flex justify-center">
-              <NavLinks />
+              <NavLinks isUserLoggedIn={isLogin} language={language} />
             </div>
-
-
-
 
             <Popover className="lg:hidden">
               {({ open }) => (
@@ -231,7 +207,7 @@ export function Header() {
 
             {/* Language and authentication actions grouped */}
             <div className="flex-grow flex items-center justify-end gap-6">
-              <LanguageSwitcher />
+              <LanguageSwitcher language={language} />
               {isLogin ? (
                 <Button onClick={handleLogout} variant="outline"
                   className="border-[#3bbed9] text-[#3bbed9] hover:border-[#3bbed9] hover:text-[#3bbed9] focus:outline-none focus:ring-2 focus:ring-[#3bbed9] focus:ring-opacity-50 hidden lg:block"
@@ -253,6 +229,4 @@ export function Header() {
       </nav>
     </header>
   );
-
-
 }

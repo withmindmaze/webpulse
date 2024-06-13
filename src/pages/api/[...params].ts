@@ -3,6 +3,7 @@ import * as ChromeLauncher from 'chrome-launcher';
 import lighthouse, { Config, OutputMode } from 'lighthouse';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nextCors from 'nextjs-cors';
+import { performance } from 'perf_hooks';
 
 export const config = {
   api: {
@@ -11,11 +12,15 @@ export const config = {
 }
 
 function runLighthouse(url: string, categories: string[], device: string): Promise<any> {
+  const startTime = performance.now();
+  console.log(`Request received, starting Chrome at: ${startTime}ms`);
+
   return ChromeLauncher.launch({
     chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'],
   })
     .then(chrome => {
-      console.log(`Chrome launched with debugging port: ${chrome.port}`);
+      const chromeStartTime = performance.now();
+      console.log(`Chrome launched with debugging port: ${chrome.port}, took ${(chromeStartTime - startTime).toFixed(2)}ms`);
 
       const options = {
         port: chrome.port,
@@ -57,6 +62,9 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
 
       return lighthouse(url, options, config)
         .then(runnerResult => {
+          const chromeEndTime = performance.now();
+          console.log(`Chrome run complete, took ${(chromeEndTime - chromeStartTime).toFixed(2)}ms`);
+
           chrome.kill();
           console.log("Chrome was killed");
           return runnerResult;
@@ -79,6 +87,9 @@ function runLighthouse(url: string, categories: string[], device: string): Promi
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const handlerStartTime = performance.now();
+  console.log(`Request received at: ${handlerStartTime}ms`);
+
   // Initialize CORS middleware
   await nextCors(req, res, {
     methods: ['POST', 'OPTIONS'],
@@ -117,10 +128,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       try {
+        const responseStartTime = performance.now();
+        console.log(`Starting response at: ${responseStartTime}ms`);
+
         const runnerResult = await runLighthouse(url, categories, device);
+
         const jsonReport = runnerResult?.lhr
         if (user_id !== undefined) {
-          const reportData = await supabase
+          await supabase
             .from('report')
             .insert([{
               user_id,
@@ -128,8 +143,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               url,
               generated_by: generatedBy ? generatedBy : 'user'
             }]);
-          console.log(reportData);
         }
+
+        const responseEndTime = performance.now();
+        console.log(`Response sent, took ${(responseEndTime - responseStartTime).toFixed(2)}ms`);
+
         res.status(200).json({ data: runnerResult, jsonReport: jsonReport });
       } catch (error) {
         res.status(500).json({ error: error instanceof Error ? error.message : 'An error occurred' });

@@ -9,12 +9,12 @@ import { useTranslation } from 'react-i18next';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || '');
 
-function Purchase() {
+function Purchase({ user }) {
     const { i18n } = useTranslation();
 
     return (
         <Elements stripe={stripePromise} options={{ locale: i18n.language }}>
-            <Pricing />
+            <Pricing user={user} />
         </Elements >
     )
 }

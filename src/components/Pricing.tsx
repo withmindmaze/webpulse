@@ -93,7 +93,7 @@ const SubscribeForm = ({ handleSubmit, billingInterval, handleIntervalChange, bu
   );
 };
 
-export function Pricing() {
+export function Pricing({ user }) {
   const router = useRouter();
   const [isPremiumUser, setIsPremiumUser] = useState(null);
   const [isEndPeriodRemaining, setIsEndPeriodRemaining] = useState(false);
@@ -112,11 +112,11 @@ export function Pricing() {
   useEffect(() => {
     const checkPaymentStatus = async () => {
       setLoading(true);
-      const getUser = await supabase.auth.getUser();
+      // const getUser = await supabase.auth.getUser();
       const userSubscriptions = await supabase
         .from('user_plan')
         .select('*')
-        .eq('user_id', getUser.data.user?.id)
+        .eq('user_id', user?.id)
         .single();
 
       const paymentDetails = userSubscriptions.data;
@@ -180,7 +180,7 @@ export function Pricing() {
 
   const handleCancelSubscription = async () => {
     setButtonLoading(true);
-    const getUser = await supabase.auth.getUser();
+    // const getUser = await supabase.auth.getUser();
 
     const apiResponse = await fetch(`/api/stripe/cancelSubscription`, {
       method: 'POST',
@@ -188,7 +188,7 @@ export function Pricing() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: getUser.data.user?.id
+        userId: user?.id
       }),
     });
 
@@ -236,10 +236,10 @@ export function Pricing() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: getUser.data.user?.email,
+        email: user?.email,
         paymentMethodId: paymentMethod.id,
         priceId,
-        user_id: getUser.data.user?.id
+        user_id: user?.id
       }),
     });
 

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
-function Alerts() {
+function Alerts({ user }) {
     const [metrics, setMetrics] = useState({ Performance: false, Accessibility: false, SEO: false, PWA: false, });
     const [currentAlert, setCurrentAlert] = useState(null);
     const [competitorUrl, setCompetitorUrl] = useState('');
@@ -66,18 +66,18 @@ function Alerts() {
             return;
         }
         setSaving(true);
-        const { data: user, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-            toast.error(t('toast.auth_error'));
-            console.error('Authentication error or no user data:', userError);
-            return;
-        }
+        // const { data: user, error: userError } = await supabase.auth.getUser();
+        // if (userError || !user) {
+        //     toast.error(t('toast.auth_error'));
+        //     console.error('Authentication error or no user data:', userError);
+        //     return;
+        // }
 
         //@ts-ignore
         const selectedCategories = Object.keys(metrics).filter(metric => metrics[metric]);
 
         const { data, error } = await supabase.from('comparison_alert').insert([{
-            user_id: user.user.id,
+            user_id: user.id,
             url,
             competitor_url: competitorUrl,
             metrics: selectedCategories,
@@ -101,8 +101,8 @@ function Alerts() {
     }, []);
 
     const fetchAlerts = async () => {
-        const { data: user, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
+        // const { data: user, error: userError } = await supabase.auth.getUser();
+        if (!user || !user?.id) {
             toast.error(t('toast.auth_error'));
             return;
         }
@@ -110,7 +110,7 @@ function Alerts() {
         const { data, error } = await supabase
             .from('comparison_alert')
             .select('*')
-            .eq('user_id', user.user.id);
+            .eq('user_id', user.id);
 
         if (error) {
             toast.error(t('toast.fetch_alerts_fail'));
